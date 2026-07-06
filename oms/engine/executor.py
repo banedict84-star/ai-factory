@@ -173,15 +173,26 @@ class OpenAIExecutor:
                 self._client = False
         return self._client or None
 
-    def _gen_image(self, client, prompt: str) -> tuple[str, str]:
+    def _gen_image(self, client, prompt: str) -> tuple[bytes, str]:
+        """이미지 바이트를 돌려준다.
+
+        모델·SDK 버전에 따라 응답이 b64_json 이거나 url 이라서 둘 다 처리한다.
+        (response_format 은 최신 API 에서 거부되므로 아예 보내지 않는다.)
+        """
         last = None
         for m in self.image_models:
             try:
-                kwargs = {"model": m, "prompt": prompt, "size": "1024x1024"}
-                if m.startswith("dall-e"):
-                    kwargs["response_format"] = "b64_json"
-                res = client.images.generate(**kwargs)
-                return res.data[0].b64_json, m
+                res = client.images.generate(model=m, prompt=prompt, size="1024x1024")
+                d = res.data[0]
+                b64 = getattr(d, "b64_json", None)
+                if b64:
+                    return base64.b64decode(b64), m
+                url = getattr(d, "url", None)
+                if url:
+                    import urllib.request
+                    with urllib.request.urlopen(url, timeout=60) as r:
+                        return r.read(), m
+                raise RuntimeError("이미지 응답에 b64_json/url 이 없습니다")
             except Exception as e:
                 last = e
                 print(f"[executor] 이미지 모델 '{m}' 실패: {e}", file=sys.stderr)
@@ -200,10 +211,10 @@ class OpenAIExecutor:
                 text = (r.choices[0].message.content or "").strip()
                 return text or self.fallback.execute(ctx)
             if ctx.need == "image" and self.media_dir:
-                b64, used = self._gen_image(client, _image_prompt(ctx))
+                data, used = self._gen_image(client, _image_prompt(ctx))
                 path, url = _media_url(self.media_dir, ctx.task.id, ctx.need)
                 path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_bytes(base64.b64decode(b64))
+                path.write_bytes(data)
                 print(f"[executor] 이미지 생성 성공: {used} → {url}", file=sys.stderr)
                 return url
         except Exception as e:
