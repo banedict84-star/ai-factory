@@ -134,10 +134,50 @@ def _journey(task_id: int, emps) -> list[dict]:
     return chain
 
 
+def _msg_view(m, emps) -> dict:
+    if m.from_id is None:
+        frm = {"name": "대표", "emoji": "👤", "ceo": True}
+    else:
+        e = emps.get(m.from_id)
+        frm = {"name": e.name if e else "?", "emoji": e.emoji if e else "🤖", "ceo": False}
+    to = None
+    if m.to_id and emps.get(m.to_id):
+        to = emps[m.to_id].name
+    return {"from": frm, "to": to, "text": m.text, "t": _fmt(m.created_at),
+            "task_id": m.task_id}
+
+
 # ── 라우트 ──────────────────────────────────────────────
 @app.get("/")
-def home():
-    return RedirectResponse("/flow")
+def home(request: Request):
+    """오피스 — 첫 화면. 직원들이 지금 무슨 상태이고 무슨 말을 하는지."""
+    roles = {r.id: r for r in repo.list_roles()}
+    emps = _emp_map()
+    all_msgs = repo.list_messages()
+    last_by_emp: dict[int, str] = {}
+    for m in all_msgs:
+        if m.from_id is not None:
+            last_by_emp[m.from_id] = m.text
+
+    roster = []
+    for e in repo.list_employees():
+        role = roles.get(e.role_id)
+        current = [
+            t for t in repo.list_tasks(assignee_id=e.id)
+            if t.status in (TaskStatus.handed_off, TaskStatus.in_progress,
+                            TaskStatus.awaiting_approval, TaskStatus.blocked)
+        ]
+        roster.append({
+            "id": e.id, "emoji": e.emoji, "name": e.name, "title": e.title,
+            "role": role.name if role else "-", "status": e.status.value,
+            "current": current[0].title if current else None,
+            "says": last_by_emp.get(e.id),
+        })
+
+    messages = [_msg_view(m, emps) for m in all_msgs[-40:]]
+    return TEMPLATES.TemplateResponse(request, "office.html", {
+        "request": request, "roster": roster, "messages": messages,
+    })
 
 
 @app.get("/flow")
@@ -208,28 +248,56 @@ def task_detail(request: Request, task_id: int):
 
 
 @app.get("/employees")
-def employees(request: Request):
+def employees_index():
+    return RedirectResponse("/")  # 오피스에 직원 로스터가 있음
+
+
+@app.get("/employees/{emp_id}")
+def profile(request: Request, emp_id: int):
     roles = {r.id: r for r in repo.list_roles()}
     emps = _emp_map()
-    views = []
-    for e in repo.list_employees():
-        role = roles.get(e.role_id)
-        current = [
-            t for t in repo.list_tasks(assignee_id=e.id)
-            if t.status in (TaskStatus.handed_off, TaskStatus.in_progress,
-                            TaskStatus.awaiting_approval, TaskStatus.blocked)
-        ]
-        reports_to = emps.get(e.reports_to_id)
-        views.append({
-            "emoji": e.emoji, "name": e.name, "title": e.title,
-            "role": role.name if role else "-",
-            "status": e.status.value,
-            "reports_to": (reports_to.name if reports_to else "대표"),
-            "current": [{"id": t.id, "title": t.title} for t in current],
-            "memory": [m.content for m in repo.list_memory(e.id)],
-        })
-    return TEMPLATES.TemplateResponse(request, "employees.html", {
-        "request": request, "employees": views,
+    e = repo.get_employee(emp_id)
+    if e is None:
+        return RedirectResponse("/")
+    role = roles.get(e.role_id)
+    reports_to = emps.get(e.reports_to_id)
+
+    # 이 직원의 이벤트로 통계 계산
+    events = [ev for ev in repo.list_events() if ev.actor_id == emp_id]
+    started = {}  # task_id → 시작 시각
+    done_count = 0
+    durations = []
+    recent_work = []
+    for ev in sorted(events, key=lambda x: (x.created_at, x.id or 0)):
+        if ev.type == EventType.task_started:
+            started[ev.task_id] = ev.created_at
+        elif ev.type == EventType.task_worked:
+            done_count += 1
+            label = (ev.payload or {}).get("label", "")
+            recent_work.append({"task_id": ev.task_id, "label": label})
+            if ev.task_id in started:
+                durations.append((ev.created_at - started[ev.task_id]).total_seconds())
+    avg = f"{sum(durations)/len(durations):.1f}초" if durations else "—"
+
+    current = [
+        t for t in repo.list_tasks(assignee_id=emp_id)
+        if t.status in (TaskStatus.handed_off, TaskStatus.in_progress,
+                        TaskStatus.awaiting_approval, TaskStatus.blocked)
+    ]
+    decisions = [d for d in repo.list_decisions() if d.decided_by_id == emp_id]
+    decisions.sort(key=lambda d: (d.created_at, d.id or 0), reverse=True)
+
+    return TEMPLATES.TemplateResponse(request, "profile.html", {
+        "request": request,
+        "e": {"emoji": e.emoji, "name": e.name, "title": e.title,
+              "role": role.name if role else "-", "status": e.status.value,
+              "reports_to": reports_to.name if reports_to else "대표"},
+        "specialty": role.description if role and role.description else (role.name if role else "-"),
+        "done_count": done_count, "avg": avg,
+        "current": [{"id": t.id, "title": t.title, "status": t.status.value} for t in current],
+        "recent_work": list(reversed(recent_work))[:6],
+        "memory": [{"content": m.content, "key": m.key} for m in repo.list_memory(emp_id)],
+        "decisions": [{"reason": d.reason, "t": _fmt(d.created_at)} for d in decisions[:6]],
     })
 
 
@@ -258,16 +326,28 @@ def create_mission(intent: str = Form(...), mode: str = Form("auto")):
     return RedirectResponse("/flow", status_code=303)
 
 
+@app.post("/preference")
+def preference(intent: str = Form(...)):
+    team = repo.list_teams()[0]
+    engine.share_preference(team.id, intent)
+    return RedirectResponse("/", status_code=303)
+
+
+def _back(request: Request) -> str:
+    ref = request.headers.get("referer")
+    return ref if ref else "/"
+
+
 @app.post("/tick")
-def tick():
+def tick(request: Request):
     engine.tick()
-    return RedirectResponse("/flow", status_code=303)
+    return RedirectResponse(_back(request), status_code=303)
 
 
 @app.post("/run")
-def run():
+def run(request: Request):
     engine.run_until_idle()
-    return RedirectResponse("/flow", status_code=303)
+    return RedirectResponse(_back(request), status_code=303)
 
 
 @app.post("/tasks/{task_id}/approve")

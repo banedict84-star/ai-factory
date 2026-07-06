@@ -16,6 +16,7 @@ from ..domain.models import (
     Employee,
     Event,
     MemoryEntry,
+    Message,
     Mission,
     MissionStatus,
     Role,
@@ -38,6 +39,7 @@ _TABLES: dict[type, str] = {
     Event: "events",
     Decision: "decisions",
     MemoryEntry: "memories",
+    Message: "messages",
 }
 
 
@@ -240,3 +242,18 @@ class SQLiteRepository(Repository):
         if employee_id is not None:
             ms = [m for m in ms if m.employee_id == employee_id]
         return ms
+
+    # ── Message ──
+    def add_message(self, message: Message) -> Message:
+        return self._add(message)
+
+    def list_messages(
+        self, task_id: int | None = None, limit: int | None = None
+    ) -> list[Message]:
+        msgs = self._all(Message)
+        if task_id is not None:
+            msgs = [m for m in msgs if m.task_id == task_id]
+        msgs.sort(key=lambda m: (m.created_at, m.id or 0))
+        if limit is not None:
+            msgs = msgs[-limit:]
+        return msgs

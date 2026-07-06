@@ -46,11 +46,11 @@ def seed(repo: Repository) -> None:
         team_id=team.id, name="지호", role_id=role_lead.id,
         title="팀장", emoji="🧭", reports_to_id=None,  # 대표에게 보고
     ))
-    repo.add_employee(Employee(
+    rina = repo.add_employee(Employee(
         team_id=team.id, name="리나", role_id=role_video.id,
         title="팀원", emoji="🎬", reports_to_id=jiho.id,
     ))
-    repo.add_employee(Employee(
+    minjun = repo.add_employee(Employee(
         team_id=team.id, name="민준", role_id=role_copy.id,
         title="팀원", emoji="✍️", reports_to_id=jiho.id,
     ))
@@ -58,15 +58,31 @@ def seed(repo: Repository) -> None:
         team_id=team.id, name="수아", role_id=role_pub.id,
         title="팀원", emoji="📅", reports_to_id=jiho.id,
     ))
-    repo.add_employee(Employee(
+    taeo = repo.add_employee(Employee(
         team_id=team.id, name="태오", role_id=role_analyst.id,
         title="팀원", emoji="📊", reports_to_id=jiho.id,
     ))
 
-    # ── 초기 기억 ──
+    # ── 초기 기억 (일부는 key 를 달아 대화에 반영됨) ──
     repo.add_memory(MemoryEntry(
         content="대표는 기존 계정을 AI Boots / AI Fashion 릴스 계정으로 리브랜딩하길 원한다.",
         employee_id=jiho.id, source="feedback",
+    ))
+    repo.add_memory(MemoryEntry(
+        content="브랜드 방향은 감성적이고 담백하게.",
+        employee_id=jiho.id, source="learning", key="style_pref", value="감성적인",
+    ))
+    repo.add_memory(MemoryEntry(
+        content="지난 영상이 조금 길다는 피드백이 있었다.",
+        employee_id=rina.id, source="feedback", key="past_feedback", value="영상 길이 축소",
+    ))
+    repo.add_memory(MemoryEntry(
+        content="대표는 짧은 문장을 선호한다.",
+        employee_id=minjun.id, source="feedback", key="tone_pref", value="짧은",
+    ))
+    repo.add_memory(MemoryEntry(
+        content="성과는 저장수 중심으로 본다.",
+        employee_id=taeo.id, source="learning", key="metric_focus", value="저장수",
     ))
     repo.add_memory(MemoryEntry(
         content="브랜드 톤: 담백하고 감각적. 자연광 세로 숏폼.",

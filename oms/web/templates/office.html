@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}오피스 · AI Employee OS{% endblock %}
+{% block body %}
+  <h1>🏢 오피스</h1>
+  <p class="sub">AI 직원들이 일하는 사무실입니다. 지금 누가 무슨 상태이고, 서로 무슨 말을 나누는지 보입니다.
+    상단 <strong>▶ 한 스텝 진행</strong>을 누르면 직원들이 움직이고 대화가 이어집니다.</p>
+
+  <div class="card">
+    <div class="row" style="margin-bottom:8px">
+      <strong>👤 대표 한마디</strong>
+      <span class="sub">취향·방향을 한 줄로 남기면 관련 직원의 기억에 반영됩니다.</span>
+    </div>
+    <form method="post" action="/preference" class="row">
+      <input name="intent" placeholder="예: 나는 고급스럽고 여성 패션 느낌을 선호한다."
+             style="flex:1" />
+      <button class="primary" type="submit">전달</button>
+    </form>
+  </div>
+
+  <h2>직원 ({{ roster|length }}명)</h2>
+  <div class="roster">
+    {% for e in roster %}
+    <a class="empcard" href="/employees/{{ e.id }}">
+      <div class="top">
+        <span style="font-size:22px">{{ e.emoji }}</span>
+        <div>
+          <div class="nm">{{ e.name }} <span class="dot {{ e.status }}"></span></div>
+          <div class="rl">{{ e.title }} · {{ e.role }}</div>
+        </div>
+      </div>
+      {% if e.current %}<div class="cur">🛠 {{ e.current }}</div>{% else %}<div class="cur">대기중</div>{% endif %}
+      {% if e.says %}<div class="says">“{{ e.says }}”</div>{% endif %}
+    </a>
+    {% endfor %}
+  </div>
+
+  <h2>💬 대화</h2>
+  <div class="card">
+    {% if not messages %}
+      <div class="empty">아직 대화가 없습니다. ‘대표 한마디’를 남기거나 ‘한 스텝 진행’을 눌러보세요.</div>
+    {% endif %}
+    <div class="chat">
+      {% for m in messages %}
+      <div class="msg {{ 'ceo' if m.from.ceo else '' }}">
+        <div class="av">{{ m.from.emoji }}</div>
+        <div class="bub">
+          <div class="who">{{ m.from.name }}{% if m.to %} <span class="arrow">→ {{ m.to }}</span>{% endif %} · {{ m.t }}</div>
+          <div>{{ m.text }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

@@ -156,9 +156,23 @@ class Decision:
 # ── 맥락 ─────────────────────────────────────────────────
 @dataclass
 class MemoryEntry:
-    """직원(또는 팀)의 기억. 결정할 때 읽고, 행동/피드백 후 쓴다."""
-    content: str
+    """직원(또는 팀)의 기억. 결정/대화할 때 읽고, 행동/피드백 후 쓴다."""
+    content: str                               # 사람이 읽는 문장
     employee_id: Optional[int] = None          # None = 팀/조직 공용
     source: str = "learning"                   # feedback | decision | learning
+    key: Optional[str] = None                  # 예: style_pref, tone_pref, past_feedback
+    value: Optional[str] = None                # 대화 템플릿에 채워질 짧은 값 (예: 럭셔리)
+    created_at: datetime = field(default_factory=now)
+    id: Optional[int] = None
+
+
+# ── 대화 ─────────────────────────────────────────────────
+@dataclass
+class Message:
+    """직원 간(또는 대표의) 대화 한 줄. 활동이 아니라 '말'."""
+    text: str
+    from_id: Optional[int] = None              # None = 대표
+    to_id: Optional[int] = None                # None = 전체(브로드캐스트)
+    task_id: Optional[int] = None
     created_at: datetime = field(default_factory=now)
     id: Optional[int] = None

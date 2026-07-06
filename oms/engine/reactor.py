@@ -13,6 +13,7 @@ from ..domain.models import (
     Event,
     EventType,
     MemoryEntry,
+    Message,
     Mission,
     MissionStatus,
     Mode,
@@ -21,7 +22,7 @@ from ..domain.models import (
     now,
 )
 from ..repository.base import Repository
-from .catalog import ARTIFACT_LABEL, REQUIRED_ARTIFACTS, plan_mission
+from .catalog import ARTIFACT_LABEL, PRODUCED_BY, REQUIRED_ARTIFACTS, plan_mission
 from .decision import (
     DecisionContext,
     DecisionEngine,
@@ -29,12 +30,19 @@ from .decision import (
     RuleBasedDecisionEngine,
     record_decision,
 )
+from .dialogue import DialogueContext, DialogueEngine, RuleBasedDialogueEngine
 
 
 class OrganizationEngine:
-    def __init__(self, repo: Repository, decision: DecisionEngine | None = None):
+    def __init__(
+        self,
+        repo: Repository,
+        decision: DecisionEngine | None = None,
+        dialogue: DialogueEngine | None = None,
+    ):
         self.repo = repo
         self.decision = decision or RuleBasedDecisionEngine()
+        self.dialogue = dialogue or RuleBasedDialogueEngine()
 
     # ── 대표의 입력: Mission 생성 ─────────────────────────
     def create_mission(self, team_id: int, intent: str, mode: Mode) -> Mission:
@@ -210,6 +218,8 @@ class OrganizationEngine:
             self._emit(EventType.task_handed_off, task.team_id,
                        mission_id=task.mission_id, task_id=task.id, actor_id=actor.id,
                        payload={"to": nxt.id, "to_name": nxt.name, "reason": result.reason})
+            # 직원끼리 실제로 대화하게 (기억 기반)
+            self._talk(task, speaker=actor, listener=nxt, need=result.next_need)
             return f"{nxt.name}에게 인계"
 
         if result.action == DecisionAction.complete:
@@ -271,6 +281,94 @@ class OrganizationEngine:
         org = OrgSnapshot(employees=employees, roles_by_id=roles_by_id)
         memory = self.repo.list_memory(actor.id)
         return DecisionContext(task=task, actor=actor, org=org, memory=memory)
+
+    # ── 직원 간 대화 생성 (기억 기반) ────────────────────────
+    def _talk(self, task: Task, speaker: Employee, listener: Employee,
+              need: str | None) -> None:
+        if need is None or speaker.id == listener.id:
+            return  # 자기 자신에게 넘기는 초기 배정은 대화 없음
+
+        # listener 가 need 를 만든 뒤, 그 다음 단계 담당을 미리 찾는다
+        required = REQUIRED_ARTIFACTS.get(task.kind, [])
+        have = set(task.artifacts.keys()) | {need}
+        remaining = [a for a in required if a not in have]
+        next_need = remaining[0] if remaining else None
+        next_actor = None
+        if next_need:
+            cap = PRODUCED_BY.get(next_need)
+            cands = self.repo.find_employees_by_capability(cap, task.team_id) if cap else []
+            next_actor = cands[0] if cands else None
+
+        # 관련 직원들의 기억을 key 로 모은다
+        mem: dict[int, dict[str, MemoryEntry]] = {}
+        for e in [speaker, listener] + ([next_actor] if next_actor else []):
+            mem[e.id] = {m.key: m for m in self.repo.list_memory(e.id) if m.key}
+
+        ctx = DialogueContext(
+            task=task, speaker=speaker, listener=listener, need=need,
+            next_actor=next_actor, next_need=next_need, mem=mem,
+        )
+        for msg in self.dialogue.generate(ctx):
+            self.repo.add_message(msg)
+
+    # ── 대표의 취향 → 직원 Memory 로 분배 ────────────────────
+    def share_preference(self, team_id: int, text: str) -> list[tuple[Employee, str]]:
+        """대표가 한 줄 쓰면 관련 직원의 기억으로 배포되고, 팀이 반응(대화)합니다."""
+        text = text.strip()
+        if not text:
+            return []
+
+        # 대표가 말한다 (from_id=None → 대표)
+        self.repo.add_message(Message(text=text, from_id=None, to_id=None))
+
+        updated: list[tuple[Employee, str]] = []
+
+        def add_mem(emp: Employee, key: str, value: str, content: str) -> None:
+            self.repo.add_memory(MemoryEntry(
+                content=content, employee_id=emp.id, source="feedback",
+                key=key, value=value,
+            ))
+            updated.append((emp, value))
+
+        has_style = any(k in text for k in
+                        ["고급", "럭셔리", "명품", "우아", "감성", "패션", "여성", "무드", "세련", "비주얼"])
+        has_tone = any(k in text for k in ["짧", "간결", "문장", "캡션", "톤", "말투"])
+        has_metric = any(k in text for k in ["성과", "조회", "도달", "저장", "지표", "반응"])
+
+        if has_style:
+            if any(k in text for k in ["고급", "럭셔리", "명품"]):
+                val = "럭셔리"
+            elif any(k in text for k in ["여성", "패션"]):
+                val = "여성 패션"
+            else:
+                val = "감각적인"
+            for cap in ("produce_video", "ideate"):
+                for e in self.repo.find_employees_by_capability(cap, team_id):
+                    add_mem(e, "style_pref", val, f"대표는 {val} 스타일을 선호한다.")
+        if has_tone:
+            for e in self.repo.find_employees_by_capability("write_caption", team_id):
+                add_mem(e, "tone_pref", "짧은", "대표는 짧은 문장을 선호한다.")
+        if has_metric:
+            for e in self.repo.find_employees_by_capability("research", team_id):
+                add_mem(e, "metric_focus", "성과", "대표는 성과 지표를 중요하게 본다.")
+
+        # 팀장과 직원들이 반응한다
+        if updated:
+            leads = self.repo.find_employees_by_capability("decompose", team_id)
+            if leads:
+                self.repo.add_message(Message(
+                    text="대표님 취향 확인했습니다. 팀에 반영하겠습니다.",
+                    from_id=leads[0].id, to_id=None,
+                ))
+                seen: set[int] = set()
+                for emp, val in updated:
+                    if emp.id in seen or emp.id == leads[0].id:
+                        continue
+                    seen.add(emp.id)
+                    self.repo.add_message(Message(
+                        text=f"{val}, 기억하겠습니다.", from_id=emp.id, to_id=leads[0].id,
+                    ))
+        return updated
 
     def _emit(self, type_: EventType, team_id: int, **kwargs) -> Event:
         event = Event(type=type_, team_id=team_id, **kwargs)

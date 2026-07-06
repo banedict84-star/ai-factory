@@ -12,6 +12,7 @@ from ..domain.models import (
     Employee,
     Event,
     MemoryEntry,
+    Message,
     Mission,
     MissionStatus,
     Role,
@@ -104,3 +105,11 @@ class Repository(ABC):
     def add_memory(self, entry: MemoryEntry) -> MemoryEntry: ...
     @abstractmethod
     def list_memory(self, employee_id: int | None = None) -> list[MemoryEntry]: ...
+
+    # ── Message (대화) ──
+    @abstractmethod
+    def add_message(self, message: Message) -> Message: ...
+    @abstractmethod
+    def list_messages(
+        self, task_id: int | None = None, limit: int | None = None
+    ) -> list[Message]: ...
