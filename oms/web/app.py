@@ -11,7 +11,10 @@ from fastapi import FastAPI, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
+import os
+
 from ..domain.models import EventType, Mode, TaskStatus
+from ..engine.executor import build_executor
 from ..engine.personas import persona_for
 from ..engine.reactor import OrganizationEngine
 from ..repository.sqlite_repo import SQLiteRepository
@@ -20,8 +23,16 @@ from ..seed import seed
 DB_PATH = Path(__file__).resolve().parent.parent.parent / "ai_os.db"
 TEMPLATES = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 
+# EXECUTOR=claude 이고 ANTHROPIC_API_KEY 가 있으면 텍스트 업무가 실제로 생성됩니다.
+# (없으면 mock 으로 폴백 — OS 는 그대로 동작)
 repo = SQLiteRepository(DB_PATH)
-engine = OrganizationEngine(repo)
+engine = OrganizationEngine(
+    repo,
+    executor=build_executor(
+        os.getenv("EXECUTOR", "mock"),
+        os.getenv("EXECUTOR_MODEL", "claude-opus-4-8"),
+    ),
+)
 app = FastAPI(title="AI Employee OS")
 
 

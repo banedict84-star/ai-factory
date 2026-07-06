@@ -32,6 +32,7 @@ from .decision import (
     record_decision,
 )
 from .dialogue import DialogueContext, DialogueEngine, RuleBasedDialogueEngine
+from .executor import ExecutionContext, ExecutorEngine, MockExecutor
 from .personas import Persona, persona_for
 
 
@@ -41,10 +42,12 @@ class OrganizationEngine:
         repo: Repository,
         decision: DecisionEngine | None = None,
         dialogue: DialogueEngine | None = None,
+        executor: ExecutorEngine | None = None,
     ):
         self.repo = repo
         self.decision = decision or RuleBasedDecisionEngine()
         self.dialogue = dialogue or RuleBasedDialogueEngine()
+        self.executor = executor or MockExecutor()
 
     # ── 하루 시뮬레이션: 시계 ──────────────────────────────
     def world(self) -> WorldState:
@@ -353,9 +356,16 @@ class OrganizationEngine:
                        payload={"awaiting": "게시 승인"})
             return f"⏳ {actor.name}이(가) 게시 전 대표 승인을 요청했습니다."
 
-        # 직원이 자기 역량으로 산출물을 만든다
+        # 직원이 자기 역량으로 산출물을 '실제로' 만든다 (Executor 이음새)
         label = ARTIFACT_LABEL.get(need, need)
-        task.artifacts[need] = f"[{actor.name}] {label} 완료"
+        mems = ([m.content for m in self.repo.list_memory(actor.id)]
+                + [m.content for m in self.repo.list_memory(None)])
+        exec_ctx = ExecutionContext(
+            task=task, actor=actor, need=need, brand=mission.intent,
+            memories=mems, artifacts=dict(task.artifacts),
+            persona=self._persona(actor).traits,
+        )
+        task.artifacts[need] = self.executor.execute(exec_ctx)
         task.updated_at = now()
         self.repo.update_task(task)
         self._emit(EventType.task_worked, task.team_id, mission_id=task.mission_id,
