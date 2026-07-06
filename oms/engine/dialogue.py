@@ -39,6 +39,7 @@ class DialogueContext:
     next_need: Optional[str] = None
     mem: dict[int, dict[str, MemoryEntry]] = field(default_factory=dict)
     personas: dict[int, Persona] = field(default_factory=dict)
+    variant: int = 0                        # 몇 번째 건인지 → 같은 성격도 표현을 바꿈
 
 
 class DialogueEngine(Protocol):
@@ -66,13 +67,14 @@ class RuleBasedDialogueEngine:
         li_mem = ctx.mem.get(li.id, {})
         need_label = ARTIFACT_LABEL.get(ctx.need, ctx.need)
         short = SHORT_NOUN.get(ctx.need, need_label)
+        v = ctx.variant
         lines: list[Message] = []
 
         # 1) 인계 요청 — speaker 성격 + 취향 기억
         style = None
         if ctx.need in NEED_STYLE and sp_mem.get("style_pref"):
             style = sp_mem["style_pref"].value
-        lines.append(Message(text=sp_p.request(li.name, short, style),
+        lines.append(Message(text=sp_p.request(li.name, short, style, variant=v),
                              from_id=sp.id, to_id=li.id, task_id=ctx.task.id))
 
         # 2) 확인 응답 — listener 성격 + 기억(피드백/취향)
@@ -80,7 +82,8 @@ class RuleBasedDialogueEngine:
             ctx.need in NEED_STYLE and li_mem.get("style_pref")) else None
         li_tone = li_mem["tone_pref"].value if (
             ctx.need in NEED_TONE and li_mem.get("tone_pref")) else None
-        conf = li_p.confirm(short, need_label, "past_feedback" in li_mem, li_style, li_tone)
+        conf = li_p.confirm(short, need_label, "past_feedback" in li_mem, li_style,
+                            li_tone, variant=v)
         lines.append(Message(text=conf, from_id=li.id, to_id=sp.id, task_id=ctx.task.id))
 
         # 3) 다음 담당 예고 — next_actor 성격
@@ -90,7 +93,7 @@ class RuleBasedDialogueEngine:
             na_mem = ctx.mem.get(na.id, {})
             next_label = ARTIFACT_LABEL.get(ctx.next_need, ctx.next_need or "")
             tone = na_mem["tone_pref"].value if na_mem.get("tone_pref") else None
-            lines.append(Message(text=na_p.precommit(short, next_label, tone),
+            lines.append(Message(text=na_p.precommit(short, next_label, tone, variant=v),
                                  from_id=na.id, to_id=None, task_id=ctx.task.id))
 
         return lines

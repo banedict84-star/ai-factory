@@ -6,6 +6,8 @@ DecisionEngine 에게 '다음은 누구?'를 물어 넘깁니다. 그 결과로 
 """
 from __future__ import annotations
 
+import re
+
 from ..domain.models import (
     DecisionAction,
     Employee,
@@ -484,9 +486,15 @@ class OrganizationEngine:
             mem[e.id] = {m.key: m for m in self.repo.list_memory(e.id) if m.key}
             personas[e.id] = self._persona(e)
 
+        # 같은 종류의 Task 가 여럿(릴스 #1·#2·#3)이면 대화가 복붙처럼 똑같지 않게
+        # '몇 번째 건인지'로 표현을 바꾼다. 릴스 번호가 있으면 그걸, 없으면 task.id 로.
+        m = re.search(r"#(\d+)", task.title or "")
+        variant = int(m.group(1)) if m else (task.id or 0)
+
         ctx = DialogueContext(
             task=task, speaker=speaker, listener=listener, need=need,
             next_actor=next_actor, next_need=next_need, mem=mem, personas=personas,
+            variant=variant,
         )
         sim = self._hhmm(self.world().sim_minutes)
         for msg in self.dialogue.generate(ctx):
