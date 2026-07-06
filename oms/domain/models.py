@@ -44,8 +44,10 @@ class Mode(str, Enum):
 
 class EventType(str, Enum):
     mission_created = "mission_created"
+    mission_decomposed = "mission_decomposed"
     task_created = "task_created"
     task_handed_off = "task_handed_off"
+    task_started = "task_started"
     task_worked = "task_worked"
     task_completed = "task_completed"
     employee_blocked = "employee_blocked"

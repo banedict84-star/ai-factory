@@ -25,14 +25,14 @@ CAPABILITY_PRODUCES: dict[str, str] = {
 # 산출물 → 그것을 만들 수 있는 역량 (역방향)
 PRODUCED_BY: dict[str, str] = {v: k for k, v in CAPABILITY_PRODUCES.items()}
 
-# 산출물 한글 라벨
+# 산출물(=업무) 한글 라벨 — 활동 문구에 그대로 쓰입니다.
 ARTIFACT_LABEL: dict[str, str] = {
     "concept": "컨셉 기획",
     "brand_definition": "브랜드 정의",
     "video": "영상 제작",
-    "caption": "캡션·해시태그",
+    "caption": "캡션과 해시태그 작성",
     "published": "게시",
-    "audience_research": "타깃 리서치",
+    "audience_research": "리서치·분석",
 }
 
 

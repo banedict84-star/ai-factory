@@ -46,21 +46,33 @@ class OrganizationEngine:
 
     # ── 한 스텝 진행: 조직이 한 번 반응 ────────────────────
     def tick(self) -> str | None:
-        """다음으로 반응할 일이 있으면 한 번 처리하고 설명을 반환. 없으면 None."""
+        """다음으로 반응할 일이 있으면 한 번 처리하고 설명을 반환. 없으면 None.
+
+        한 스텝 = 한 직원의 한 동작. 업무는 '시작' → '완료+인계' 두 스텝으로 진행되어
+        지켜보는 사람에게 '직원이 일하고 있다'는 흐름이 보입니다.
+        """
         # 1) 아직 분해되지 않은 Mission → 팀장이 분해
         open_missions = self.repo.list_missions(status=MissionStatus.open)
         if open_missions:
             return self._decompose(open_missions[0])
 
-        # 2) 담당자 손에 있는 Task → 그 직원이 작업하고 다음을 결정
-        ready = [
-            t
-            for t in self.repo.list_tasks(status=TaskStatus.handed_off)
+        # 2) 이미 시작한 업무(in_progress) → 완료하고 다음을 결정
+        working = [
+            t for t in self.repo.list_tasks(status=TaskStatus.in_progress)
             if t.assignee_id is not None
         ]
-        if ready:
-            ready.sort(key=lambda t: (t.updated_at, t.id or 0))
-            return self._advance(ready[0])
+        if working:
+            working.sort(key=lambda t: (t.updated_at, t.id or 0))
+            return self._work(working[0])
+
+        # 3) 방금 인계받은 업무(handed_off) → 담당 직원이 착수
+        handed = [
+            t for t in self.repo.list_tasks(status=TaskStatus.handed_off)
+            if t.assignee_id is not None
+        ]
+        if handed:
+            handed.sort(key=lambda t: (t.updated_at, t.id or 0))
+            return self._start(handed[0])
 
         return None
 
@@ -79,7 +91,7 @@ class OrganizationEngine:
         if task is None or task.status != TaskStatus.awaiting_approval:
             return None
         task.artifacts["_approved"] = True
-        task.status = TaskStatus.handed_off
+        task.status = TaskStatus.in_progress  # 이미 착수한 상태 → 게시 마무리로 재개
         task.updated_at = now()
         self.repo.update_task(task)
         self._emit(EventType.approval_granted, task.team_id, mission_id=task.mission_id,
@@ -109,12 +121,34 @@ class OrganizationEngine:
             # 팀장이 첫 담당자를 '결정'해서 인계
             self._route(task, lead)
 
+        self._emit(EventType.mission_decomposed, mission.team_id, mission_id=mission.id,
+                   actor_id=lead.id, payload={"count": len(plan)})
         mission.status = MissionStatus.in_progress
         self.repo.update_mission(mission)
         return f"🧭 팀장 {lead.name}이(가) 미션을 {len(plan)}개 업무로 분해했습니다."
 
-    # ── 내부: 담당 직원이 작업하고 다음을 결정 ──────────────
-    def _advance(self, task: Task) -> str:
+    # ── 내부: 담당 직원이 업무에 착수 (시작) ────────────────
+    def _start(self, task: Task) -> str:
+        actor = self.repo.get_employee(task.assignee_id)
+        required = REQUIRED_ARTIFACTS.get(task.kind, [])
+        missing = [a for a in required if a not in task.artifacts]
+        if not missing:
+            return self._work(task)  # 착수할 게 없으면 바로 마무리 판단
+
+        need = missing[0]
+        label = ARTIFACT_LABEL.get(need, need)
+        actor.status = EmployeeStatus.working
+        self.repo.update_employee(actor)
+        task.status = TaskStatus.in_progress
+        task.updated_at = now()
+        self.repo.update_task(task)
+        self._emit(EventType.task_started, task.team_id, mission_id=task.mission_id,
+                   task_id=task.id, actor_id=actor.id,
+                   payload={"need": need, "label": label})
+        return f"{actor.emoji} {actor.name}: {label} 착수"
+
+    # ── 내부: 업무를 완료하고 다음을 결정 ──────────────────
+    def _work(self, task: Task) -> str:
         actor = self.repo.get_employee(task.assignee_id)
         mission = self.repo.get_mission(task.mission_id)
 
@@ -144,11 +178,8 @@ class OrganizationEngine:
             return f"⏳ {actor.name}이(가) 게시 전 대표 승인을 요청했습니다."
 
         # 직원이 자기 역량으로 산출물을 만든다
-        actor.status = EmployeeStatus.working
-        self.repo.update_employee(actor)
         label = ARTIFACT_LABEL.get(need, need)
         task.artifacts[need] = f"[{actor.name}] {label} 완료"
-        task.status = TaskStatus.in_progress
         task.updated_at = now()
         self.repo.update_task(task)
         self._emit(EventType.task_worked, task.team_id, mission_id=task.mission_id,

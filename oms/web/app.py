@@ -41,14 +41,24 @@ TASK_STATUS_LABEL = {
 
 EVENT_ICON = {
     EventType.mission_created: "🎯",
+    EventType.mission_decomposed: "🧭",
     EventType.task_created: "🆕",
     EventType.task_handed_off: "🔁",
-    EventType.task_worked: "🛠",
+    EventType.task_started: "▶️",
+    EventType.task_worked: "✔️",
     EventType.task_completed: "✅",
     EventType.employee_blocked: "⚠️",
     EventType.approval_requested: "⏳",
     EventType.approval_granted: "👍",
     EventType.mission_done: "🏁",
+}
+
+# 활동 피드에 자연스럽게 노출할 이벤트 (인계/생성 같은 내부 기록은 제외)
+FEED_TYPES = {
+    EventType.mission_created, EventType.mission_decomposed,
+    EventType.task_started, EventType.task_worked,
+    EventType.approval_requested, EventType.approval_granted,
+    EventType.employee_blocked, EventType.mission_done,
 }
 
 
@@ -60,26 +70,49 @@ def _fmt(dt) -> str:
     return dt.strftime("%H:%M:%S")
 
 
+def _has_batchim(word: str) -> bool:
+    if not word:
+        return False
+    code = ord(word[-1])
+    return 0xAC00 <= code <= 0xD7A3 and (code - 0xAC00) % 28 != 0
+
+
+def _subj(word: str) -> str:  # 가 / 이
+    return word + ("이" if _has_batchim(word) else "가")
+
+
+def _obj(word: str) -> str:  # 을 / 를
+    return word + ("을" if _has_batchim(word) else "를")
+
+
 def _event_text(ev, emps) -> str:
     p = ev.payload or {}
+    actor = emps.get(ev.actor_id) if ev.actor_id else None
+    name = actor.name if actor else "대표"
+    label = p.get("label", "")
+
     if ev.type == EventType.mission_created:
         return "대표가 미션을 지시했습니다."
+    if ev.type == EventType.mission_decomposed:
+        return f"{_subj(name)} 미션을 업무로 분해했습니다."
+    if ev.type == EventType.task_started:
+        return f"{_subj(name)} {label} 업무를 시작했습니다."
+    if ev.type == EventType.task_worked:
+        return f"{_subj(name)} {_obj(label)} 완료했습니다."
+    if ev.type == EventType.task_completed:
+        return f"{_subj(name)} 업무를 마무리했습니다."
     if ev.type == EventType.task_created:
         return f"업무 생성: {p.get('title', '')}"
     if ev.type == EventType.task_handed_off:
         return f"{p.get('to_name', '')}에게 인계 — {p.get('reason', '')}"
-    if ev.type == EventType.task_worked:
-        return f"{p.get('label', '')} 완료"
-    if ev.type == EventType.task_completed:
-        return "업무 완료"
     if ev.type == EventType.employee_blocked:
-        return f"에스컬레이션 — {p.get('reason', '')}"
+        return f"{_subj(name)} 막혀 상급자에게 보고했습니다."
     if ev.type == EventType.approval_requested:
-        return "게시 전 대표 승인 요청"
+        return f"{_subj(name)} 게시 승인 요청을 올렸습니다."
     if ev.type == EventType.approval_granted:
-        return "대표가 게시를 승인"
+        return "대표가 게시를 승인했습니다."
     if ev.type == EventType.mission_done:
-        return "미션 완료 🏁"
+        return "미션이 완료되었습니다. 🏁"
     return ev.type.value
 
 
@@ -204,12 +237,16 @@ def employees(request: Request):
 def feed(request: Request):
     emps = _emp_map()
     items = []
-    for ev in repo.list_events(limit=100):
+    for ev in repo.list_events():
+        if ev.type not in FEED_TYPES:
+            continue  # 인계/생성 같은 내부 기록은 활동 피드에서 숨김
         items.append({
             "t": _fmt(ev.created_at), "icon": EVENT_ICON.get(ev.type, "•"),
             "actor": _actor_name(ev.actor_id, emps),
             "text": _event_text(ev, emps), "task_id": ev.task_id,
         })
+        if len(items) >= 100:
+            break
     return TEMPLATES.TemplateResponse(request, "feed.html", {"request": request, "items": items})
 
 

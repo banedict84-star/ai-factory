@@ -2,23 +2,27 @@
 {% block title %}Task 흐름 · AI Employee OS{% endblock %}
 {% block body %}
   <h1>🔁 Task 흐름</h1>
-  <p class="sub">Mission 하나가 Task 로 분해되어 직원들 사이를 이동합니다.
-    <strong>한 스텝 진행</strong>을 누르면 조직이 한 번 반응합니다.
+  <p class="sub">이 화면이 AI Employee OS의 중심입니다.
+    대표가 <strong>Mission</strong>을 지시하면 직원들이 <strong>Task</strong>로 나눠 서로에게 넘기며 일합니다.
+    상단 <strong>▶ 한 스텝 진행</strong>을 누르면 직원 한 명이 한 동작(착수→완료→인계)을 합니다.
     {% if pending_count %}<span class="badge purple">승인 대기 {{ pending_count }}</span>{% endif %}
   </p>
 
   <div class="card">
-    <h2 style="margin-top:0">🎯 대표 지시 — 새 Mission</h2>
+    <div class="row" style="margin-bottom:8px">
+      <strong>🎯 대표 지시</strong>
+      <span class="sub">한 줄로 목표만 주세요. 업무 분해는 팀장이 합니다.</span>
+    </div>
     <form method="post" action="/missions">
-      <textarea name="intent" rows="2" placeholder="예: 이번 주는 여름 샌들 콘텐츠에 집중하자."></textarea>
+      <textarea name="intent" rows="2">기존 인스타 계정을 AI Boots / AI Fashion 릴스 계정으로 리브랜딩하고, 첫 7일 동안 하루 3개 릴스를 운영할 준비를 하라.</textarea>
       <div class="row" style="margin-top:8px">
         <label class="sub">게시 방식</label>
         <select name="mode" style="width:auto">
-          <option value="auto">자동 (AI가 바로 게시)</option>
+          <option value="auto">자동 (바로 게시)</option>
           <option value="approval">승인 (대표 최종 승인)</option>
         </select>
         <div class="spacer"></div>
-        <button class="primary" type="submit">지시하기</button>
+        <button class="primary" type="submit">지시하기 →</button>
       </div>
     </form>
   </div>
