@@ -22,23 +22,35 @@ from ..repository.sqlite_repo import SQLiteRepository
 from ..seed import seed
 
 ROOT = Path(__file__).resolve().parent.parent.parent
+
+# .env 로드 (EXECUTOR, OPENAI_API_KEY 등을 파일에서 읽어옵니다)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(ROOT / ".env")
+except Exception:
+    pass
+
 DB_PATH = ROOT / "ai_os.db"
 MEDIA_DIR = ROOT / "media"
 MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 TEMPLATES = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 
-# EXECUTOR=claude(텍스트) 또는 openai(텍스트+이미지) + 키가 있으면 실제로 생성됩니다.
+# EXECUTOR=openai(텍스트+이미지) 또는 claude(텍스트) + 키가 있으면 실제로 생성됩니다.
 # 없으면 mock 으로 폴백 (텍스트는 표시, 이미지는 플레이스홀더 그림).
+_EXECUTOR_KIND = os.getenv("EXECUTOR", "mock")
 repo = SQLiteRepository(DB_PATH)
 engine = OrganizationEngine(
     repo,
     executor=build_executor(
-        os.getenv("EXECUTOR", "mock"),
+        _EXECUTOR_KIND,
         os.getenv("EXECUTOR_MODEL"),
         media_dir=MEDIA_DIR,
         image_model=os.getenv("EXECUTOR_IMAGE_MODEL", "gpt-image-1"),
     ),
 )
+_key = "set" if os.getenv("OPENAI_API_KEY") else "MISSING"
+print(f"[AI Employee OS] executor={_EXECUTOR_KIND} · OPENAI_API_KEY={_key} · media={MEDIA_DIR}")
+
 app = FastAPI(title="AI Employee OS")
 app.mount("/media", StaticFiles(directory=str(MEDIA_DIR)), name="media")
 

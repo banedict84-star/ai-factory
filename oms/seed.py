@@ -100,7 +100,7 @@ def seed(repo: Repository) -> None:
         mode=Mode.auto,
     )
 
-    # 아침을 미리 돌려둔다 — 대표가 앱을 열면 이미 직원들이 출근해 일하고 있게.
+    # 아침 출근·스탠드업까지만 미리 준비한다(대화만, 실행기 호출 없음).
+    # 실제 업무(기획/이미지/캡션 생성)는 대표가 '한 스텝 진행'을 누를 때
+    # 앱에 설정된 실행기(OpenAI 등)로 수행되어 산출물이 채워진다.
     engine.open_office()
-    for _ in range(9):
-        engine.tick()

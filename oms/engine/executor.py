@@ -9,6 +9,8 @@
 """
 from __future__ import annotations
 
+import base64
+import sys
 import textwrap
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -155,7 +157,8 @@ class OpenAIExecutor:
                  media_dir: Path | None = None,
                  fallback: ExecutorEngine | None = None):
         self.text_model = text_model
-        self.image_model = image_model
+        # 설정 모델 → dall-e-3 순서로 시도 (검증 안 된 계정도 되게)
+        self.image_models = list(dict.fromkeys([image_model, "dall-e-3"]))
         self.media_dir = Path(media_dir) if media_dir else None
         self.fallback = fallback or MockExecutor(media_dir)
         self._client = None
@@ -165,9 +168,24 @@ class OpenAIExecutor:
             try:
                 from openai import OpenAI
                 self._client = OpenAI()
-            except Exception:
+            except Exception as e:
+                print(f"[executor] OpenAI 초기화 실패(키 확인): {e}", file=sys.stderr)
                 self._client = False
         return self._client or None
+
+    def _gen_image(self, client, prompt: str) -> tuple[str, str]:
+        last = None
+        for m in self.image_models:
+            try:
+                kwargs = {"model": m, "prompt": prompt, "size": "1024x1024"}
+                if m.startswith("dall-e"):
+                    kwargs["response_format"] = "b64_json"
+                res = client.images.generate(**kwargs)
+                return res.data[0].b64_json, m
+            except Exception as e:
+                last = e
+                print(f"[executor] 이미지 모델 '{m}' 실패: {e}", file=sys.stderr)
+        raise last or RuntimeError("이미지 생성 실패")
 
     def execute(self, ctx: ExecutionContext) -> str:
         client = self._client_or_none()
@@ -179,18 +197,18 @@ class OpenAIExecutor:
                     model=self.text_model,
                     messages=[{"role": "user", "content": _text_prompt(ctx)}],
                 )
-                return (r.choices[0].message.content or "").strip() or self.fallback.execute(ctx)
+                text = (r.choices[0].message.content or "").strip()
+                return text or self.fallback.execute(ctx)
             if ctx.need == "image" and self.media_dir:
-                import base64
-                res = client.images.generate(
-                    model=self.image_model, prompt=_image_prompt(ctx), size="1024x1024",
-                )
-                b64 = res.data[0].b64_json
+                b64, used = self._gen_image(client, _image_prompt(ctx))
                 path, url = _media_url(self.media_dir, ctx.task.id, ctx.need)
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(base64.b64decode(b64))
+                print(f"[executor] 이미지 생성 성공: {used} → {url}", file=sys.stderr)
                 return url
-        except Exception:
+        except Exception as e:
+            print(f"[executor] '{ctx.need}' 생성 실패 → 플레이스홀더로 대체: {e}",
+                  file=sys.stderr)
             return self.fallback.execute(ctx)
         return self.fallback.execute(ctx)  # 영상/게시 등은 아직 미연결
 
