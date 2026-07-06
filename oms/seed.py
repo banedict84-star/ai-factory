@@ -26,7 +26,7 @@ def seed(repo: Repository) -> None:
     ))
     role_video = repo.add_role(Role(
         key="video_producer", name="영상 프로듀서",
-        capabilities=["prompt_gen", "produce_video"],
+        capabilities=["prompt_gen", "image_gen"],
     ))
     role_copy = repo.add_role(Role(
         key="copywriter", name="카피라이터",

@@ -16,14 +16,14 @@ from .catalog import ARTIFACT_LABEL
 from .personas import Persona
 
 # 어떤 작업(need)에 어떤 기억이 관련되는지
-NEED_STYLE = {"concept", "prompt", "video", "brand_definition"}   # → style_pref
+NEED_STYLE = {"concept", "prompt", "image", "video", "brand_definition"}  # → style_pref
 NEED_TONE = {"caption"}                                 # → tone_pref
 NEED_METRIC = {"audience_research", "direction_proposal"}  # → metric_focus
 
 # 자연스러운 호칭·부탁에 쓰는 짧은 명사
 SHORT_NOUN = {
-    "concept": "기획", "prompt": "프롬프트", "video": "영상", "caption": "캡션",
-    "brand_definition": "브랜드", "audience_research": "데이터",
+    "concept": "기획", "prompt": "프롬프트", "image": "이미지", "video": "영상",
+    "caption": "캡션", "brand_definition": "브랜드", "audience_research": "데이터",
     "published": "게시", "direction_proposal": "방향",
 }
 

@@ -67,6 +67,9 @@
         {% for a in t.artifacts %}<span class="chip">✔ {{ a }}</span>{% endfor %}
       </div>
       {% endif %}
+      {% if t.image %}
+      <div style="margin-top:8px"><img src="{{ t.image }}" style="width:120px;border-radius:10px"></div>
+      {% endif %}
     </div>
     {% endfor %}
   </div>

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 # Task 종류별로 완성에 필요한 산출물(checklist) — 순서 아님, 그냥 '필요한 것들'
 REQUIRED_ARTIFACTS: dict[str, list[str]] = {
-    "reel": ["concept", "prompt", "video", "caption", "published"],
+    "reel": ["concept", "prompt", "image", "caption", "published"],
     "rebrand": ["brand_definition", "audience_research"],
     "analysis": ["audience_research", "direction_proposal"],
 }
@@ -17,8 +17,9 @@ REQUIRED_ARTIFACTS: dict[str, list[str]] = {
 CAPABILITY_PRODUCES: dict[str, str] = {
     "ideate": "concept",
     "prompt_gen": "prompt",
+    "image_gen": "image",
     "brand_define": "brand_definition",
-    "produce_video": "video",
+    "produce_video": "video",   # (다음 단계에서 사용)
     "write_caption": "caption",
     "publish": "published",
     "research": "audience_research",
@@ -32,6 +33,7 @@ PRODUCED_BY: dict[str, str] = {v: k for k, v in CAPABILITY_PRODUCES.items()}
 ARTIFACT_LABEL: dict[str, str] = {
     "concept": "컨셉 기획",
     "prompt": "생성 프롬프트",
+    "image": "이미지 생성",
     "brand_definition": "브랜드 정의",
     "video": "영상 제작",
     "caption": "캡션과 해시태그 작성",

@@ -10,3 +10,6 @@ requests>=2.31.0
 PyYAML>=6.0
 python-dotenv>=1.0.0
 Pillow>=10.0.0
+
+# (선택) OpenAI 사용 시
+openai>=1.40.0

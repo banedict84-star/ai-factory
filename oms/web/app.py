@@ -9,31 +9,38 @@ from pathlib import Path
 
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 import os
 
-from ..domain.models import EventType, Mode, TaskStatus
+from ..domain.models import EventType, Mode, TaskStatus  # noqa: E402
 from ..engine.executor import build_executor
 from ..engine.personas import persona_for
 from ..engine.reactor import OrganizationEngine
 from ..repository.sqlite_repo import SQLiteRepository
 from ..seed import seed
 
-DB_PATH = Path(__file__).resolve().parent.parent.parent / "ai_os.db"
+ROOT = Path(__file__).resolve().parent.parent.parent
+DB_PATH = ROOT / "ai_os.db"
+MEDIA_DIR = ROOT / "media"
+MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 TEMPLATES = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 
-# EXECUTOR=claude 이고 ANTHROPIC_API_KEY 가 있으면 텍스트 업무가 실제로 생성됩니다.
-# (없으면 mock 으로 폴백 — OS 는 그대로 동작)
+# EXECUTOR=claude(텍스트) 또는 openai(텍스트+이미지) + 키가 있으면 실제로 생성됩니다.
+# 없으면 mock 으로 폴백 (텍스트는 표시, 이미지는 플레이스홀더 그림).
 repo = SQLiteRepository(DB_PATH)
 engine = OrganizationEngine(
     repo,
     executor=build_executor(
         os.getenv("EXECUTOR", "mock"),
-        os.getenv("EXECUTOR_MODEL", "claude-opus-4-8"),
+        os.getenv("EXECUTOR_MODEL"),
+        media_dir=MEDIA_DIR,
+        image_model=os.getenv("EXECUTOR_IMAGE_MODEL", "gpt-image-1"),
     ),
 )
 app = FastAPI(title="AI Employee OS")
+app.mount("/media", StaticFiles(directory=str(MEDIA_DIR)), name="media")
 
 
 @app.on_event("startup")
@@ -212,12 +219,14 @@ def flow(request: Request):
         for t in tasks:
             holder = emps.get(t.assignee_id)
             label, color = TASK_STATUS_LABEL.get(t.status, (t.status.value, "muted"))
+            img = t.artifacts.get("image")
             task_views.append({
                 "id": t.id, "title": t.title, "kind": t.kind,
                 "status_label": label, "status_color": color,
                 "holder": f"{holder.emoji} {holder.name}" if holder else "-",
                 "journey": _journey(t.id, emps),
                 "artifacts": [k for k in t.artifacts if not k.startswith("_")],
+                "image": img if isinstance(img, str) and img.startswith("/media/") else None,
             })
         mission_views.append({
             "id": m.id, "intent": m.intent, "status": m.status.value,

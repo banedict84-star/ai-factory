@@ -42,7 +42,14 @@
   <h2>산출물</h2>
   <div class="card">
     {% for k, v in artifacts.items() %}
-      <div class="row"><span class="chip">{{ k }}</span><span class="sub">{{ v }}</span></div>
+      <div style="margin:10px 0">
+        <span class="chip">{{ k }}</span>
+        {% if v.startswith('/media/') %}
+          <div><img src="{{ v }}" style="max-width:320px;border-radius:12px;margin-top:6px"></div>
+        {% else %}
+          <div class="sub" style="white-space:pre-wrap;margin-top:4px">{{ v }}</div>
+        {% endif %}
+      </div>
     {% endfor %}
   </div>
   {% endif %}

@@ -8,3 +8,4 @@ output/
 venv/
 ai_os.db
 *.db
+media/
