@@ -143,8 +143,11 @@ def _msg_view(m, emps) -> dict:
     to = None
     if m.to_id and emps.get(m.to_id):
         to = emps[m.to_id].name
-    return {"from": frm, "to": to, "text": m.text, "t": _fmt(m.created_at),
-            "task_id": m.task_id}
+    return {"from": frm, "to": to, "text": m.text, "sim": m.sim or _fmt(m.created_at),
+            "kind": m.kind, "lines": m.text.split("\n"), "task_id": m.task_id}
+
+
+PHASE_LABEL = {"before": "근무 전", "working": "근무 중", "after": "퇴근"}
 
 
 # ── 라우트 ──────────────────────────────────────────────
@@ -174,9 +177,15 @@ def home(request: Request):
             "says": last_by_emp.get(e.id),
         })
 
-    messages = [_msg_view(m, emps) for m in all_msgs[-40:]]
+    messages = [_msg_view(m, emps) for m in all_msgs[-60:]]
+    w = engine.world()
+    world = {
+        "day": w.day, "time": engine._hhmm(w.sim_minutes),
+        "phase": w.phase, "phase_label": PHASE_LABEL.get(w.phase, w.phase),
+        "metric": w.metric,
+    }
     return TEMPLATES.TemplateResponse(request, "office.html", {
-        "request": request, "roster": roster, "messages": messages,
+        "request": request, "roster": roster, "messages": messages, "world": world,
     })
 
 
@@ -330,6 +339,24 @@ def create_mission(intent: str = Form(...), mode: str = Form("auto")):
 def preference(intent: str = Form(...)):
     team = repo.list_teams()[0]
     engine.share_preference(team.id, intent)
+    return RedirectResponse("/", status_code=303)
+
+
+@app.post("/ask-status")
+def ask_status():
+    engine.ask_status()
+    return RedirectResponse("/", status_code=303)
+
+
+@app.post("/end-day")
+def end_day():
+    engine.end_day()
+    return RedirectResponse("/", status_code=303)
+
+
+@app.post("/new-day")
+def new_day():
+    engine.start_new_day()
     return RedirectResponse("/", status_code=303)
 
 

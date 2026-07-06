@@ -19,6 +19,7 @@ from ..domain.models import (
     Task,
     TaskStatus,
     Team,
+    WorldState,
 )
 
 
@@ -113,3 +114,9 @@ class Repository(ABC):
     def list_messages(
         self, task_id: int | None = None, limit: int | None = None
     ) -> list[Message]: ...
+
+    # ── WorldState (하루 시뮬레이션) ──
+    @abstractmethod
+    def get_world_state(self) -> WorldState | None: ...
+    @abstractmethod
+    def save_world_state(self, state: WorldState) -> WorldState: ...

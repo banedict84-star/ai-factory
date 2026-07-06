@@ -99,3 +99,8 @@ def seed(repo: Repository) -> None:
         ),
         mode=Mode.auto,
     )
+
+    # 아침을 미리 돌려둔다 — 대표가 앱을 열면 이미 직원들이 출근해 일하고 있게.
+    engine.open_office()
+    for _ in range(9):
+        engine.tick()

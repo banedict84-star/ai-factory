@@ -1,19 +1,27 @@
 {% extends "base.html" %}
 {% block title %}오피스 · AI Employee OS{% endblock %}
 {% block body %}
-  <h1>🏢 오피스</h1>
-  <p class="sub">AI 직원들이 일하는 사무실입니다. 지금 누가 무슨 상태이고, 서로 무슨 말을 나누는지 보입니다.
-    상단 <strong>▶ 한 스텝 진행</strong>을 누르면 직원들이 움직이고 대화가 이어집니다.</p>
+  <div class="row">
+    <h1 style="margin:0">🏢 오피스</h1>
+    <span class="badge blue">Day {{ world.day }}</span>
+    <span class="badge muted">🕘 {{ world.time }}</span>
+    <span class="badge {{ 'green' if world.phase=='working' else 'purple' if world.phase=='after' else 'amber' }}">{{ world.phase_label }}</span>
+    <div class="spacer"></div>
+    {% if world.phase == 'working' %}
+      <form method="post" action="/end-day"><button type="submit">🌙 퇴근</button></form>
+    {% elif world.phase == 'after' %}
+      <form method="post" action="/new-day"><button class="primary" type="submit">☀️ 새 하루 시작</button></form>
+    {% endif %}
+  </div>
+  <p class="sub">AI 직원들이 일하는 사무실입니다. 지금 누가 무슨 상태이고, 서로 무슨 말을 나누는지 보입니다.</p>
 
-  <div class="card">
-    <div class="row" style="margin-bottom:8px">
-      <strong>👤 대표 한마디</strong>
-      <span class="sub">취향·방향을 한 줄로 남기면 관련 직원의 기억에 반영됩니다.</span>
-    </div>
-    <form method="post" action="/preference" class="row">
-      <input name="intent" placeholder="예: 나는 고급스럽고 여성 패션 느낌을 선호한다."
-             style="flex:1" />
-      <button class="primary" type="submit">전달</button>
+  <div class="row" style="gap:8px">
+    <form method="post" action="/ask-status">
+      <button class="primary" type="submit">🙋 현재 어떻게 되고 있나요?</button>
+    </form>
+    <form method="post" action="/preference" class="row" style="flex:1; gap:8px">
+      <input name="intent" placeholder="대표 한마디 (예: 나는 고급스럽고 여성 패션 느낌을 선호한다.)" style="flex:1" />
+      <button type="submit">전달</button>
     </form>
   </div>
 
@@ -34,20 +42,33 @@
     {% endfor %}
   </div>
 
-  <h2>💬 대화</h2>
+  <h2>💬 오늘 (Day {{ world.day }})</h2>
   <div class="card">
     {% if not messages %}
-      <div class="empty">아직 대화가 없습니다. ‘대표 한마디’를 남기거나 ‘한 스텝 진행’을 눌러보세요.</div>
+      <div class="empty">상단 <strong>▶ 한 스텝 진행</strong>을 누르면 하루가 시작됩니다.</div>
     {% endif %}
     <div class="chat">
       {% for m in messages %}
-      <div class="msg {{ 'ceo' if m.from.ceo else '' }}">
-        <div class="av">{{ m.from.emoji }}</div>
-        <div class="bub">
-          <div class="who">{{ m.from.name }}{% if m.to %} <span class="arrow">→ {{ m.to }}</span>{% endif %} · {{ m.t }}</div>
-          <div>{{ m.text }}</div>
-        </div>
-      </div>
+        {% if m.kind == 'life' %}
+          <div class="life"><span class="t">{{ m.sim }}</span>
+            🟢 {{ m.from.emoji }} <strong>{{ m.from.name }}</strong> · {{ m.text }}</div>
+        {% elif m.kind == 'report' %}
+          <div class="msg">
+            <div class="av">{{ m.from.emoji }}</div>
+            <div class="bub report">
+              <div class="who">{{ m.from.name }} · 보고 · {{ m.sim }}</div>
+              {% for line in m.lines %}<div>{{ line }}</div>{% endfor %}
+            </div>
+          </div>
+        {% else %}
+          <div class="msg {{ 'ceo' if m.from.ceo else '' }}">
+            <div class="av">{{ m.from.emoji }}</div>
+            <div class="bub">
+              <div class="who">{{ m.from.name }}{% if m.to %} <span class="arrow">→ {{ m.to }}</span>{% endif %} · {{ m.sim }}</div>
+              <div>{{ m.text }}</div>
+            </div>
+          </div>
+        {% endif %}
       {% endfor %}
     </div>
   </div>

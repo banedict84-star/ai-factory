@@ -19,6 +19,7 @@ from ..domain.models import (
     Mode,
     Task,
     TaskStatus,
+    WorldState,
     now,
 )
 from ..repository.base import Repository
@@ -44,6 +45,164 @@ class OrganizationEngine:
         self.decision = decision or RuleBasedDecisionEngine()
         self.dialogue = dialogue or RuleBasedDialogueEngine()
 
+    # ── 하루 시뮬레이션: 시계 ──────────────────────────────
+    def world(self) -> WorldState:
+        w = self.repo.get_world_state()
+        if w is None:
+            w = self.repo.save_world_state(WorldState())
+        return w
+
+    def _save_world(self, w: WorldState) -> None:
+        self.repo.save_world_state(w)
+
+    def _hhmm(self, minutes: int) -> str:
+        minutes = max(0, min(540, minutes))  # 09:00 ~ 18:00
+        return f"{9 + minutes // 60:02d}:{minutes % 60:02d}"
+
+    def _advance_sim(self, mins: int) -> None:
+        w = self.world()
+        w.sim_minutes = min(540, w.sim_minutes + mins)
+        self._save_world(w)
+
+    def _say(self, from_id: int | None, text: str, *, kind: str = "chat",
+             to_id: int | None = None, task_id: int | None = None) -> Message:
+        w = self.world()
+        msg = Message(text=text, from_id=from_id, to_id=to_id, task_id=task_id,
+                      kind=kind, sim=self._hhmm(w.sim_minutes))
+        return self.repo.add_message(msg)
+
+    def _lead(self, team_id: int) -> Employee:
+        return self.repo.find_employees_by_capability("decompose", team_id)[0]
+
+    # ── 하루 시뮬레이션: 출근 · 아침 ────────────────────────
+    def open_office(self) -> None:
+        """직원들이 출근하고, 아침 인사를 나눈다. (열면 이미 살아있는 회사)"""
+        w = self.world()
+        if w.phase != "before":
+            return
+        team = self.repo.list_teams()[0]
+        emps = self.repo.list_employees(team.id)
+        lead = self._lead(team.id)
+        # 팀장 먼저, 그다음 순서대로 출근
+        order = [lead] + [e for e in emps if e.id != lead.id]
+
+        w.sim_minutes = 0
+        w.phase = "working"
+        self._save_world(w)
+
+        for i, e in enumerate(order):
+            if i:
+                self._advance_sim(2 + (i % 2))  # 2~3분 간격
+            self._say(e.id, "출근했습니다.", kind="life")
+            e.status = EmployeeStatus.idle
+            self.repo.update_employee(e)
+
+        self._advance_sim(2)
+        self._say(lead.id, "좋은 아침입니다. 오늘 하루도 시작하겠습니다.", kind="life")
+        self._morning_briefing(team.id, lead)
+
+    def _morning_briefing(self, team_id: int, lead: Employee) -> None:
+        """아침 스탠드업 — 각자 현재 상황과 기억을 근거로 먼저 말한다."""
+        w = self.world()
+        # 오늘 예정 릴스 수
+        reels = [t for t in self.repo.list_tasks(team_id=team_id) if t.kind == "reel"]
+        if not reels:
+            missions = self.repo.list_missions(
+                team_id=team_id, status=MissionStatus.open)
+            reels_planned = sum(
+                1 for m in missions for k, _ in plan_mission(m.intent) if k == "reel")
+        else:
+            reels_planned = len(reels)
+
+        def by_cap(cap):
+            got = self.repo.find_employees_by_capability(cap, team_id)
+            return got[0] if got else None
+
+        self._advance_sim(1)
+        if reels_planned:
+            self._say(lead.id, f"오늘 릴스 {reels_planned}개 제작 예정입니다.")
+        # 분석가: 지표 인용
+        taeo = by_cap("research")
+        if taeo:
+            self._advance_sim(1)
+            self._say(taeo.id, f"어제 조회수가 평균보다 {w.metric}% 높았습니다.")
+        # 영상: 준비 상황
+        rina = by_cap("produce_video")
+        if rina:
+            self._advance_sim(1)
+            self._say(rina.id, "오늘 영상 작업 준비하겠습니다.")
+        # 카피: 대기
+        minjun = by_cap("write_caption")
+        if minjun:
+            self._advance_sim(1)
+            self._say(minjun.id, "캡션 작성 대기 중입니다.")
+        # 게시
+        sua = by_cap("publish")
+        if sua:
+            self._advance_sim(1)
+            self._say(sua.id, "게시 일정 확인하고 있습니다.")
+
+    # ── 보고 문화: 대표가 물으면 팀장이 종합 보고 ────────────
+    def ask_status(self) -> None:
+        team = self.repo.list_teams()[0]
+        lead = self._lead(team.id)
+        self._say(None, "현재 어떻게 되고 있나요?")  # 대표가 묻는다
+
+        reels = [t for t in self.repo.list_tasks(team_id=team.id) if t.kind == "reel"]
+        total = len(reels)
+        done = sum(1 for t in reels if t.status == TaskStatus.completed)
+        doing = total - done
+        w = self.world()
+
+        lines = []
+        if total:
+            lines.append(f"릴스 {total}개 중 {done}개 완료, {doing}개 제작 중입니다.")
+        else:
+            lines.append("현재 진행 중인 릴스 업무는 없습니다.")
+        lines.append(f"조회수는 평균보다 {w.metric}% 높습니다.")
+        # 기억(피드백)을 인용
+        feedbacks = [m for m in self.repo.list_memory() if m.key == "past_feedback"]
+        if feedbacks:
+            lines.append("대표님의 지난 피드백은 모두 반영했습니다.")
+        self._advance_sim(1)
+        self._say(lead.id, "\n".join(lines), kind="report")
+
+    # ── 퇴근 · 새 하루 ─────────────────────────────────────
+    def end_day(self) -> None:
+        w = self.world()
+        if w.phase != "working":
+            return
+        team = self.repo.list_teams()[0]
+        emps = self.repo.list_employees(team.id)
+        lead = self._lead(team.id)
+        w.sim_minutes = 540  # 18:00
+        self._save_world(w)
+
+        done = sum(1 for t in self.repo.list_tasks(team_id=team.id)
+                   if t.status == TaskStatus.completed)
+        self._say(lead.id, "오늘 업무를 모두 완료했습니다.", kind="report")
+        if done:
+            self._say(lead.id, f"완료한 업무 {done}건, 수고 많으셨습니다.", kind="report")
+
+        self._advance_sim(5)  # 18:05
+        for e in emps:
+            self._say(e.id, "내일 다시 뵙겠습니다.", kind="life")
+            e.status = EmployeeStatus.off
+            self.repo.update_employee(e)
+        w.phase = "after"
+        self._save_world(w)
+
+    def start_new_day(self) -> None:
+        w = self.world()
+        if w.phase != "after":
+            return
+        w.day += 1
+        w.sim_minutes = 0
+        w.phase = "before"
+        w.metric = 10 + (w.day * 3) % 12  # 지표 변동(시뮬레이션)
+        self._save_world(w)
+        self.open_office()
+
     # ── 대표의 입력: Mission 생성 ─────────────────────────
     def create_mission(self, team_id: int, intent: str, mode: Mode) -> Mission:
         mission = Mission(team_id=team_id, intent=intent, mode=mode)
@@ -59,6 +218,15 @@ class OrganizationEngine:
         한 스텝 = 한 직원의 한 동작. 업무는 '시작' → '완료+인계' 두 스텝으로 진행되어
         지켜보는 사람에게 '직원이 일하고 있다'는 흐름이 보입니다.
         """
+        # 0) 출근 전이면 먼저 출근시킨다 (열면 이미 살아있게)
+        w = self.world()
+        if w.phase == "before":
+            self.open_office()
+            return "🟢 직원들이 출근했습니다."
+        if w.phase == "after":
+            return None  # 퇴근함 — 새 하루가 필요
+        self._advance_sim(12)  # 시간이 흐른다
+
         # 1) 아직 분해되지 않은 Mission → 팀장이 분해
         open_missions = self.repo.list_missions(status=MissionStatus.open)
         if open_missions:
@@ -308,7 +476,9 @@ class OrganizationEngine:
             task=task, speaker=speaker, listener=listener, need=need,
             next_actor=next_actor, next_need=next_need, mem=mem,
         )
+        sim = self._hhmm(self.world().sim_minutes)
         for msg in self.dialogue.generate(ctx):
+            msg.sim = sim
             self.repo.add_message(msg)
 
     # ── 대표의 취향 → 직원 Memory 로 분배 ────────────────────
@@ -319,7 +489,7 @@ class OrganizationEngine:
             return []
 
         # 대표가 말한다 (from_id=None → 대표)
-        self.repo.add_message(Message(text=text, from_id=None, to_id=None))
+        self._say(None, text)
 
         updated: list[tuple[Employee, str]] = []
 
@@ -356,18 +526,13 @@ class OrganizationEngine:
         if updated:
             leads = self.repo.find_employees_by_capability("decompose", team_id)
             if leads:
-                self.repo.add_message(Message(
-                    text="대표님 취향 확인했습니다. 팀에 반영하겠습니다.",
-                    from_id=leads[0].id, to_id=None,
-                ))
+                self._say(leads[0].id, "대표님 취향 확인했습니다. 팀에 반영하겠습니다.")
                 seen: set[int] = set()
                 for emp, val in updated:
                     if emp.id in seen or emp.id == leads[0].id:
                         continue
                     seen.add(emp.id)
-                    self.repo.add_message(Message(
-                        text=f"{val}, 기억하겠습니다.", from_id=emp.id, to_id=leads[0].id,
-                    ))
+                    self._say(emp.id, f"{val}, 기억하겠습니다.", to_id=leads[0].id)
         return updated
 
     def _emit(self, type_: EventType, team_id: int, **kwargs) -> Event:

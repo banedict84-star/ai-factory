@@ -23,6 +23,7 @@ from ..domain.models import (
     Task,
     TaskStatus,
     Team,
+    WorldState,
 )
 from ..serde import from_data, to_data
 from .base import Repository
@@ -40,6 +41,7 @@ _TABLES: dict[type, str] = {
     Decision: "decisions",
     MemoryEntry: "memories",
     Message: "messages",
+    WorldState: "world_state",
 }
 
 
@@ -257,3 +259,13 @@ class SQLiteRepository(Repository):
         if limit is not None:
             msgs = msgs[-limit:]
         return msgs
+
+    # ── WorldState ──
+    def get_world_state(self) -> WorldState | None:
+        rows = self._all(WorldState)
+        return rows[0] if rows else None
+
+    def save_world_state(self, state: WorldState) -> WorldState:
+        if state.id is None:
+            return self._add(state)
+        return self._update(state)

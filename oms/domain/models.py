@@ -20,6 +20,7 @@ class EmployeeStatus(str, Enum):
     working = "working"  # 작업중
     waiting = "waiting"  # 대기(승인 등)
     blocked = "blocked"  # 막힘
+    off = "off"          # 퇴근/비활성
 
 
 class TaskStatus(str, Enum):
@@ -174,5 +175,18 @@ class Message:
     from_id: Optional[int] = None              # None = 대표
     to_id: Optional[int] = None                # None = 전체(브로드캐스트)
     task_id: Optional[int] = None
+    kind: str = "chat"                         # chat | life(출퇴근 등) | report
+    sim: Optional[str] = None                  # 시뮬레이션 시각 "09:03"
     created_at: datetime = field(default_factory=now)
+    id: Optional[int] = None
+
+
+# ── 세계 상태 (하루 시뮬레이션) ───────────────────────────
+@dataclass
+class WorldState:
+    """회사의 '지금' — 며칠째, 몇 시, 근무 국면."""
+    day: int = 1
+    sim_minutes: int = 0                       # 09:00 부터 경과한 분
+    phase: str = "before"                      # before(출근 전) | working | after(퇴근)
+    metric: int = 12                           # 조회수 지표(시뮬레이션)
     id: Optional[int] = None

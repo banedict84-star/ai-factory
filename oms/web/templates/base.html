@@ -78,6 +78,7 @@
     .dot{ width:8px; height:8px; border-radius:50%; display:inline-block; }
     .dot.idle{ background:#22a06b; } .dot.working{ background:#2f6feb; }
     .dot.waiting{ background:#7a5af5; } .dot.blocked{ background:#d64545; }
+    .dot.off{ background:#9aa4b2; }
     .says{ margin-top:8px; font-size:13px; background:var(--accent-weak); color:var(--text);
       padding:8px 10px; border-radius:10px; position:relative; }
     .cur{ margin-top:6px; font-size:12px; color:var(--muted); }
@@ -90,6 +91,9 @@
     .msg .who{ font-size:12px; color:var(--muted); margin-bottom:2px; }
     .msg.ceo .bub{ background:var(--accent-weak); border-color:transparent; }
     .msg .arrow{ color:var(--muted); font-weight:400; }
+    .msg .bub.report{ border-left:3px solid var(--accent); }
+    .life{ text-align:center; font-size:13px; color:var(--muted); padding:4px 0; }
+    .life .t{ font-variant-numeric:tabular-nums; margin-right:8px; opacity:.8; }
   </style>
 </head>
 <body>
