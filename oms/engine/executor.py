@@ -157,8 +157,10 @@ class OpenAIExecutor:
                  media_dir: Path | None = None,
                  fallback: ExecutorEngine | None = None):
         self.text_model = text_model
-        # 설정 모델 → dall-e-3 순서로 시도 (검증 안 된 계정도 되게)
-        self.image_models = list(dict.fromkeys([image_model, "dall-e-3"]))
+        # 계정마다 접근 가능한 이미지 모델이 다르다(프로젝트 키 모델 제한·검증 여부 등).
+        # 설정 모델 → 대체 모델 순으로 시도하고, 이 계정에서 '되는' 첫 모델을 쓴다.
+        self.image_models = list(dict.fromkeys(
+            [image_model, "gpt-image-1", "dall-e-3", "dall-e-2"]))
         self.media_dir = Path(media_dir) if media_dir else None
         self.fallback = fallback or MockExecutor(media_dir)
         self._client = None
