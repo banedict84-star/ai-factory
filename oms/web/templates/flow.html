@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Task 흐름 · AI Employee OS{% endblock %}
+{% block body %}
+  <h1>🔁 Task 흐름</h1>
+  <p class="sub">Mission 하나가 Task 로 분해되어 직원들 사이를 이동합니다.
+    <strong>한 스텝 진행</strong>을 누르면 조직이 한 번 반응합니다.
+    {% if pending_count %}<span class="badge purple">승인 대기 {{ pending_count }}</span>{% endif %}
+  </p>
+
+  <div class="card">
+    <h2 style="margin-top:0">🎯 대표 지시 — 새 Mission</h2>
+    <form method="post" action="/missions">
+      <textarea name="intent" rows="2" placeholder="예: 이번 주는 여름 샌들 콘텐츠에 집중하자."></textarea>
+      <div class="row" style="margin-top:8px">
+        <label class="sub">게시 방식</label>
+        <select name="mode" style="width:auto">
+          <option value="auto">자동 (AI가 바로 게시)</option>
+          <option value="approval">승인 (대표 최종 승인)</option>
+        </select>
+        <div class="spacer"></div>
+        <button class="primary" type="submit">지시하기</button>
+      </div>
+    </form>
+  </div>
+
+  {% for m in missions %}
+  <div class="card">
+    <div class="row">
+      <strong>🎯 Mission</strong>
+      <span class="badge {{ 'green' if m.status=='done' else 'blue' if m.status=='in_progress' else 'amber' }}">{{ m.status }}</span>
+      <span class="badge muted">{{ '자동' if m.mode=='auto' else '승인' }}</span>
+    </div>
+    <p style="margin:8px 0 4px">{{ m.intent }}</p>
+
+    {% if not m.tasks %}
+      <div class="empty">아직 분해된 업무가 없습니다. ‘한 스텝 진행’을 누르면 팀장이 분해합니다.</div>
+    {% endif %}
+
+    {% for t in m.tasks %}
+    <div class="card" style="margin:10px 0;">
+      <div class="row">
+        <a class="tasklink" href="/tasks/{{ t.id }}"><strong>{{ t.title }}</strong></a>
+        <span class="badge {{ t.status_color }}">{{ t.status_label }}</span>
+        <div class="spacer"></div>
+        <span class="sub">현재 담당: {{ t.holder }}</span>
+      </div>
+      {% if t.journey %}
+      <div class="journey" style="margin-top:8px">
+        {% for n in t.journey %}
+          <span class="node">{{ n.emoji }} {{ n.name }}</span>
+          {% if not loop.last %}<span>→</span>{% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if t.artifacts %}
+      <div class="row" style="margin-top:8px">
+        {% for a in t.artifacts %}<span class="chip">✔ {{ a }}</span>{% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+{% endblock %}

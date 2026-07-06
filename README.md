@@ -1,61 +1,82 @@
-# AI Factory — 인스타그램 자동 영상 게시 에이전트
+# AI Employee OS
 
-설정해 둔 규칙에 따라 **AI가 영상 아이디어 → 영상 → 캡션**을 만들고,
-**인스타그램에 자동으로 게시**하는 파이프라인입니다.
-하루 2회, 완전 자동 실행을 목표로 합니다.
+AI 직원들이 **회사처럼** 일하는 조직 운영체제.
+당신은 프로그램을 조작하는 게 아니라 **회사를 운영**합니다 — 대표로서 목표(Mission)를 주면,
+AI 직원들이 그것을 업무(Task)로 나누고 서로에게 넘기며 완성합니다.
+
+> ## 🧭 우리의 목표는 Workflow Engine이 아니라 **Organization Engine**이다.
+> 워크플로 엔진은 정해진 순서를 실행한다. 조직 엔진은 **역할·이벤트·미션·업무·의사결정·기억**을
+> 가진 구성원들이 상호작용하며 일을 완성한다. 그래서 인스타그램 팀뿐 아니라
+> 유튜브·CRM·영업팀도 같은 엔진 위에서 운영된다.
+
+첫 부서: **Instagram Automation Team** (고정 5인).
+
+## 핵심 개념 (1급 객체)
+
+| 개념 | 정체 |
+|---|---|
+| **Role** | 능력의 정의 — 어떤 이벤트에 반응하고 무엇을 할 수 있는지 |
+| **Event** | "무슨 일이 일어났다" — 조직이 반응하는 신호이자 감사 로그 |
+| **Mission** | 대표가 만드는 상위 목표 (실행 불가) |
+| **Task** | 팀장이 분해한 실행 단위. 직원 사이를 이동하는 바통 |
+| **Decision** | "이 태스크, 다음은 누구에게?" — **규칙 → AI 로 교체되는 이음새** |
+| **Memory** | 직원의 누적된 맥락. 결정할 때 읽고 행동 후 쓴다 |
+
+여기에 **Team**(부서)과 **Employee**(역할·직책·보고대상·상태·기억을 가진 직원).
+
+## 아키텍처 (계층 분리)
 
 ```
-아이디어 생성(AI)  →  영상 생성  →  공개 URL 업로드  →  인스타 게시
-   idea_generator     video_generator    uploader        instagram_publisher
-                         └──────────── pipeline ────────────┘
-                                        │
-                              GitHub Actions (cron, 하루 2회)
+oms/
+  domain/       순수 모델 — DB/프레임워크 몰라도 됨
+  repository/   Repository 인터페이스 + SQLite 구현  ← DB는 여기서만 (Postgres/Supabase 교체 지점)
+  engine/       Decision 인터페이스 + 규칙엔진 + 반응 루프  ← AI 교체 지점
+  web/          FastAPI + 화면 (Task 흐름이 중심)
 ```
 
-## 전체 흐름
+- **DB 직접 호출은 Repository 안에만** 존재합니다. 엔진·화면은 인터페이스에만 의존 → 나중에
+  Supabase/PostgreSQL 로 옮길 때 `sqlite_repo.py`만 다시 구현하면 됩니다.
+- **의사결정은 `DecisionEngine` 인터페이스로 분리**되어 있습니다. 지금은
+  `RuleBasedDecisionEngine`(AI 없음), 나중에 `AIDecisionEngine`으로 한 줄만 교체하면
+  AI가 다음 담당자를 판단합니다. **Task 에는 고정 워크플로가 없습니다.**
 
-1. **`idea_generator`** — Claude가 `config/content.yaml`의 설정(주제·톤·해시태그 규칙)을 읽고
-   오늘 올릴 영상의 **컨셉 · 캡션 · 해시태그 · 영상 프롬프트**를 생성합니다.
-2. **`video_generator`** — 영상 프롬프트로 실제 영상을 만듭니다.
-   지금은 `placeholder`(텍스트 카드 영상) 제공자가 기본이며, 나중에 실제 AI 영상 서비스로 교체합니다.
-3. **`uploader`** — 만든 영상을 **공개적으로 접근 가능한 URL**에 올립니다
-   (인스타 API가 파일이 아닌 URL을 요구하기 때문).
-4. **`instagram_publisher`** — Instagram Graph API로 릴스(Reels)를 게시합니다.
+## 조직이 도는 방식
 
-## 시작하기 전에 준비할 것 (사용자 작업)
+```
+대표 → Mission 생성  ─▶ [MissionCreated]
+   팀장이 반응     ─▶ Mission 을 Task 로 분해, 첫 담당자에게
+   담당 직원이 반응 ─▶ 작업 → Decision(상태+역할+다음필요) 판단
+                     ├▶ 다음 담당자에게 인계  [TaskHandedOff]
+                     ├▶ 완료                 [TaskCompleted]
+                     └▶ 막힘 → 보고 대상에게   [EmployeeBlocked]
+   (승인 모드면) 게시 전 ─▶ [ApprovalRequested] → 대표 승인
+```
 
-자동 게시를 하려면 아래가 필요합니다. **본인 계정에만 올리는 경우 앱 심사는 필요 없습니다.**
+Task 가 움직일 때마다 **Event 1건 + Decision 1건**이 남습니다.
 
-1. **인스타그램 프로페셔널 계정** (비즈니스 또는 크리에이터로 전환)
-2. **페이스북 페이지** 생성 후 위 인스타 계정과 연결
-3. **Meta 개발자 앱** 생성 → Instagram Graph API 제품 추가
-4. 아래 값 확보:
-   - `INSTAGRAM_ACCESS_TOKEN` (장기 토큰 권장)
-   - `INSTAGRAM_ACCOUNT_ID` (IG 비즈니스 계정 ID)
-5. 영상 AI 제공자 키 (선택, 실제 영상 생성 시)
-6. Claude API 키 (`ANTHROPIC_API_KEY`) — 아이디어·캡션 생성용
-
-자세한 단계는 `docs/SETUP.md`를 참고하세요.
-
-## 로컬 실행
+## 실행
 
 ```bash
 pip install -r requirements.txt
-cp .env.example .env      # 값 채우기
-python -m src.main --dry-run    # 실제 게시 없이 흐름만 확인
-python -m src.main              # 실제 실행
+python -m oms.main serve      # http://127.0.0.1:8000  (첫 실행 시 자동 시드)
+# python -m oms.main reset    # DB 초기화 후 재시드
 ```
 
-## 자동 스케줄
+화면:
+- **🔁 Task 흐름** (`/flow`) — 이 프로젝트의 심장. 누가 → 누구에게, 왜 넘겼는지.
+- **👥 직원** (`/employees`) — 역할·상태·현재 업무·기억
+- **📡 활동** (`/feed`) — 조직 전체 Event 스트림
+- 상단 **▶ 한 스텝 진행 / ⏩ 끝까지** 로 조직을 굴려봅니다.
 
-`.github/workflows/post.yml`이 하루 2회 실행됩니다.
-GitHub 저장소 Settings → Secrets에 `ANTHROPIC_API_KEY`,
-`INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_ACCOUNT_ID` 등을 등록하세요.
+## 시드 데이터
 
-## 지금 동작하는 것 / 아직인 것
+- 부서: Instagram Automation Team
+- 직원 5인: 지호(팀장·콘텐츠 디렉터) · 리나(영상) · 민준(카피) · 수아(게시) · 태오(분석)
+- 첫 Mission: *"기존 인스타 계정을 AI Boots / AI Fashion 릴스 계정으로 리브랜딩하고,
+  첫 7일 동안 하루 3개 릴스를 운영할 준비를 하라."*
 
-- ✅ 아이디어·캡션·해시태그 생성 (Claude)
-- ✅ 파이프라인·스케줄 뼈대, dry-run
-- ✅ 인스타그램 릴스 게시 로직 (토큰만 있으면 동작)
-- 🔧 영상 생성: 현재 placeholder(텍스트 카드). 실제 AI 영상 제공자 연결 필요
-- 🔧 업로더: 공개 URL 호스팅 연결 필요 (S3/GCS 등)
+## `src/` — Instagram 실행 파이프라인 (추후 연결)
+
+`src/` 에는 실제 인스타 콘텐츠를 생성·게시하는 파이프라인 초안이 있습니다.
+지금 OS 는 **실제 AI/게시 API 를 연결하지 않습니다.** 나중에 직원의 Decision/작업 자리에
+이 실행기를 연결하면, AI 직원들이 실제로 콘텐츠를 만들어 올리게 됩니다.

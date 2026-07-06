@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}활동 · AI Employee OS{% endblock %}
+{% block body %}
+  <h1>📡 활동 피드</h1>
+  <p class="sub">조직 전체에서 일어나는 Event 를 실시간으로 지켜보는 창입니다.</p>
+  <div class="card">
+    {% if not items %}<div class="empty">아직 활동이 없습니다.</div>{% endif %}
+    <ul class="timeline">
+      {% for e in items %}
+      <li>
+        <span class="ic">{{ e.icon }}</span>
+        <div>
+          <div>{{ e.text }}
+            {% if e.task_id %}<a class="tasklink" href="/tasks/{{ e.task_id }}">#{{ e.task_id }}</a>{% endif %}
+          </div>
+          <div class="meta">{{ e.actor }} · {{ e.t }}</div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

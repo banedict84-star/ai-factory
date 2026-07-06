@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ task.title }} · Task 흐름{% endblock %}
+{% block body %}
+  <p class="sub"><a class="tasklink" href="/flow">← Task 흐름</a></p>
+  <div class="row">
+    <h1 style="margin:0">{{ task.title }}</h1>
+    <span class="badge {{ status_color }}">{{ status_label }}</span>
+  </div>
+  <p class="sub">현재 담당: {{ holder }} · 종류: {{ task.kind }}</p>
+
+  {% if can_approve %}
+  <div class="card" style="border-color:#dccdf7">
+    <div class="row">
+      <strong>⏳ 게시 승인 대기</strong>
+      <div class="spacer"></div>
+      <form method="post" action="/tasks/{{ task.id }}/approve">
+        <button class="primary" type="submit">👍 게시 승인</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if journey %}
+  <h2>담당자 이동 (누가 → 누구에게, 왜)</h2>
+  <div class="card">
+    <div class="journey">
+      {% for n in journey %}
+        <span class="node">{{ n.emoji }} {{ n.name }}</span>
+        {% if not loop.last %}<span>→</span>{% endif %}
+      {% endfor %}
+    </div>
+    <ul class="timeline" style="margin-top:10px">
+      {% for n in journey %}
+      <li><span class="ic">🔁</span><div><strong>{{ n.emoji }} {{ n.name }}</strong>
+        <div class="meta">{{ n.reason }}</div></div></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if artifacts %}
+  <h2>산출물</h2>
+  <div class="card">
+    {% for k, v in artifacts.items() %}
+      <div class="row"><span class="chip">{{ k }}</span><span class="sub">{{ v }}</span></div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <h2>타임라인 (Event + Decision)</h2>
+  <div class="card">
+    {% if not timeline %}<div class="empty">아직 기록이 없습니다.</div>{% endif %}
+    <ul class="timeline">
+      {% for e in timeline %}
+      <li class="{{ e.kind }}">
+        <span class="ic">{{ e.icon }}</span>
+        <div>
+          <div>{{ e.text }}</div>
+          <div class="meta">{{ e.actor }} · {{ e.t }}</div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

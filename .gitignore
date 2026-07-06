@@ -6,3 +6,5 @@ output/
 *.png
 .venv/
 venv/
+ai_os.db
+*.db
