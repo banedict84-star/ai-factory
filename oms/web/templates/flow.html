@@ -13,8 +13,14 @@
       <strong>🎯 대표 지시</strong>
       <span class="sub">한 줄로 목표만 주세요. 업무 분해는 팀장이 합니다.</span>
     </div>
+    <div class="row" style="margin-bottom:8px">
+      <span class="sub">빠른 시나리오:</span>
+      <button type="button" class="btn" onclick="fillMission(0)">🔁 기존 계정 리브랜딩</button>
+      <button type="button" class="btn" onclick="fillMission(1)">🎬 오늘 릴스 3개 제작</button>
+      <button type="button" class="btn" onclick="fillMission(2)">📊 성과 분석</button>
+    </div>
     <form method="post" action="/missions">
-      <textarea name="intent" rows="2">기존 인스타 계정을 AI Boots / AI Fashion 릴스 계정으로 리브랜딩하고, 첫 7일 동안 하루 3개 릴스를 운영할 준비를 하라.</textarea>
+      <textarea id="intent" name="intent" rows="2">기존 인스타 계정을 AI Boots / AI Fashion 릴스 계정으로 리브랜딩하고, 첫 7일 동안 하루 3개 릴스를 운영할 준비를 하라.</textarea>
       <div class="row" style="margin-top:8px">
         <label class="sub">게시 방식</label>
         <select name="mode" style="width:auto">
@@ -65,4 +71,17 @@
     {% endfor %}
   </div>
   {% endfor %}
+
+  <script>
+    const PRESETS = [
+      "기존 인스타 계정을 AI Boots / AI Fashion 릴스 계정으로 리브랜딩하고, 첫 7일 동안 하루 3개 릴스를 운영할 준비를 하라.",
+      "오늘 업로드할 AI Boots 릴스 3개를 기획하고 제작 준비를 완료하라.",
+      "최근 게시물 성과를 분석하고 다음 콘텐츠 방향을 제안하라."
+    ];
+    function fillMission(i){
+      const el = document.getElementById('intent');
+      el.value = PRESETS[i];
+      el.focus();
+    }
+  </script>
 {% endblock %}

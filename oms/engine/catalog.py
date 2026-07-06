@@ -10,6 +10,7 @@ from __future__ import annotations
 REQUIRED_ARTIFACTS: dict[str, list[str]] = {
     "reel": ["concept", "video", "caption", "published"],
     "rebrand": ["brand_definition", "audience_research"],
+    "analysis": ["audience_research", "direction_proposal"],
 }
 
 # 역량(capability) → 그 역량이 만들어내는 산출물
@@ -20,6 +21,7 @@ CAPABILITY_PRODUCES: dict[str, str] = {
     "write_caption": "caption",
     "publish": "published",
     "research": "audience_research",
+    "propose": "direction_proposal",
 }
 
 # 산출물 → 그것을 만들 수 있는 역량 (역방향)
@@ -33,6 +35,7 @@ ARTIFACT_LABEL: dict[str, str] = {
     "caption": "캡션과 해시태그 작성",
     "published": "게시",
     "audience_research": "리서치·분석",
+    "direction_proposal": "콘텐츠 방향 제안",
 }
 
 
@@ -41,6 +44,10 @@ def plan_mission(intent: str) -> list[tuple[str, str]]:
 
     반환: (kind, title) 리스트
     """
+    # 성과 분석형 미션
+    if any(k in intent for k in ("분석", "성과")):
+        return [("analysis", "성과 분석 및 다음 콘텐츠 방향 제안")]
+
     tasks: list[tuple[str, str]] = []
     if any(k in intent for k in ("리브랜딩", "브랜드", "리브랜드", "rebrand")):
         tasks.append(("rebrand", "브랜드 리브랜딩: AI Boots / AI Fashion 정의"))

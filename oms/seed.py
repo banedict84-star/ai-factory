@@ -21,7 +21,7 @@ def seed(repo: Repository) -> None:
     # ── 역할 (능력의 정의) ──
     role_lead = repo.add_role(Role(
         key="team_lead", name="팀장·콘텐츠 디렉터",
-        capabilities=["decompose", "ideate", "brand_define", "review", "report"],
+        capabilities=["decompose", "ideate", "brand_define", "propose", "review", "report"],
         description="미션을 업무로 분해하고 컨셉을 잡으며 결과를 대표에게 보고.",
     ))
     role_video = repo.add_role(Role(
