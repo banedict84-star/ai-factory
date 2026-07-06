@@ -32,6 +32,7 @@ from .decision import (
     record_decision,
 )
 from .dialogue import DialogueContext, DialogueEngine, RuleBasedDialogueEngine
+from .personas import Persona, persona_for
 
 
 class OrganizationEngine:
@@ -74,6 +75,10 @@ class OrganizationEngine:
     def _lead(self, team_id: int) -> Employee:
         return self.repo.find_employees_by_capability("decompose", team_id)[0]
 
+    def _persona(self, emp: Employee) -> Persona:
+        role = self.repo.get_role(emp.role_id)
+        return persona_for(role.key if role else "")
+
     # ── 하루 시뮬레이션: 출근 · 아침 ────────────────────────
     def open_office(self) -> None:
         """직원들이 출근하고, 아침 인사를 나눈다. (열면 이미 살아있는 회사)"""
@@ -102,9 +107,8 @@ class OrganizationEngine:
         self._morning_briefing(team.id, lead)
 
     def _morning_briefing(self, team_id: int, lead: Employee) -> None:
-        """아침 스탠드업 — 각자 현재 상황과 기억을 근거로 먼저 말한다."""
+        """아침 스탠드업 — 각자 자기 성격대로 먼저 말한다."""
         w = self.world()
-        # 오늘 예정 릴스 수
         reels = [t for t in self.repo.list_tasks(team_id=team_id) if t.kind == "reel"]
         if not reels:
             missions = self.repo.list_missions(
@@ -114,35 +118,23 @@ class OrganizationEngine:
         else:
             reels_planned = len(reels)
 
+        # 팀장 먼저(전체 정리), 그다음 분석가/영상/카피/게시 순
         def by_cap(cap):
             got = self.repo.find_employees_by_capability(cap, team_id)
             return got[0] if got else None
+        order = [lead, by_cap("research"), by_cap("produce_video"),
+                 by_cap("write_caption"), by_cap("publish")]
+        seen: set[int] = set()
+        for emp in order:
+            if emp is None or emp.id in seen:
+                continue
+            seen.add(emp.id)
+            line = self._persona(emp).standup(reels_planned, w.metric)
+            if line:
+                self._advance_sim(1)
+                self._say(emp.id, line)
 
-        self._advance_sim(1)
-        if reels_planned:
-            self._say(lead.id, f"오늘 릴스 {reels_planned}개 제작 예정입니다.")
-        # 분석가: 지표 인용
-        taeo = by_cap("research")
-        if taeo:
-            self._advance_sim(1)
-            self._say(taeo.id, f"어제 조회수가 평균보다 {w.metric}% 높았습니다.")
-        # 영상: 준비 상황
-        rina = by_cap("produce_video")
-        if rina:
-            self._advance_sim(1)
-            self._say(rina.id, "오늘 영상 작업 준비하겠습니다.")
-        # 카피: 대기
-        minjun = by_cap("write_caption")
-        if minjun:
-            self._advance_sim(1)
-            self._say(minjun.id, "캡션 작성 대기 중입니다.")
-        # 게시
-        sua = by_cap("publish")
-        if sua:
-            self._advance_sim(1)
-            self._say(sua.id, "게시 일정 확인하고 있습니다.")
-
-    # ── 보고 문화: 대표가 물으면 팀장이 종합 보고 ────────────
+    # ── 보고 문화: 대표가 물으면 직원마다 자기 스타일로 보고 ──
     def ask_status(self) -> None:
         team = self.repo.list_teams()[0]
         lead = self._lead(team.id)
@@ -153,19 +145,27 @@ class OrganizationEngine:
         done = sum(1 for t in reels if t.status == TaskStatus.completed)
         doing = total - done
         w = self.world()
+        has_feedback = any(m.key == "past_feedback" for m in self.repo.list_memory())
 
-        lines = []
-        if total:
-            lines.append(f"릴스 {total}개 중 {done}개 완료, {doing}개 제작 중입니다.")
-        else:
-            lines.append("현재 진행 중인 릴스 업무는 없습니다.")
-        lines.append(f"조회수는 평균보다 {w.metric}% 높습니다.")
-        # 기억(피드백)을 인용
-        feedbacks = [m for m in self.repo.list_memory() if m.key == "past_feedback"]
-        if feedbacks:
-            lines.append("대표님의 지난 피드백은 모두 반영했습니다.")
+        def by_cap(cap):
+            got = self.repo.find_employees_by_capability(cap, team.id)
+            return got[0] if got else None
+
+        # 지호: 전체 요약
         self._advance_sim(1)
-        self._say(lead.id, "\n".join(lines), kind="report")
+        self._say(lead.id,
+                  self._persona(lead).report_overview(total, done, doing, has_feedback),
+                  kind="report")
+        # 태오: 데이터 중심
+        taeo = by_cap("research")
+        if taeo:
+            self._advance_sim(1)
+            self._say(taeo.id, self._persona(taeo).report_data(w.metric), kind="report")
+        # 수아: 일정 중심
+        sua = by_cap("publish")
+        if sua:
+            self._advance_sim(1)
+            self._say(sua.id, self._persona(sua).report_schedule(doing), kind="report")
 
     # ── 퇴근 · 새 하루 ─────────────────────────────────────
     def end_day(self) -> None:
@@ -186,7 +186,7 @@ class OrganizationEngine:
 
         self._advance_sim(5)  # 18:05
         for e in emps:
-            self._say(e.id, "내일 다시 뵙겠습니다.", kind="life")
+            self._say(e.id, self._persona(e).goodbye(), kind="life")
             e.status = EmployeeStatus.off
             self.repo.update_employee(e)
         w.phase = "after"
@@ -467,14 +467,16 @@ class OrganizationEngine:
             cands = self.repo.find_employees_by_capability(cap, task.team_id) if cap else []
             next_actor = cands[0] if cands else None
 
-        # 관련 직원들의 기억을 key 로 모은다
+        # 관련 직원들의 기억(key)과 성격을 모은다
         mem: dict[int, dict[str, MemoryEntry]] = {}
+        personas: dict[int, Persona] = {}
         for e in [speaker, listener] + ([next_actor] if next_actor else []):
             mem[e.id] = {m.key: m for m in self.repo.list_memory(e.id) if m.key}
+            personas[e.id] = self._persona(e)
 
         ctx = DialogueContext(
             task=task, speaker=speaker, listener=listener, need=need,
-            next_actor=next_actor, next_need=next_need, mem=mem,
+            next_actor=next_actor, next_need=next_need, mem=mem, personas=personas,
         )
         sim = self._hhmm(self.world().sim_minutes)
         for msg in self.dialogue.generate(ctx):
@@ -532,7 +534,7 @@ class OrganizationEngine:
                     if emp.id in seen or emp.id == leads[0].id:
                         continue
                     seen.add(emp.id)
-                    self._say(emp.id, f"{val}, 기억하겠습니다.", to_id=leads[0].id)
+                    self._say(emp.id, self._persona(emp).ack(val), to_id=leads[0].id)
         return updated
 
     def _emit(self, type_: EventType, team_id: int, **kwargs) -> Event:

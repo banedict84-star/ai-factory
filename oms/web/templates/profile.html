@@ -23,6 +23,11 @@
     </div>
   </div>
 
+  {% if personality %}
+  <h2>성격</h2>
+  <div class="card">🎭 {{ personality }}</div>
+  {% endif %}
+
   <h2>전문분야</h2>
   <div class="card">{{ specialty }}</div>
 

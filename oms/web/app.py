@@ -12,6 +12,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from ..domain.models import EventType, Mode, TaskStatus
+from ..engine.personas import persona_for
 from ..engine.reactor import OrganizationEngine
 from ..repository.sqlite_repo import SQLiteRepository
 from ..seed import seed
@@ -301,6 +302,7 @@ def profile(request: Request, emp_id: int):
         "e": {"emoji": e.emoji, "name": e.name, "title": e.title,
               "role": role.name if role else "-", "status": e.status.value,
               "reports_to": reports_to.name if reports_to else "대표"},
+        "personality": persona_for(role.key).traits if role else "",
         "specialty": role.description if role and role.description else (role.name if role else "-"),
         "done_count": done_count, "avg": avg,
         "current": [{"id": t.id, "title": t.title, "status": t.status.value} for t in current],
