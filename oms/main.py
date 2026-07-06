@@ -5,6 +5,7 @@
 """
 from __future__ import annotations
 
+import os
 import sys
 
 import uvicorn
@@ -28,8 +29,11 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if cmd == "serve":
+        # 클라우드(예: Render)는 PORT 를 지정합니다. 없으면 로컬 기본값.
+        host = os.getenv("HOST", "0.0.0.0")
+        port = int(os.getenv("PORT", "8000"))
         seed(repo)
-        uvicorn.run("oms.web.app:app", host="127.0.0.1", port=8000, reload=False)
+        uvicorn.run("oms.web.app:app", host=host, port=port, reload=False)
         return 0
 
     print(__doc__)

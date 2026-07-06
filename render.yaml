@@ -1,0 +1,21 @@
+# Render 배포 설정 (Blueprint)
+# render.com → New + → Blueprint → 이 저장소 선택 → OPENAI_API_KEY / APP_PASSWORD 입력 → 배포
+services:
+  - type: web
+    name: ai-employee-os
+    runtime: python
+    branch: claude/korean-greeting-wkvr53
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m oms.main serve
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: EXECUTOR
+        value: openai
+      - key: EXECUTOR_IMAGE_MODEL
+        value: dall-e-3       # 호스팅에선 검증 없이 바로 되는 dall-e-3 사용
+      - key: OPENAI_API_KEY
+        sync: false           # ← Render 대시보드에서 직접 입력(비밀)
+      - key: APP_PASSWORD
+        sync: false           # ← (권장) 사이트 접속 비밀번호. 비워두면 잠금 없음

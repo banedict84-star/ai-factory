@@ -54,6 +54,31 @@ print(f"[AI Employee OS] executor={_EXECUTOR_KIND} · OPENAI_API_KEY={_key} · m
 app = FastAPI(title="AI Employee OS")
 app.mount("/media", StaticFiles(directory=str(MEDIA_DIR)), name="media")
 
+# (선택) APP_PASSWORD 를 설정하면 사이트에 간단한 비밀번호 잠금이 걸립니다.
+# 공개 주소로 배포할 때 남이 내 OpenAI 크레딧을 쓰지 못하게 막아줍니다.
+_APP_PASSWORD = os.getenv("APP_PASSWORD")
+if _APP_PASSWORD:
+    import base64
+
+    from starlette.responses import Response
+
+    @app.middleware("http")
+    async def _basic_auth(request: Request, call_next):
+        header = request.headers.get("authorization", "")
+        ok = False
+        if header.startswith("Basic "):
+            try:
+                decoded = base64.b64decode(header[6:]).decode("utf-8")
+                ok = decoded.split(":", 1)[1] == _APP_PASSWORD
+            except Exception:
+                ok = False
+        if not ok:
+            return Response(
+                "비밀번호가 필요합니다.", status_code=401,
+                headers={"WWW-Authenticate": 'Basic realm="AI Employee OS"'},
+            )
+        return await call_next(request)
+
 
 @app.on_event("startup")
 def _startup() -> None:
