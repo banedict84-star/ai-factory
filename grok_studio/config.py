@@ -22,12 +22,23 @@ XAI_API_KEY: str = os.getenv("XAI_API_KEY", "").strip()
 XAI_BASE_URL: str = os.getenv("XAI_BASE_URL", "https://api.x.ai/v1").rstrip("/")
 
 # ── 모델 식별자 (xAI 스펙 변경 시 .env 로 교체) ────────────────
+# 콤마로 여러 개를 주면 앞에서부터 시도해서 '되는' 모델을 자동으로 씁니다.
+# (모델 이름이 자주 바뀌므로 폴백 목록으로 둔다)
+def _model_list(env_key: str, default: str) -> list[str]:
+    raw = os.getenv(env_key, default)
+    return [m.strip() for m in raw.split(",") if m.strip()]
+
+
 # 옷 분석용 비전 모델 (멀티모달 chat)
-XAI_VISION_MODEL: str = os.getenv("XAI_VISION_MODEL", "grok-2-vision-1212")
+XAI_VISION_MODELS: list[str] = _model_list(
+    "XAI_VISION_MODEL", "grok-4,grok-4-fast,grok-4.1,grok-3,grok-2-vision")
 # 모델이 옷 입은 사진 생성 (text-to-image)
-XAI_IMAGE_MODEL: str = os.getenv("XAI_IMAGE_MODEL", "grok-2-image-1212")
+XAI_IMAGE_MODELS: list[str] = _model_list(
+    "XAI_IMAGE_MODEL", "grok-imagine-image,grok-2-image,grok-2-image-1212")
 # 영상 생성 (Grok Imagine, image-to-video)
-XAI_VIDEO_MODEL: str = os.getenv("XAI_VIDEO_MODEL", "grok-imagine-video")
+XAI_VIDEO_MODELS: list[str] = _model_list(
+    "XAI_VIDEO_MODEL",
+    "grok-imagine-video-1.5-preview,grok-imagine-video,grok-imagine")
 
 # ── 엔드포인트 경로 (base_url 뒤에 붙는다) ─────────────────────
 IMAGE_PATH: str = os.getenv("XAI_IMAGE_PATH", "/images/generations")

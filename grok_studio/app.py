@@ -167,6 +167,24 @@ async def generate(
     return {"job_id": job_id}
 
 
+@app.get("/api/diag")
+def diag():
+    """계정에서 실제 사용 가능한 모델 목록 + 현재 설정된 후보 모델."""
+    out = {
+        "has_key": bool(config.XAI_API_KEY),
+        "configured": {
+            "vision": config.XAI_VISION_MODELS,
+            "image": config.XAI_IMAGE_MODELS,
+            "video": config.XAI_VIDEO_MODELS,
+        },
+    }
+    try:
+        out["available_models"] = xai_client.list_models()
+    except Exception as e:  # noqa: BLE001
+        out["available_models_error"] = str(e)
+    return out
+
+
 @app.get("/api/job/{job_id}")
 def job_status(job_id: str):
     j = _get(job_id)
