@@ -9,3 +9,10 @@ venv/
 ai_os.db
 *.db
 media/
+
+# 단, 고정 모델 프로필 이미지는 커밋한다 (재생성 방지 · 얼굴 고정)
+!grok_studio/static/models/
+!grok_studio/static/models/*.png
+!grok_studio/static/models/*.jpg
+!grok_studio/static/models/*.jpeg
+!grok_studio/static/models/*.webp

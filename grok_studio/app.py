@@ -173,10 +173,26 @@ _preview_locks: dict[str, threading.Lock] = {
 }
 
 
+# 고정 프로필 이미지가 있으면 이걸 우선 사용 (재생성 X, 비용 0, 얼굴 고정)
+STATIC_MODELS_DIR = BASE_DIR / "static" / "models"
+
+
 @app.get("/api/model-preview/{model_id}")
 def model_preview(model_id: str):
     if model_id not in models.MODELS_BY_ID:
         raise HTTPException(status_code=404, detail="unknown model")
+
+    # 1순위: 저장소에 박아둔 고정 이미지
+    for ext in ("png", "jpg", "jpeg", "webp"):
+        fixed = STATIC_MODELS_DIR / f"{model_id}.{ext}"
+        if fixed.exists():
+            mt = "image/jpeg" if ext in ("jpg", "jpeg") else f"image/{ext}"
+            return FileResponse(
+                str(fixed), media_type=mt,
+                headers={"Cache-Control": "public, max-age=604800"},
+            )
+
+    # 2순위: 없으면 그록으로 생성 후 캐시 (기존 동작)
     path = config.OUTPUT_DIR / f"model_{model_id}.png"
     if not path.exists():
         if not config.XAI_API_KEY:
