@@ -24,7 +24,16 @@
     padding:16px;cursor:pointer;transition:.15s;text-align:center}
   .model:hover{border-color:#3d4560}
   .model .av{position:relative;width:96px;height:120px;margin:0 auto 4px;border-radius:12px;
-    overflow:hidden;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:40px}
+    overflow:hidden;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:40px;cursor:zoom-in}
+  .model .av::after{content:"🔍";position:absolute;bottom:4px;right:4px;font-size:11px;z-index:3;
+    background:rgba(0,0,0,.55);border-radius:6px;padding:1px 5px;opacity:0;transition:.15s}
+  .model .av:hover::after{opacity:1}
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;
+    z-index:100;padding:24px;cursor:zoom-out;backdrop-filter:blur(2px)}
+  .lightbox.show{display:flex}
+  .lightbox img{max-width:94vw;max-height:90vh;border-radius:14px;box-shadow:0 12px 50px rgba(0,0,0,.6)}
+  .lightbox .x{position:absolute;top:14px;right:22px;color:#fff;font-size:34px;line-height:1;cursor:pointer;opacity:.85}
+  .lightbox .cap{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#cfd6e4;font-size:14px}
   .model .av .pv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;opacity:0;transition:.35s}
   .model .av .pv.ok{opacity:1}
   .model .nm{font-weight:700;margin-top:8px}
@@ -137,17 +146,38 @@
   </div>
 </div>
 
+<div class="lightbox" id="lightbox">
+  <span class="x">&times;</span>
+  <img id="lightboxImg" alt="model">
+  <div class="cap" id="lightboxCap"></div>
+</div>
+
 <script>
 const $ = s => document.querySelector(s);
 let selectedModel = null, fileData = null, polling = null;
 
-// 모델 선택
+// 모델 선택 (카드 클릭)
 document.querySelectorAll('.model').forEach(el=>{
   el.onclick = ()=>{
     document.querySelectorAll('.model').forEach(m=>m.classList.remove('sel'));
     el.classList.add('sel'); selectedModel = el.dataset.id; refresh();
   };
 });
+
+// 사진 클릭 → 크게 보기 (라이트박스). 선택과 분리(stopPropagation).
+const lb = $('#lightbox'), lbImg = $('#lightboxImg'), lbCap = $('#lightboxCap');
+document.querySelectorAll('.model .av').forEach(av=>{
+  av.addEventListener('click', e=>{
+    e.stopPropagation();
+    const card = av.closest('.model');
+    lbImg.src = '/api/model-preview/' + card.dataset.id;
+    lbCap.textContent = (card.querySelector('.nm')||{}).textContent || '';
+    lb.classList.add('show');
+  });
+});
+function closeLightbox(){ lb.classList.remove('show'); lbImg.src=''; }
+lb.addEventListener('click', closeLightbox);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeLightbox(); });
 
 // 파일 업로드 + 미리보기 (클릭 선택 + 드래그 앤 드롭)
 const drop = $('#drop'), fileInput = $('#file');
