@@ -30,8 +30,11 @@
   .model .nm{font-weight:700;margin-top:8px}
   .model .tg{color:var(--sub);font-size:12.5px;margin-top:2px}
   .model.sel{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,255,.18);background:var(--card2)}
-  .drop{margin-top:12px;background:var(--card);border:1.5px dashed var(--line);border-radius:16px;
+  .drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    width:100%;min-height:160px;box-sizing:border-box;
+    margin-top:12px;background:var(--card);border:1.5px dashed var(--line);border-radius:16px;
     padding:22px;text-align:center;cursor:pointer;transition:.15s}
+  .drop #dropInner{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
   .drop:hover{border-color:var(--accent2)}
   .drop.has{border-style:solid}
   .drop.drag{border-color:var(--accent2);border-style:solid;background:#172233;transform:scale(1.01)}
