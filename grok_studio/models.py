@@ -92,13 +92,21 @@ def build_video_prompt(model_name: str, motion: str) -> str:
 
 
 def build_tryon_prompt(appearance: str, garment_desc: str) -> str:
-    """모델이 옷 입은 스틸컷 생성 프롬프트."""
+    """모델이 옷 입은 스틸컷 생성 프롬프트.
+
+    핵심: 머리끝~발끝(신발 포함) 전신이 잘리지 않고 다 나오도록 강하게 지시.
+    """
     return (
-        f"Full-body studio fashion photograph of {appearance}, "
+        f"Full-length head-to-toe studio fashion photograph of {appearance}, "
         f"wearing {garment_desc}. "
-        "The model stands facing the camera in a natural relaxed pose, "
-        "clean seamless light-gray studio backdrop, soft even lighting, "
+        "FULL BODY SHOT showing the ENTIRE figure from the top of the head all "
+        "the way down to the shoes — the feet and footwear MUST be fully visible "
+        "and NOTHING is cropped or cut off at the legs. "
+        "The model stands upright facing the camera in a natural relaxed pose, "
+        "the whole body centered in frame with clear empty margin space above the "
+        "head and below the feet (do not crop the ankles or shoes). "
+        "Clean seamless light-gray studio backdrop, soft even lighting, "
         "sharp focus, high detail, realistic fabric and fit, "
-        "professional Korean online shopping-mall lookbook style, "
-        "vertical full-body composition, photorealistic."
+        "professional Korean online shopping-mall lookbook catalog style, "
+        "tall vertical full-length fashion framing, photorealistic."
     )
