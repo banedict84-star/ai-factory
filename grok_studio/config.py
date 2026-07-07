@@ -56,7 +56,7 @@ VIDEO_DURATION: int = int(os.getenv("XAI_VIDEO_DURATION", "6"))
 IMAGE_SEED: str = os.getenv("XAI_IMAGE_SEED", "7").strip()
 VIDEO_SEED: str = os.getenv("XAI_VIDEO_SEED", "7").strip()
 VIDEO_ASPECT_RATIO: str = os.getenv("XAI_VIDEO_ASPECT_RATIO", "9:16")  # 쇼핑몰 세로영상
-VIDEO_RESOLUTION: str = os.getenv("XAI_VIDEO_RESOLUTION", "720p")
+VIDEO_RESOLUTION: str = os.getenv("XAI_VIDEO_RESOLUTION", "480p")
 
 # 영상 폴링 (비동기 job 인 경우)
 VIDEO_POLL_INTERVAL: float = float(os.getenv("XAI_VIDEO_POLL_INTERVAL", "5"))
