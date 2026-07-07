@@ -49,7 +49,7 @@ VIDEO_STATUS_PATH: str = os.getenv("XAI_VIDEO_STATUS_PATH", "/videos")
 CHAT_PATH: str = os.getenv("XAI_CHAT_PATH", "/chat/completions")
 
 # ── 영상 파라미터 기본값 ───────────────────────────────────────
-VIDEO_DURATION: int = int(os.getenv("XAI_VIDEO_DURATION", "10"))
+VIDEO_DURATION: int = int(os.getenv("XAI_VIDEO_DURATION", "6"))
 VIDEO_ASPECT_RATIO: str = os.getenv("XAI_VIDEO_ASPECT_RATIO", "9:16")  # 쇼핑몰 세로영상
 VIDEO_RESOLUTION: str = os.getenv("XAI_VIDEO_RESOLUTION", "720p")
 
