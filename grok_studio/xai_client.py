@@ -251,14 +251,15 @@ def generate_video(image_bytes: bytes, prompt: str,
         raise XAIError(f"영상 응답을 이해할 수 없음: {str(data)[:400]}")
 
     deadline = time.monotonic() + config.VIDEO_POLL_TIMEOUT
-    poll_path = f"{config.VIDEO_PATH}/{job_id}"
+    # 제출: POST /v1/videos/generations → 폴링: GET /v1/videos/{request_id}
+    poll_path = f"{config.VIDEO_STATUS_PATH}/{job_id}"
     while time.monotonic() < deadline:
         if on_progress:
             on_progress(status or "processing")
         time.sleep(config.VIDEO_POLL_INTERVAL)
         job = _get(poll_path)
         status = _extract_status(job)
-        if status in ("failed", "error", "canceled", "cancelled"):
+        if status in ("failed", "error", "canceled", "cancelled", "expired"):
             raise XAIError(f"영상 생성 실패: {str(job)[:400]}")
         url = _extract_video_url(job)
         if url and status in ("done", "completed", "succeeded", "success", ""):

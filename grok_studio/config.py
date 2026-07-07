@@ -43,6 +43,8 @@ XAI_VIDEO_MODELS: list[str] = _model_list(
 # ── 엔드포인트 경로 (base_url 뒤에 붙는다) ─────────────────────
 IMAGE_PATH: str = os.getenv("XAI_IMAGE_PATH", "/images/generations")
 VIDEO_PATH: str = os.getenv("XAI_VIDEO_PATH", "/videos/generations")
+# 영상 상태 폴링은 제출과 경로가 다르다: GET /v1/videos/{request_id}
+VIDEO_STATUS_PATH: str = os.getenv("XAI_VIDEO_STATUS_PATH", "/videos")
 CHAT_PATH: str = os.getenv("XAI_CHAT_PATH", "/chat/completions")
 
 # ── 영상 파라미터 기본값 ───────────────────────────────────────
