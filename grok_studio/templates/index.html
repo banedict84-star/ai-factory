@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grok Studio — 쇼핑몰 모델 영상</title>
+<style>
+  :root{
+    --bg:#0b0d12; --card:#151922; --card2:#1c2130; --line:#2a3040;
+    --ink:#eef1f6; --sub:#9aa4b6; --accent:#7c5cff; --accent2:#4ac6ff;
+    --ok:#38d39f; --err:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#1a1430 0,var(--bg) 55%);
+    color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",sans-serif}
+  .wrap{max-width:920px;margin:0 auto;padding:28px 18px 80px}
+  header h1{font-size:26px;margin:0 0 4px}
+  header p{color:var(--sub);margin:0 0 22px}
+  .badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:99px;
+    background:#2a2140;color:#c9b8ff;border:1px solid #3a2f5c;margin-left:8px;vertical-align:middle}
+  h2{font-size:15px;letter-spacing:.02em;color:var(--sub);text-transform:uppercase;margin:26px 0 12px}
+  .models{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .model{background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+    padding:16px;cursor:pointer;transition:.15s;text-align:center}
+  .model:hover{border-color:#3d4560}
+  .model .av{font-size:40px;line-height:1}
+  .model .nm{font-weight:700;margin-top:8px}
+  .model .tg{color:var(--sub);font-size:12.5px;margin-top:2px}
+  .model.sel{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,255,.18);background:var(--card2)}
+  .drop{margin-top:12px;background:var(--card);border:1.5px dashed var(--line);border-radius:16px;
+    padding:22px;text-align:center;cursor:pointer;transition:.15s}
+  .drop:hover{border-color:var(--accent2)}
+  .drop.has{border-style:solid}
+  .drop img{max-height:220px;max-width:100%;border-radius:10px}
+  .drop .hint{color:var(--sub);font-size:13px}
+  textarea{width:100%;background:var(--card);color:var(--ink);border:1.5px solid var(--line);
+    border-radius:12px;padding:12px 14px;font:13.5px/1.5 inherit;resize:vertical;min-height:92px}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent),#5b7cff);
+    color:#fff;border:0;border-radius:12px;padding:13px 22px;font-size:15px;font-weight:700;cursor:pointer;
+    margin-top:16px;transition:.15s}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn:hover:not(:disabled){transform:translateY(-1px)}
+  .panel{margin-top:22px;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:18px;display:none}
+  .panel.show{display:block}
+  .steps{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .step{font-size:12.5px;padding:5px 11px;border-radius:99px;background:var(--card2);color:var(--sub);border:1px solid var(--line)}
+  .step.active{color:#fff;border-color:var(--accent);background:#241d3d}
+  .step.done{color:var(--ok);border-color:#1f5c48}
+  .spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;
+    display:inline-block;animation:sp .7s linear infinite;vertical-align:-3px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .out{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+  @media(max-width:640px){.out{grid-template-columns:1fr}.models{grid-template-columns:1fr}}
+  .out figure{margin:0;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+  .out figcaption{color:var(--sub);font-size:12.5px;margin-bottom:8px}
+  .out img,.out video{width:100%;border-radius:8px;background:#000}
+  .muted{color:var(--sub);font-size:12.5px}
+  .err{color:var(--err);font-size:13.5px;white-space:pre-wrap}
+  .garment{background:#161c17;border:1px solid #274031;border-radius:10px;padding:10px 12px;color:#bfe9cf;font-size:13px;margin-bottom:12px}
+  a.dl{color:var(--accent2);font-size:13px;text-decoration:none}
+  .warn{background:#2a1e14;border:1px solid #5c4327;color:#f0c89b;border-radius:12px;padding:12px 14px;font-size:13.5px;margin-bottom:16px}
+  input[type=file]{display:none}
+  .gate{max-width:360px;margin:60px auto;text-align:center}
+  .gate input{width:100%;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Grok Studio <span class="badge">그록 영상</span></h1>
+    <p>모델을 고르고 · 옷 사진을 올리면 → 모델이 그 옷을 입은 <b>사진</b>과 <b>영상</b>을 만듭니다.</p>
+  </header>
+
+  {% if not has_key %}
+  <div class="warn">⚠️ 서버에 <b>XAI_API_KEY</b> 가 설정되지 않았습니다. <code>.env</code> 에 키를 넣고 다시 실행하세요. (지금은 화면만 볼 수 있어요.)</div>
+  {% endif %}
+
+  <h2>1 · 모델 선택</h2>
+  <div class="models" id="models">
+    {% for m in models %}
+    <div class="model" data-id="{{ m.id }}">
+      <div class="av">{{ m.emoji }}</div>
+      <div class="nm">{{ m.name }}</div>
+      <div class="tg">{{ m.tagline }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2>2 · 옷 사진 업로드</h2>
+  <label class="drop" id="drop">
+    <input type="file" id="file" accept="image/*">
+    <div id="dropInner">
+      <div style="font-size:34px">👕</div>
+      <div>여기를 눌러 <b>옷 사진</b>을 선택하세요</div>
+      <div class="hint">상의/하의/원피스 등 · JPG·PNG · 최대 15MB</div>
+    </div>
+  </label>
+
+  <h2>3 · 영상 동작(프롬프트)</h2>
+  <textarea id="motion">{{ default_motion }}</textarea>
+  <div class="muted">그록에 전달할 영상 안무입니다. 그대로 두거나 수정하세요.</div>
+
+  <button class="btn" id="go" disabled>🎬 영상 만들기</button>
+
+  <div class="panel" id="panel">
+    <div class="steps" id="steps">
+      <span class="step" data-s="analyzing">옷 분석</span>
+      <span class="step" data-s="generating_image">옷 입히기</span>
+      <span class="step" data-s="generating_video">영상 생성</span>
+      <span class="step" data-s="done">완성</span>
+    </div>
+    <div id="status" class="muted"></div>
+    <div id="garment" class="garment" style="display:none"></div>
+    <div id="errbox" class="err"></div>
+    <div class="out">
+      <figure id="figImg" style="display:none">
+        <figcaption>👗 옷 입은 모델</figcaption>
+        <img id="tryon" alt="try-on">
+      </figure>
+      <figure id="figVid" style="display:none">
+        <figcaption>🎥 영상</figcaption>
+        <video id="video" controls autoplay loop muted playsinline></video>
+        <div style="margin-top:8px"><a class="dl" id="dl" download>⬇ 영상 저장</a></div>
+      </figure>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+let selectedModel = null, fileData = null, polling = null;
+
+// 모델 선택
+document.querySelectorAll('.model').forEach(el=>{
+  el.onclick = ()=>{
+    document.querySelectorAll('.model').forEach(m=>m.classList.remove('sel'));
+    el.classList.add('sel'); selectedModel = el.dataset.id; refresh();
+  };
+});
+
+// 파일 업로드 + 미리보기
+const drop = $('#drop'), fileInput = $('#file');
+fileInput.onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  fileData = f;
+  const url = URL.createObjectURL(f);
+  $('#dropInner').innerHTML = `<img src="${url}"><div class="hint" style="margin-top:8px">${f.name} · 다시 누르면 변경</div>`;
+  drop.classList.add('has'); refresh();
+};
+
+function refresh(){ $('#go').disabled = !(selectedModel && fileData); }
+
+// 생성 시작
+$('#go').onclick = async ()=>{
+  if(!(selectedModel && fileData)) return;
+  $('#go').disabled = true;
+  $('#panel').classList.add('show');
+  $('#errbox').textContent=''; $('#garment').style.display='none';
+  $('#figImg').style.display='none'; $('#figVid').style.display='none';
+  setSteps('queued');
+  $('#status').innerHTML = '<span class="spin"></span> 시작하는 중…';
+
+  const fd = new FormData();
+  fd.append('model_id', selectedModel);
+  fd.append('motion', $('#motion').value);
+  fd.append('clothing', fileData);
+
+  try{
+    const r = await fetch('/api/generate', {method:'POST', body:fd});
+    if(!r.ok){ throw new Error((await r.json()).detail || r.statusText); }
+    const {job_id} = await r.json();
+    poll(job_id);
+  }catch(e){ fail(e.message); $('#go').disabled=false; }
+};
+
+function poll(id){
+  clearInterval(polling);
+  polling = setInterval(async ()=>{
+    try{
+      const r = await fetch('/api/job/'+id);
+      const j = await r.json();
+      setSteps(j.stage);
+      $('#status').innerHTML = (j.stage==='done'||j.stage==='error')
+        ? '' : '<span class="spin"></span> '+j.stage_label;
+      if(j.garment){ $('#garment').style.display='block'; $('#garment').textContent='🧵 인식된 옷: '+j.garment; }
+      if(j.tryon_url){ $('#figImg').style.display='block'; $('#tryon').src=j.tryon_url; }
+      if(j.stage==='error'){ clearInterval(polling); fail(j.error||'알 수 없는 오류'); $('#go').disabled=false; }
+      if(j.stage==='done'){
+        clearInterval(polling);
+        $('#figVid').style.display='block';
+        $('#video').src=j.video_url; $('#dl').href=j.video_url;
+        $('#status').innerHTML='✅ 완성!'; $('#go').disabled=false;
+      }
+    }catch(e){ /* 일시적 오류는 다음 폴링에서 회복 */ }
+  }, 2500);
+}
+
+function setSteps(stage){
+  const order=['analyzing','generating_image','generating_video','done'];
+  const map={queued:-1,analyzing:0,generating_image:1,image_ready:1,generating_video:2,done:3,error:-1};
+  const cur=map[stage] ?? -1;
+  document.querySelectorAll('.step').forEach(el=>{
+    const i=order.indexOf(el.dataset.s);
+    el.classList.remove('active','done');
+    if(i<cur) el.classList.add('done');
+    else if(i===cur) el.classList.add('active');
+  });
+}
+function fail(msg){ $('#status').textContent=''; $('#errbox').textContent='❌ '+msg; }
+</script>
+</body>
+</html>
