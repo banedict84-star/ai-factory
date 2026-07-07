@@ -17,7 +17,7 @@ import uuid
 from pathlib import Path
 
 from fastapi import FastAPI, Form, HTTPException, Request, UploadFile, File
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -165,6 +165,36 @@ async def generate(
         daemon=True,
     ).start()
     return {"job_id": job_id}
+
+
+# ── 모델 프로필 사진 (카드에 표시, 최초 1회 생성 후 캐시) ─────
+_preview_locks: dict[str, threading.Lock] = {
+    m.id: threading.Lock() for m in models.MODELS
+}
+
+
+@app.get("/api/model-preview/{model_id}")
+def model_preview(model_id: str):
+    if model_id not in models.MODELS_BY_ID:
+        raise HTTPException(status_code=404, detail="unknown model")
+    path = config.OUTPUT_DIR / f"model_{model_id}.png"
+    if not path.exists():
+        if not config.XAI_API_KEY:
+            raise HTTPException(status_code=503, detail="no key")
+        with _preview_locks[model_id]:
+            if not path.exists():  # 락 안에서 재확인 (중복 생성 방지)
+                model = models.get_model(model_id)
+                try:
+                    png = xai_client.generate_tryon_image(
+                        models.build_portrait_prompt(model.appearance))
+                except Exception as e:  # noqa: BLE001
+                    # 실패하면 카드는 이모지로 폴백 (프론트 onerror)
+                    raise HTTPException(status_code=503, detail=str(e))
+                path.write_bytes(png)
+    return FileResponse(
+        str(path), media_type="image/png",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
 
 
 @app.get("/api/diag")

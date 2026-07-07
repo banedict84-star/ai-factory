@@ -91,6 +91,18 @@ def build_video_prompt(model_name: str, motion: str) -> str:
     return VIDEO_STYLE_PREFIX.format(model_name=model_name) + motion.strip()
 
 
+def build_portrait_prompt(appearance: str) -> str:
+    """모델 선택 카드에 보여줄 프로필 사진 프롬프트 (상반신 인물)."""
+    return (
+        f"Professional studio profile portrait of {appearance}. "
+        "Upper-body shot from the chest up, facing the camera with a warm, "
+        "friendly natural expression, wearing simple neutral casual clothing, "
+        "clean seamless light-gray studio background, soft even beauty lighting, "
+        "sharp focus, high detail, photorealistic, "
+        "Korean fashion-model profile headshot."
+    )
+
+
 def build_tryon_prompt(appearance: str, garment_desc: str) -> str:
     """모델이 옷 입은 스틸컷 생성 프롬프트.
 

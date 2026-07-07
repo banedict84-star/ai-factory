@@ -23,7 +23,10 @@
   .model{background:var(--card);border:1.5px solid var(--line);border-radius:16px;
     padding:16px;cursor:pointer;transition:.15s;text-align:center}
   .model:hover{border-color:#3d4560}
-  .model .av{font-size:40px;line-height:1}
+  .model .av{position:relative;width:96px;height:120px;margin:0 auto 4px;border-radius:12px;
+    overflow:hidden;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:40px}
+  .model .av .pv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;opacity:0;transition:.35s}
+  .model .av .pv.ok{opacity:1}
   .model .nm{font-weight:700;margin-top:8px}
   .model .tg{color:var(--sub);font-size:12.5px;margin-top:2px}
   .model.sel{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,255,.18);background:var(--card2)}
@@ -79,7 +82,11 @@
   <div class="models" id="models">
     {% for m in models %}
     <div class="model" data-id="{{ m.id }}">
-      <div class="av">{{ m.emoji }}</div>
+      <div class="av">
+        <span class="em">{{ m.emoji }}</span>
+        <img class="pv" src="/api/model-preview/{{ m.id }}" alt="{{ m.name }}"
+             loading="lazy" onload="this.classList.add('ok')" onerror="this.remove()">
+      </div>
       <div class="nm">{{ m.name }}</div>
       <div class="tg">{{ m.tagline }}</div>
     </div>
