@@ -19,3 +19,19 @@ services:
         sync: false           # ← Render 대시보드에서 직접 입력(비밀)
       - key: APP_PASSWORD
         sync: false           # ← (권장) 사이트 접속 비밀번호. 비워두면 잠금 없음
+
+  # 🎬 Grok Studio — 쇼핑몰 모델 영상 생성기 (그록 API)
+  - type: web
+    name: grok-studio
+    runtime: python
+    branch: claude/grok-shopping-model-video-2wrfn7
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn grok_studio.app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: XAI_API_KEY
+        sync: false           # ← Render 대시보드에서 그록 키 입력(비밀)
+      - key: APP_PASSWORD
+        sync: false           # ← (선택) 사이트 접속 비밀번호. 비우면 잠금 없음
