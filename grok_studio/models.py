@@ -56,6 +56,18 @@ MODELS: list[Model] = [
             "clean minimal vibe, professional studio e-commerce model"
         ),
     ),
+    Model(
+        id="taesan",
+        name="태산 (Taesan)",
+        emoji="🧑🏻",
+        tagline="빅사이즈·듬직 · 남성복",
+        appearance=(
+            "a plus-size Korean male fashion model named Taesan, "
+            "big-and-tall heavy-set build, broad sturdy frame, short black hair, "
+            "calm friendly face, professional big-size (plus-size) menswear "
+            "e-commerce model"
+        ),
+    ),
 ]
 
 MODELS_BY_ID = {m.id: m for m in MODELS}
