@@ -34,6 +34,7 @@
     padding:22px;text-align:center;cursor:pointer;transition:.15s}
   .drop:hover{border-color:var(--accent2)}
   .drop.has{border-style:solid}
+  .drop.drag{border-color:var(--accent2);border-style:solid;background:#172233;transform:scale(1.01)}
   .drop img{max-height:220px;max-width:100%;border-radius:10px}
   .drop .hint{color:var(--sub);font-size:13px}
   textarea{width:100%;background:var(--card);color:var(--ink);border:1.5px solid var(--line);
@@ -98,8 +99,8 @@
     <input type="file" id="file" accept="image/*">
     <div id="dropInner">
       <div style="font-size:34px">👕</div>
-      <div>여기를 눌러 <b>옷 사진</b>을 선택하세요</div>
-      <div class="hint">상의/하의/원피스 등 · JPG·PNG · 최대 15MB</div>
+      <div>여기로 <b>옷 사진</b>을 끌어다 놓거나 눌러서 선택하세요</div>
+      <div class="hint">드래그 앤 드롭 · 상의/하의/원피스 등 · JPG·PNG · 최대 15MB</div>
     </div>
   </label>
 
@@ -145,15 +146,36 @@ document.querySelectorAll('.model').forEach(el=>{
   };
 });
 
-// 파일 업로드 + 미리보기
+// 파일 업로드 + 미리보기 (클릭 선택 + 드래그 앤 드롭)
 const drop = $('#drop'), fileInput = $('#file');
-fileInput.onchange = e=>{
-  const f = e.target.files[0]; if(!f) return;
+
+function handleFile(f){
+  if(!f) return;
+  if(!f.type || !f.type.startsWith('image/')){ alert('이미지 파일만 올릴 수 있어요 (JPG·PNG 등).'); return; }
+  if(f.size > 15*1024*1024){ alert('사진이 너무 큽니다 (최대 15MB).'); return; }
   fileData = f;
   const url = URL.createObjectURL(f);
-  $('#dropInner').innerHTML = `<img src="${url}"><div class="hint" style="margin-top:8px">${f.name} · 다시 누르면 변경</div>`;
+  $('#dropInner').innerHTML = `<img src="${url}"><div class="hint" style="margin-top:8px">${f.name} · 다시 누르거나 끌어다 놓으면 변경</div>`;
   drop.classList.add('has'); refresh();
-};
+}
+
+fileInput.onchange = e=> handleFile(e.target.files[0]);
+
+// 드래그 앤 드롭
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev, e=>{
+  e.preventDefault(); e.stopPropagation(); drop.classList.add('drag');
+}));
+['dragleave','dragend'].forEach(ev=>drop.addEventListener(ev, e=>{
+  e.preventDefault(); e.stopPropagation(); drop.classList.remove('drag');
+}));
+drop.addEventListener('drop', e=>{
+  e.preventDefault(); e.stopPropagation(); drop.classList.remove('drag');
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  handleFile(f);
+});
+// 페이지 밖으로 떨어뜨렸을 때 브라우저가 파일을 여는 것 방지
+window.addEventListener('dragover', e=>e.preventDefault());
+window.addEventListener('drop', e=>e.preventDefault());
 
 function refresh(){ $('#go').disabled = !(selectedModel && fileData); }
 
