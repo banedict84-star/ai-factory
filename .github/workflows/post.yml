@@ -1,10 +1,9 @@
-name: 인스타 자동 게시
+name: 인스타 릴스 자동 게시 (예전 · 수동)
 
+# 사진(모델 컷) 자동화는 photo.yml 로 옮겨졌습니다.
+# 이 워크플로는 예전 '릴스(영상)' 파이프라인이며, 자동 스케줄 대신
+# 필요할 때만 수동으로 실행합니다.
 on:
-  schedule:
-    # UTC 기준. 하루 2회 (한국시간 09:00, 18:00 = UTC 00:00, 09:00)
-    - cron: "0 0 * * *"
-    - cron: "0 9 * * *"
   workflow_dispatch: # 수동 실행 버튼
 
 jobs:
@@ -23,7 +22,7 @@ jobs:
       - name: 의존성 설치
         run: pip install -r requirements.txt
 
-      - name: 파이프라인 실행
+      - name: 릴스 파이프라인 실행
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
@@ -31,4 +30,4 @@ jobs:
           VIDEO_PROVIDER: ${{ vars.VIDEO_PROVIDER || 'placeholder' }}
           UPLOADER: ${{ vars.UPLOADER || 'none' }}
           VIDEO_API_KEY: ${{ secrets.VIDEO_API_KEY }}
-        run: python -m src.main
+        run: python -m src.main reel

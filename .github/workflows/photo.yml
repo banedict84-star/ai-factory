@@ -1,0 +1,39 @@
+name: 인스타 모델 컷 자동 게시
+
+on:
+  schedule:
+    # UTC 기준. 하루 2회 (한국시간 09:00, 18:00 = UTC 00:00, 09:00)
+    - cron: "0 0 * * *"
+    - cron: "0 9 * * *"
+  workflow_dispatch: # 수동 실행 버튼
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 의존성 설치
+        run: pip install -r requirements.txt
+
+      - name: 사진 게시 파이프라인 실행
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          INSTAGRAM_ACCOUNT_ID: ${{ secrets.INSTAGRAM_ACCOUNT_ID }}
+          IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
+          UPLOADER: ${{ vars.UPLOADER || 'imgur' }}
+          EXECUTOR_IMAGE_MODEL: ${{ vars.EXECUTOR_IMAGE_MODEL || 'dall-e-3' }}
+        run: python -m src.main post
+
+      - name: 게시 기록 보관 (반응 조회용)
+        uses: actions/upload-artifact@v4
+        with:
+          name: posts
+          path: output/posts.json
+          if-no-files-found: ignore

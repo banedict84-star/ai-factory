@@ -1,7 +1,13 @@
-# 설정 가이드
+# 설정 가이드 — 모델 컷 자동 게시 + 반응 조회
 
-인스타그램 자동 게시를 위해 준비해야 할 것들을 순서대로 정리했습니다.
-계정 관련 단계는 직접 하셔야 하고, 코드/자동화는 이미 준비돼 있습니다.
+AI가 만든 모델 컷(사진)을 인스타에 자동으로 올리고, 사람들의 반응
+(좋아요·댓글·도달·저장)을 자동으로 모아 보는 전체 흐름입니다.
+
+```
+Claude(컨셉·캡션) → OpenAI(모델 컷 생성) → Imgur(공개 URL) → 인스타 게시 → 반응 조회
+```
+
+계정 관련 단계는 직접 하셔야 하고(아래 1~4), 코드/자동화는 이미 준비돼 있습니다.
 
 ## 1. 인스타그램 계정 준비
 
@@ -21,9 +27,9 @@
 3. 앱에 **Instagram Graph API** 제품 추가
 4. **Graph API 탐색기** 또는 비즈니스 설정에서 아래 권한으로 토큰 발급:
    - `instagram_basic`
-   - `instagram_content_publish`
+   - `instagram_content_publish`  ← 게시에 필요
+   - `instagram_manage_insights`  ← 반응(인사이트) 조회에 필요
    - `pages_read_engagement`
-   - (필요 시) `business_management`
 
 > 💡 본인 계정에만 게시하는 경우, 앱을 **개발(Development) 모드**로 두고
 > 본인을 앱의 테스터/관리자로 등록하면 앱 심사(App Review) 없이 사용할 수 있습니다.
@@ -32,35 +38,58 @@
 
 | 값 | 어디서 |
 | --- | --- |
-| `INSTAGRAM_ACCESS_TOKEN` | Graph API 탐색기에서 발급 (장기 토큰으로 교환 권장) |
+| `INSTAGRAM_ACCESS_TOKEN` | Graph API 탐색기에서 발급 (60일 장기 토큰으로 교환 권장) |
 | `INSTAGRAM_ACCOUNT_ID` | `GET /me/accounts` → 페이지의 `instagram_business_account.id` |
-| `ANTHROPIC_API_KEY` | https://console.anthropic.com |
+| `ANTHROPIC_API_KEY` | https://console.anthropic.com (캡션/컨셉 기획) |
+| `OPENAI_API_KEY` | https://platform.openai.com (모델 컷 이미지 생성) |
+| `IMGUR_CLIENT_ID` | imgur.com → Settings → **Applications → Register an application** (익명 업로드용, 무료) |
 
-토큰은 만료됩니다. **60일짜리 장기 토큰(long-lived token)** 으로 교환해두고,
-만료 전에 갱신하는 걸 권장합니다.
+토큰은 만료됩니다. **60일짜리 장기 토큰**으로 교환해두고 만료 전에 갱신하세요.
+
+### 이미지 호스팅은 왜 필요한가요?
+
+인스타 Graph API 는 로컬 파일이 아니라 **공개 URL** 을 요구합니다. 그래서 만든 컷을
+어딘가 공개된 곳에 올린 뒤 그 URL 로 게시합니다. `UPLOADER` 로 방식을 고릅니다:
+
+- `imgur` (기본·권장) : 무료. `IMGUR_CLIENT_ID` 만 있으면 됨.
+- `public` : 이미 서버(예: Render `/media`)에 파일이 있을 때 → `PUBLIC_MEDIA_BASE_URL` 설정.
+- `none` : 업로드 안 함 → 실제 게시는 건너뜀(생성까지만).
 
 ## 5. 로컬 테스트
 
 ```bash
 cp .env.example .env   # 위 값들 채우기
 pip install -r requirements.txt
-python -m src.main --dry-run
+
+# 실제 게시 없이 기획 + 모델 컷 생성까지만 확인
+python -m src.main post --dry-run
+
+# 진짜 게시 (토큰·업로더 설정 필요)
+python -m src.main post
+
+# 사람들 반응 조회 (계정에서 최근 게시물 직접 조회)
+python -m src.main insights --from-account -n 10
 ```
 
-`--dry-run` 은 실제 게시 없이 아이디어·영상 생성까지만 확인합니다.
+`--dry-run` 은 실제 게시 없이 컨셉·캡션·이미지 생성까지만 확인합니다.
+키가 하나도 없어도 이미지는 플레이스홀더로 대체되어 흐름을 확인할 수 있습니다.
 
-## 6. 실제 게시를 위한 남은 2가지
-
-1. **영상 생성 제공자**: 현재 `placeholder`(텍스트 카드)입니다.
-   실제 AI 영상을 쓰려면 `src/video_generator.py` 에 제공자를 추가하고
-   `VIDEO_PROVIDER` 를 바꾸세요.
-2. **공개 URL 업로더**: 인스타는 공개 URL 을 요구합니다.
-   `src/uploader.py` 에 S3/GCS 등의 업로더를 구현하고 `UPLOADER` 를 설정하세요.
-
-## 7. 자동 스케줄 (GitHub Actions)
+## 6. 자동 스케줄 (GitHub Actions — 서버 없이)
 
 저장소 **Settings → Secrets and variables → Actions** 에 등록:
-- Secrets: `ANTHROPIC_API_KEY`, `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_ACCOUNT_ID`, `VIDEO_API_KEY`
-- Variables: `VIDEO_PROVIDER`, `UPLOADER`
 
-`.github/workflows/post.yml` 이 하루 2회 자동 실행합니다.
+- **Secrets**: `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`,
+  `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_ACCOUNT_ID`, `IMGUR_CLIENT_ID`
+- **Variables** (선택): `UPLOADER`(기본 imgur), `EXECUTOR_IMAGE_MODEL`(기본 dall-e-3)
+
+동작하는 워크플로:
+
+| 파일 | 하는 일 | 기본 스케줄(한국시간) |
+| --- | --- | --- |
+| `.github/workflows/photo.yml` | 모델 컷 1장 기획→생성→게시 | 매일 09:00, 18:00 |
+| `.github/workflows/insights.yml` | 최근 게시물 반응 리포트 | 매일 21:00 |
+| `.github/workflows/post.yml` | (예전) 릴스 영상 파이프라인 | 매일 09:00, 18:00 |
+
+각 워크플로는 **Actions 탭 → 수동 실행(Run workflow)** 버튼으로도 바로 돌려볼 수 있습니다.
+스케줄이나 게시 방향(컨셉·캡션·해시태그)은 `.github/workflows/*.yml` 의 cron 과
+`config/content.yaml` 을 고쳐서 조정합니다.

@@ -32,15 +32,31 @@ class InstagramPublisher:
         self._wait_until_ready(container_id)
         return self._publish(container_id)
 
-    def _create_container(self, video_url: str, caption: str) -> str:
+    def publish_photo(self, image_url: str, caption: str) -> str:
+        """사진(피드 이미지)을 게시하고 게시된 미디어 ID 를 반환합니다.
+
+        모델 컷처럼 정지 이미지 1장을 올릴 때 씁니다. 사진 컨테이너는 대개
+        곧바로 준비되지만, 만약을 위해 릴스와 동일하게 준비 상태를 폴링합니다.
+        image_url 은 공개적으로 접근 가능한 URL 이어야 합니다(uploader 참고).
+        """
+        container_id = self._create_container(image_url, caption, media_type="IMAGE")
+        self._wait_until_ready(container_id)
+        return self._publish(container_id)
+
+    def _create_container(
+        self, media_url: str, caption: str, media_type: str = "REELS"
+    ) -> str:
+        # REELS 는 video_url, IMAGE 는 image_url 로 필드명이 다릅니다.
+        url_field = "image_url" if media_type == "IMAGE" else "video_url"
+        data = {
+            "media_type": media_type,
+            url_field: media_url,
+            "caption": caption,
+            "access_token": self.access_token,
+        }
         resp = requests.post(
             f"{GRAPH_API}/{self.account_id}/media",
-            data={
-                "media_type": "REELS",
-                "video_url": video_url,
-                "caption": caption,
-                "access_token": self.access_token,
-            },
+            data=data,
             timeout=60,
         )
         resp.raise_for_status()

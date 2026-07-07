@@ -92,8 +92,29 @@ python -m oms.main serve
 - 첫 Mission: *"기존 인스타 계정을 AI Boots / AI Fashion 릴스 계정으로 리브랜딩하고,
   첫 7일 동안 하루 3개 릴스를 운영할 준비를 하라."*
 
-## `src/` — Instagram 실행 파이프라인 (추후 연결)
+## `src/` — 모델 컷 자동 게시 + 반응 조회 (동작함)
 
-`src/` 에는 실제 인스타 콘텐츠를 생성·게시하는 파이프라인 초안이 있습니다.
-지금 OS 는 **실제 AI/게시 API 를 연결하지 않습니다.** 나중에 직원의 Decision/작업 자리에
-이 실행기를 연결하면, AI 직원들이 실제로 콘텐츠를 만들어 올리게 됩니다.
+`src/` 는 AI가 만든 **모델 컷(사진)** 을 인스타에 올리고, 사람들의 반응을 모아 보는
+실행 파이프라인입니다. 한 바퀴 흐름:
+
+```
+Claude(컨셉·캡션) → OpenAI(모델 컷 생성) → Imgur(공개 URL) → 인스타 게시 → 반응 조회
+```
+
+```bash
+python -m src.main post --dry-run          # 게시 없이 컨셉·캡션·이미지 생성만 확인
+python -m src.main post                     # 실제 게시 (토큰·업로더 필요)
+python -m src.main insights --from-account  # 좋아요·댓글·도달·저장 등 반응 조회
+```
+
+- **게시**: `instagram_publisher.publish_photo()` — Graph API `IMAGE` 타입.
+- **호스팅**: `uploader.py` — `imgur`(무료·기본) / `public`(배포 서버) / `none`.
+- **반응**: `insights.py` — like_count·comments_count + reach·saved·shares 등.
+- **자동화**: `.github/workflows/photo.yml`(게시) · `insights.yml`(반응 리포트) 가
+  GitHub Actions 로 하루 N회 자동 실행 → **서버 없이** 돌아갑니다.
+
+셋업(계정·토큰·시크릿)은 **[docs/SETUP.md](docs/SETUP.md)** 참고.
+릴스(영상) 파이프라인은 `python -m src.main reel` 로 남아 있습니다.
+
+> OMS(조직 엔진)와의 연결: 지금 `src/` 는 컷을 즉석에서 생성해 올립니다. 나중에 OMS
+> 직원의 '게시' 작업 자리에 이 실행기를 연결하면, AI 직원들이 만든 컷이 그대로 올라갑니다.
