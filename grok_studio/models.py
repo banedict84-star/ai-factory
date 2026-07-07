@@ -78,12 +78,17 @@ DEFAULT_MOTION_PROMPT = (
     "confidently walks to the left and leaves off-screen from the side."
 )
 
-# 영상 프롬프트를 만들 때 안무 앞에 붙는 촬영/스타일 지시
+# 영상 프롬프트를 만들 때 안무 앞에 붙는 촬영/스타일 지시.
+# 일관성을 위해 카메라·구도·군더더기 동작을 강하게 고정한다.
 VIDEO_STYLE_PREFIX = (
     "Full-body fashion e-commerce video of {model_name} wearing the outfit shown "
     "in the reference image. Clean bright studio, seamless light-gray backdrop, "
     "soft even lighting, sharp focus on the clothing, realistic fabric movement, "
-    "steady camera, vertical 9:16 framing. "
+    "vertical 9:16 framing. "
+    "The camera is completely static and locked off — no zoom, no pan, no shake. "
+    "The model stays centered in frame. Perform ONLY the exact motion described "
+    "below with the specified timing, and add no extra gestures, expressions, "
+    "or movements. Even, steady pacing. "
 )
 
 

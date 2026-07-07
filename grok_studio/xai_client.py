@@ -61,6 +61,27 @@ def _data_uri(image_bytes: bytes, mime: str = "image/png") -> str:
     return f"data:{mime};base64,{b64}"
 
 
+def _is_seed_param_error(msg: str) -> bool:
+    """시드 파라미터를 API 가 거부한 오류인지 — 이러면 시드 빼고 재시도."""
+    low = msg.lower()
+    return "seed" in low or "unsupported parameter" in low or "unexpected" in low or "unknown field" in low
+
+
+def _post_with_seed(path: str, payload: dict[str, Any], seed: str) -> dict[str, Any]:
+    """시드를 넣어 요청하고, 시드 미지원이면 시드 없이 자동 재시도.
+
+    (모델 관련 오류는 그대로 올려서 상위의 모델 폴백이 처리하게 둔다.)
+    """
+    if seed:
+        try:
+            return _post(path, {**payload, "seed": int(seed)})
+        except XAIError as e:
+            if _is_seed_param_error(str(e)) and not _is_model_error(str(e)):
+                return _post(path, payload)  # 시드 빼고 재시도
+            raise
+    return _post(path, payload)
+
+
 def _is_model_error(msg: str) -> bool:
     """'그 모델은 없다' 류의 에러인지 — 이러면 다음 후보 모델로 넘어간다."""
     low = msg.lower()
@@ -145,7 +166,7 @@ def generate_tryon_image(prompt: str) -> bytes:
             "response_format": "b64_json",
         }
         try:
-            data = _post(config.IMAGE_PATH, payload)
+            data = _post_with_seed(config.IMAGE_PATH, payload, config.IMAGE_SEED)
         except XAIError as e:
             # 이미지는 검증된 폴백 모델이 있으므로 어떤 오류든 다음 후보로 시도.
             # (새 품질 모델이 파라미터를 거부해도 기존 모델로 안전하게 넘어감)
@@ -225,7 +246,8 @@ def generate_video(image_bytes: bytes, prompt: str,
     last: Exception | None = None
     for model in config.XAI_VIDEO_MODELS:
         try:
-            data = _post(config.VIDEO_PATH, {"model": model, **base_payload})
+            data = _post_with_seed(
+                config.VIDEO_PATH, {"model": model, **base_payload}, config.VIDEO_SEED)
             break
         except XAIError as e:
             last = e

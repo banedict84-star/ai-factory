@@ -50,6 +50,11 @@ CHAT_PATH: str = os.getenv("XAI_CHAT_PATH", "/chat/completions")
 
 # ── 영상 파라미터 기본값 ───────────────────────────────────────
 VIDEO_DURATION: int = int(os.getenv("XAI_VIDEO_DURATION", "6"))
+
+# 결과 일관성용 고정 시드. 같은 시드+같은 입력이면 (지원 시) 거의 동일한 결과.
+# 비우면("") 시드 미사용(매번 랜덤). API가 시드 미지원이면 자동으로 무시하고 진행.
+IMAGE_SEED: str = os.getenv("XAI_IMAGE_SEED", "7").strip()
+VIDEO_SEED: str = os.getenv("XAI_VIDEO_SEED", "7").strip()
 VIDEO_ASPECT_RATIO: str = os.getenv("XAI_VIDEO_ASPECT_RATIO", "9:16")  # 쇼핑몰 세로영상
 VIDEO_RESOLUTION: str = os.getenv("XAI_VIDEO_RESOLUTION", "720p")
 
