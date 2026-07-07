@@ -69,6 +69,9 @@ python -m src.main post
 
 # 사람들 반응 조회 (계정에서 최근 게시물 직접 조회)
 python -m src.main insights --from-account -n 10
+
+# 잘되는 채널 분석 → 다음 기획부터 그 패턴 반영
+python -m src.main benchmark @referenceaccount1 @referenceaccount2
 ```
 
 `--dry-run` 은 실제 게시 없이 컨셉·캡션·이미지 생성까지만 확인합니다.
@@ -93,3 +96,25 @@ python -m src.main insights --from-account -n 10
 각 워크플로는 **Actions 탭 → 수동 실행(Run workflow)** 버튼으로도 바로 돌려볼 수 있습니다.
 스케줄이나 게시 방향(컨셉·캡션·해시태그)은 `.github/workflows/*.yml` 의 cron 과
 `config/content.yaml` 을 고쳐서 조정합니다.
+
+## 7. 잘되는 채널 따라 만들기 (벤치마크)
+
+이미 잘 나가는 채널의 **패턴을 학습**해서 우리 콘텐츠 기획에 반영합니다.
+인스타 공식 **Business Discovery API** 를 쓰므로 합법적이고 계정도 안전합니다.
+
+```bash
+# 참고 계정들을 분석 (비즈니스/크리에이터 계정만 가능, 개인 계정 불가)
+python -m src.main benchmark @referenceaccount1 @referenceaccount2
+```
+
+- 분석 내용: 게시물당 평균 반응, 게시 주기, 반응 좋은 시간대(KST),
+  자주 쓰는 해시태그, 반응이 특히 좋았던 게시물의 소재/톤.
+- 결과는 `output/benchmark.json` 에 저장되고, 이후 `python -m src.main post` 가
+  자동으로 그 패턴을 반영해 기획합니다(우리 브랜드로 **재창조** — 복사 아님).
+- 계정을 매번 입력하기 싫으면 `config/content.yaml` 의 `benchmark.accounts` 에
+  @아이디를 넣어두면 `benchmark` 명령이 인자 없이도 그 계정들을 씁니다.
+
+> ⚠️ **할 수 있는 것**: 대상 계정의 공개 지표(팔로워·좋아요·댓글·캡션·시간).
+> **할 수 없는 것**: 남의 계정의 도달·저장 같은 내부 인사이트, 개인 계정 조회,
+> 그리고 이미지·글을 그대로 복사(저작권 + 인스타의 중복 콘텐츠 불이익).
+> 필요 권한: 토큰에 `instagram_manage_insights` 가 포함돼 있어야 합니다.

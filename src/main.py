@@ -67,6 +67,31 @@ def _run_insights(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_benchmark(args: argparse.Namespace) -> int:
+    from . import benchmark
+
+    usernames = [u.lstrip("@") for u in args.usernames]
+    if not usernames:
+        # config 에 적어둔 벤치마크 계정을 기본으로 사용
+        from . import config as _cfg
+
+        content = _cfg.load_content_config()
+        usernames = [u.lstrip("@") for u in (content.get("benchmark", {}) or {}).get("accounts", [])]
+    if not usernames:
+        print("분석할 계정이 없습니다. 예) python -m src.main benchmark @account1 @account2")
+        print("또는 config/content.yaml 의 benchmark.accounts 에 @아이디를 넣어두세요.")
+        return 1
+
+    print(f"벤치마크 분석 중: {', '.join('@'+u for u in usernames)} …")
+    report = benchmark.build_report(usernames, limit=args.limit)
+    benchmark.save(report)
+    print("─" * 60)
+    print(report.summary_text())
+    print("─" * 60)
+    print("✅ output/benchmark.json 저장 — 이제 `post` 가 이 패턴을 반영해 기획합니다.")
+    return 0
+
+
 def _run_reel(args: argparse.Namespace) -> int:
     from . import pipeline
 
@@ -102,6 +127,13 @@ def main(argv: list[str] | None = None) -> int:
     p_ins.add_argument("--from-account", action="store_true",
                        help="로컬 기록 대신 인스타 계정에서 최근 게시물을 직접 조회")
     p_ins.set_defaults(func=_run_insights)
+
+    p_bm = sub.add_parser("benchmark", help="잘되는 채널 분석 → 기획에 반영")
+    p_bm.add_argument("usernames", nargs="*",
+                      help="분석할 계정 @아이디들 (비우면 content.yaml 의 benchmark.accounts 사용)")
+    p_bm.add_argument("--limit", type=int, default=25,
+                      help="계정당 분석할 최근 게시물 수 (기본 25)")
+    p_bm.set_defaults(func=_run_benchmark)
 
     p_reel = sub.add_parser("reel", help="(예전) 릴스 영상 파이프라인")
     p_reel.add_argument("--dry-run", action="store_true")

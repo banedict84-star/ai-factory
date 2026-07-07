@@ -122,29 +122,46 @@ class PhotoIdea:
         return f"{self.caption}\n\n{tags}".strip()
 
 
-def _build_photo_prompt(content: dict[str, Any]) -> str:
+def _build_photo_prompt(content: dict[str, Any], hints: str | None = None) -> str:
+    benchmark_block = ""
+    if hints:
+        benchmark_block = (
+            "\n[잘되는 채널 벤치마크 — 이 패턴을 '참고'해 우리 브랜드로 재창조할 것. "
+            "이미지·문구를 그대로 베끼지 말 것]\n"
+            f"{hints}\n"
+        )
     return (
         "너는 인스타그램 사진 채널을 운영하는 크리에이티브 디렉터야.\n"
         "아래 채널 설정을 바탕으로, 오늘 올릴 '모델 컷' 사진 1장을 기획해줘.\n\n"
-        f"[채널 설정]\n{json.dumps(content, ensure_ascii=False, indent=2)}\n\n"
+        f"[채널 설정]\n{json.dumps(content, ensure_ascii=False, indent=2)}\n"
+        f"{benchmark_block}\n"
         "요구사항:\n"
         "- topics 목록에서 하나를 고르거나 자연스럽게 변주할 것\n"
         "- caption 은 tone/max_length/call_to_action 설정을 지킬 것\n"
         "- hashtags 는 always_include 를 포함하고 count 개수에 맞출 것\n"
         "- image_prompt 는 이미지 생성 AI 용이므로 영어로, 한 장의 정지 사진을 "
         "피사체·구도·조명·질감·분위기까지 구체적으로 묘사할 것\n"
+        + (
+            "- 벤치마크에서 반응 좋은 '소재/포맷/해시태그/톤'의 공통점을 흡수하되, "
+            "우리 브랜드 정체성으로 새롭게 표현할 것\n" if hints else ""
+        )
     )
 
 
-def generate_photo_idea(content: dict[str, Any] | None = None) -> PhotoIdea:
-    """오늘의 모델 컷(사진) 아이디어 한 건을 생성합니다."""
+def generate_photo_idea(
+    content: dict[str, Any] | None = None, hints: str | None = None
+) -> PhotoIdea:
+    """오늘의 모델 컷(사진) 아이디어 한 건을 생성합니다.
+
+    hints 가 있으면(벤치마크 분석 결과) 잘되는 채널의 패턴을 반영해 기획합니다.
+    """
     content = content or config.load_content_config()
     client = anthropic.Anthropic(api_key=config.env("ANTHROPIC_API_KEY", required=True))
 
     response = client.messages.create(
         model=MODEL,
         max_tokens=2000,
-        messages=[{"role": "user", "content": _build_photo_prompt(content)}],
+        messages=[{"role": "user", "content": _build_photo_prompt(content, hints)}],
         output_config={"format": {"type": "json_schema", "schema": PHOTO_OUTPUT_SCHEMA}},
     )
 

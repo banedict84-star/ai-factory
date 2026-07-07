@@ -15,7 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from . import idea_generator, photo_generator, store, uploader
+from . import benchmark, idea_generator, photo_generator, store, uploader
 from .idea_generator import PhotoIdea
 from .instagram_publisher import InstagramPublisher
 
@@ -32,9 +32,14 @@ class PhotoResult:
 
 
 def run(dry_run: bool = False, image_path: Path | None = None) -> PhotoResult:
-    """모델 컷 게시 파이프라인 1회 실행."""
-    # 1) 기획
-    idea = idea_generator.generate_photo_idea()
+    """모델 컷 게시 파이프라인 1회 실행.
+
+    output/benchmark.json 이 있으면 '잘되는 채널' 패턴을 반영해 기획합니다.
+    (먼저 `python -m src.main benchmark @계정...` 을 돌려두면 생성됩니다.)
+    """
+    # 1) 기획 (벤치마크가 있으면 그 패턴을 반영)
+    hints = benchmark.load_hints()
+    idea = idea_generator.generate_photo_idea(hints=hints)
 
     # 2) 이미지 (이미 만든 컷이 있으면 그대로 사용)
     if image_path is not None:
@@ -44,6 +49,8 @@ def run(dry_run: bool = False, image_path: Path | None = None) -> PhotoResult:
             idea.image_prompt, name="model_cut", title=idea.topic
         )
     result = PhotoResult(idea=idea, image_path=img)
+    if hints:
+        result.notes.append("벤치마크 패턴을 반영해 기획했습니다 (output/benchmark.json)")
 
     if dry_run:
         result.notes.append("dry-run: 게시하지 않고 종료")

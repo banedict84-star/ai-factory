@@ -102,6 +102,7 @@ Claude(컨셉·캡션) → OpenAI(모델 컷 생성) → Imgur(공개 URL) → �
 ```
 
 ```bash
+python -m src.main benchmark @ref1 @ref2   # 잘되는 채널 분석 → 기획에 반영
 python -m src.main post --dry-run          # 게시 없이 컨셉·캡션·이미지 생성만 확인
 python -m src.main post                     # 실제 게시 (토큰·업로더 필요)
 python -m src.main insights --from-account  # 좋아요·댓글·도달·저장 등 반응 조회
@@ -110,6 +111,8 @@ python -m src.main insights --from-account  # 좋아요·댓글·도달·저장 
 - **게시**: `instagram_publisher.publish_photo()` — Graph API `IMAGE` 타입.
 - **호스팅**: `uploader.py` — `imgur`(무료·기본) / `public`(배포 서버) / `none`.
 - **반응**: `insights.py` — like_count·comments_count + reach·saved·shares 등.
+- **벤치마크**: `benchmark.py` — 잘되는 채널을 공식 Business Discovery API 로 분석해
+  소재·해시태그·게시 주기 패턴을 뽑아 기획에 반영 (복사 아님, 패턴 학습).
 - **자동화**: `.github/workflows/photo.yml`(게시) · `insights.yml`(반응 리포트) 가
   GitHub Actions 로 하루 N회 자동 실행 → **서버 없이** 돌아갑니다.
 
