@@ -98,7 +98,8 @@ def build_portrait_prompt(appearance: str) -> str:
         "Upper-body shot from the chest up, facing the camera with a warm, "
         "friendly natural expression, wearing simple neutral casual clothing, "
         "clean seamless light-gray studio background, soft even beauty lighting, "
-        "sharp focus, high detail, photorealistic, "
+        "ultra high resolution, ultra-detailed, tack-sharp crisp focus, "
+        "professional DSLR photography, 8k, photorealistic skin texture, "
         "Korean fashion-model profile headshot."
     )
 
@@ -118,7 +119,8 @@ def build_tryon_prompt(appearance: str, garment_desc: str) -> str:
         "the whole body centered in frame with clear empty margin space above the "
         "head and below the feet (do not crop the ankles or shoes). "
         "Clean seamless light-gray studio backdrop, soft even lighting, "
-        "sharp focus, high detail, realistic fabric and fit, "
+        "ultra high resolution, ultra-detailed, tack-sharp crisp focus, "
+        "professional DSLR fashion photography, 8k, realistic fabric texture and fit, "
         "professional Korean online shopping-mall lookbook catalog style, "
         "tall vertical full-length fashion framing, photorealistic."
     )

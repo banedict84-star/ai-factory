@@ -32,9 +32,10 @@ def _model_list(env_key: str, default: str) -> list[str]:
 # 옷 분석용 비전 모델 (멀티모달 chat)
 XAI_VISION_MODELS: list[str] = _model_list(
     "XAI_VISION_MODEL", "grok-4,grok-4-fast,grok-4.1,grok-3,grok-2-vision")
-# 모델이 옷 입은 사진 생성 (text-to-image)
+# 모델이 옷 입은 사진 생성 (text-to-image) — 품질 좋은 모델부터 시도
 XAI_IMAGE_MODELS: list[str] = _model_list(
-    "XAI_IMAGE_MODEL", "grok-imagine-image,grok-2-image,grok-2-image-1212")
+    "XAI_IMAGE_MODEL",
+    "grok-imagine-image-quality,grok-imagine-image,grok-2-image,grok-2-image-1212")
 # 영상 생성 (Grok Imagine, image-to-video)
 XAI_VIDEO_MODELS: list[str] = _model_list(
     "XAI_VIDEO_MODEL",

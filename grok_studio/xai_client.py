@@ -147,8 +147,10 @@ def generate_tryon_image(prompt: str) -> bytes:
         try:
             data = _post(config.IMAGE_PATH, payload)
         except XAIError as e:
+            # 이미지는 검증된 폴백 모델이 있으므로 어떤 오류든 다음 후보로 시도.
+            # (새 품질 모델이 파라미터를 거부해도 기존 모델로 안전하게 넘어감)
             last = e
-            if _is_model_error(str(e)):
+            if model != config.XAI_IMAGE_MODELS[-1]:
                 continue
             raise
         try:
