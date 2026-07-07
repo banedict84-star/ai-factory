@@ -1,0 +1,20 @@
+{% extends "_base.html" %}
+{% block title %}충전 · Grok Studio{% endblock %}
+{% block body %}
+<div class="wrap">
+  <h2>크레딧 충전</h2>
+  <div class="cardbox">
+    <p>현재 잔액: <span class="pill">💎 {{ user["credits"] }} 크레딧</span></p>
+    <p class="muted">영상 1개 = 1크레딧 · 크레딧 1개 = <b>{{ "{:,}".format(price) }}원</b></p>
+    <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+    <h3 style="margin:0 0 8px;font-size:15px">무통장입금으로 충전</h3>
+    <p class="muted" style="white-space:pre-line">{{ bank_info }}</p>
+    <ol class="muted" style="margin:12px 0 0;padding-left:18px;line-height:1.9">
+      <li>원하는 크레딧 수량만큼 위 계좌로 입금</li>
+      <li>입금자명 + <b>가입 이메일({{ user["email"] }})</b>을 관리자에게 전달</li>
+      <li>확인되면 크레딧이 충전됩니다 (수동 처리)</li>
+    </ol>
+    <p class="muted" style="margin-top:16px">※ 카드/간편결제 자동화는 준비 중입니다.</p>
+  </div>
+</div>
+{% endblock %}

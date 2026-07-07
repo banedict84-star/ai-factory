@@ -70,8 +70,30 @@ BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = Path(os.getenv("GROK_STUDIO_OUTPUT_DIR", str(BASE_DIR / "outputs")))
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# (선택) 사이트 접속 비밀번호. 비우면 잠금 없음.
+# (선택) 사이트 접속 비밀번호. 비우면 잠금 없음. (회원제와 별개의 단순 잠금)
 APP_PASSWORD: str = os.getenv("APP_PASSWORD", "").strip()
+
+
+# ── 회원제 / 크레딧 (SaaS) ────────────────────────────────────
+# 영구 저장 DB 경로. Render 무료는 재배포 시 초기화되므로 실제 서비스는
+# 퍼시스턴트 디스크나 외부 DB 경로를 GROK_STUDIO_DB 로 지정할 것.
+DB_PATH = os.getenv("GROK_STUDIO_DB", str(BASE_DIR / "data" / "grok_studio.db"))
+
+# 가입 시 무료로 주는 크레딧(체험용)
+SIGNUP_FREE_CREDITS: int = int(os.getenv("SIGNUP_FREE_CREDITS", "2"))
+# 영상 1개 생성에 필요한 크레딧
+CREDIT_COST_VIDEO: int = int(os.getenv("CREDIT_COST_VIDEO", "1"))
+
+# 이 이메일로 가입하면 관리자 권한. (기본: 대표 이메일)
+ADMIN_EMAIL: str = os.getenv("ADMIN_EMAIL", "banedict84@gmail.com").strip().lower()
+
+# 무통장입금 안내 문구 (충전 페이지에 표시)
+BANK_INFO: str = os.getenv(
+    "BANK_INFO",
+    "입금 계좌: (관리자에게 문의) · 입금 후 가입 이메일과 함께 연락 주세요.",
+)
+# 크레딧 1개당 판매가(원) — 충전 안내용 표시
+CREDIT_PRICE_KRW: int = int(os.getenv("CREDIT_PRICE_KRW", "3000"))
 
 
 def require_key() -> str:

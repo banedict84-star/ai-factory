@@ -1,33 +1,32 @@
-"""Grok Studio 웹앱 (FastAPI).
+"""Grok Studio 웹앱 (FastAPI) — 회원제 + 크레딧.
 
-흐름:
-  GET  /                     → 모델 3인 + 업로드 화면
-  POST /api/generate         → 옷 업로드 + 모델 선택 → 백그라운드 job 시작, job_id 반환
-  GET  /api/job/{id}         → 진행 상태 폴링 (분석 → 옷입은사진 → 영상)
-  GET  /outputs/{file}       → 생성된 사진/영상 서빙
-
-파이프라인은 스레드로 돌고 상태는 메모리에 둔다(단일 프로세스용 데모).
+- 회원가입/로그인 후 이용. 영상 1개 생성마다 크레딧 차감(실패 시 환불).
+- 충전은 무통장입금 → 관리자가 크레딧 지급(수동). 나중에 PG 연동 자리.
+- 각 회원의 생성 결과는 갤러리에 저장.
 """
 from __future__ import annotations
 
-import secrets
 import threading
 import traceback
 import uuid
 from pathlib import Path
 
 from fastapi import FastAPI, Form, HTTPException, Request, UploadFile, File
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import (FileResponse, HTMLResponse, JSONResponse,
+                               RedirectResponse)
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from . import config, models, xai_client
+from . import auth, config, db, models, xai_client
 
 app = FastAPI(title="Grok Studio — 쇼핑몰 모델 영상")
 
 BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.mount("/outputs", StaticFiles(directory=str(config.OUTPUT_DIR)), name="outputs")
+STATIC_MODELS_DIR = BASE_DIR / "static" / "models"
+
+db.init()
 
 
 # ── 인메모리 job 저장소 ───────────────────────────────────────
@@ -56,26 +55,36 @@ def _get(job_id: str) -> dict | None:
         return dict(j) if j else None
 
 
+# ── 현재 로그인 유저 ──────────────────────────────────────────
+def _user(request: Request):
+    return auth.current_user(request.cookies.get("gs_session"))
+
+
+def _require_user(request: Request):
+    u = _user(request)
+    if not u:
+        raise HTTPException(status_code=401, detail="로그인이 필요합니다.")
+    return u
+
+
 # ── 백그라운드 파이프라인 ─────────────────────────────────────
-def _run_pipeline(job_id: str, model_id: str, image_bytes: bytes,
-                  mime: str, motion: str) -> None:
+def _run_pipeline(job_id: str, user_id: int, cost: int, model_id: str,
+                  image_bytes: bytes, mime: str, motion: str) -> None:
     try:
         model = models.get_model(model_id)
 
-        # 1) 옷 분석
         _set(job_id, stage="analyzing")
         garment = xai_client.analyze_garment(image_bytes, mime)
         _set(job_id, garment=garment)
 
-        # 2) 모델이 옷 입은 사진
         _set(job_id, stage="generating_image")
         tryon_prompt = models.build_tryon_prompt(model.appearance, garment)
         tryon_png = xai_client.generate_tryon_image(tryon_prompt)
         img_name = f"{job_id}_tryon.png"
         (config.OUTPUT_DIR / img_name).write_bytes(tryon_png)
-        _set(job_id, stage="image_ready", tryon_url=f"/outputs/{img_name}")
+        tryon_url = f"/outputs/{img_name}"
+        _set(job_id, stage="image_ready", tryon_url=tryon_url)
 
-        # 3) 영상
         _set(job_id, stage="generating_video")
         video_prompt = models.build_video_prompt(model.name, motion)
         _set(job_id, video_prompt=video_prompt)
@@ -84,7 +93,6 @@ def _run_pipeline(job_id: str, model_id: str, image_bytes: bytes,
             on_progress=lambda s: _set(job_id, video_status=s),
         )
 
-        # 가능하면 로컬로 내려받아 서빙(외부 URL 만료 대비)
         video_url = remote_url
         try:
             vid = xai_client.download(remote_url)
@@ -92,26 +100,79 @@ def _run_pipeline(job_id: str, model_id: str, image_bytes: bytes,
             (config.OUTPUT_DIR / vid_name).write_bytes(vid)
             video_url = f"/outputs/{vid_name}"
         except Exception:
-            pass  # 내려받기 실패하면 원격 URL 그대로 사용
+            pass
 
-        _set(job_id, stage="done", video_url=video_url, remote_video_url=remote_url)
+        _set(job_id, stage="done", video_url=video_url)
+        db.add_generation(user_id, model_id, garment, tryon_url, video_url, "done")
 
     except Exception as e:  # noqa: BLE001
         traceback.print_exc()
+        # 실패하면 차감했던 크레딧 환불
+        try:
+            db.grant_credit(user_id, cost, "refund")
+        except Exception:
+            pass
         _set(job_id, stage="error", error=str(e))
 
 
-# ── 라우트 ────────────────────────────────────────────────────
-def _check_auth(request: Request) -> None:
-    if not config.APP_PASSWORD:
-        return
-    if request.cookies.get("gs_auth") == config.APP_PASSWORD:
-        return
-    raise HTTPException(status_code=401, detail="비밀번호가 필요합니다.")
+# ── 인증 페이지/API ───────────────────────────────────────────
+@app.get("/login", response_class=HTMLResponse)
+def login_page(request: Request):
+    if _user(request):
+        return RedirectResponse("/", status_code=302)
+    return templates.TemplateResponse(request=request, name="login.html", context={})
 
 
+@app.get("/signup", response_class=HTMLResponse)
+def signup_page(request: Request):
+    if _user(request):
+        return RedirectResponse("/", status_code=302)
+    return templates.TemplateResponse(
+        request=request, name="signup.html",
+        context={"free": config.SIGNUP_FREE_CREDITS})
+
+
+def _auth_cookie(resp, token: str):
+    resp.set_cookie("gs_session", token, httponly=True, samesite="lax", max_age=60*60*24*30)
+    return resp
+
+
+@app.post("/api/signup")
+def api_signup(email: str = Form(...), password: str = Form(...)):
+    try:
+        user = auth.signup(email, password)
+    except auth.AuthError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    token = auth.start_session(user["id"])
+    return _auth_cookie(JSONResponse({"ok": True}), token)
+
+
+@app.post("/api/login")
+def api_login(email: str = Form(...), password: str = Form(...)):
+    try:
+        user = auth.login(email, password)
+    except auth.AuthError as e:
+        raise HTTPException(status_code=401, detail=str(e))
+    token = auth.start_session(user["id"])
+    return _auth_cookie(JSONResponse({"ok": True}), token)
+
+
+@app.post("/api/logout")
+def api_logout(request: Request):
+    tok = request.cookies.get("gs_session")
+    if tok:
+        db.delete_session(tok)
+    resp = JSONResponse({"ok": True})
+    resp.delete_cookie("gs_session")
+    return resp
+
+
+# ── 메인 화면 (로그인 필요) ───────────────────────────────────
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
+    user = _user(request)
+    if not user:
+        return RedirectResponse("/login", status_code=302)
     return templates.TemplateResponse(
         request=request,
         name="index.html",
@@ -119,19 +180,10 @@ def index(request: Request):
             "models": models.MODELS,
             "default_motion": models.DEFAULT_MOTION_PROMPT,
             "has_key": bool(config.XAI_API_KEY),
-            "needs_password": bool(config.APP_PASSWORD),
+            "user": user,
+            "credit_cost": config.CREDIT_COST_VIDEO,
         },
     )
-
-
-@app.post("/api/login")
-def login(request: Request, password: str = Form(...)):
-    if not config.APP_PASSWORD or secrets.compare_digest(password, config.APP_PASSWORD):
-        resp = JSONResponse({"ok": True})
-        if config.APP_PASSWORD:
-            resp.set_cookie("gs_auth", config.APP_PASSWORD, httponly=True, samesite="lax")
-        return resp
-    raise HTTPException(status_code=401, detail="비밀번호가 틀렸습니다.")
 
 
 @app.post("/api/generate")
@@ -141,7 +193,7 @@ async def generate(
     motion: str = Form(""),
     clothing: UploadFile = File(...),
 ):
-    _check_auth(request)
+    user = _require_user(request)
     if not config.XAI_API_KEY:
         raise HTTPException(status_code=400,
                             detail="서버에 XAI_API_KEY 가 설정되지 않았습니다.")
@@ -154,6 +206,13 @@ async def generate(
     if len(image_bytes) > 15 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="사진이 너무 큽니다(최대 15MB).")
 
+    # 크레딧 원자적 차감 (부족하면 402)
+    cost = config.CREDIT_COST_VIDEO
+    if not db.try_spend_credit(user["id"], cost, "video"):
+        raise HTTPException(
+            status_code=402,
+            detail=f"크레딧이 부족합니다. (영상 1개 = {cost}크레딧) 충전 후 이용해주세요.")
+
     mime = clothing.content_type or "image/jpeg"
     motion = (motion or models.DEFAULT_MOTION_PROMPT).strip()
 
@@ -161,74 +220,10 @@ async def generate(
     _set(job_id, stage="queued", model_id=model_id)
     threading.Thread(
         target=_run_pipeline,
-        args=(job_id, model_id, image_bytes, mime, motion),
+        args=(job_id, user["id"], cost, model_id, image_bytes, mime, motion),
         daemon=True,
     ).start()
     return {"job_id": job_id}
-
-
-# ── 모델 프로필 사진 (카드에 표시, 최초 1회 생성 후 캐시) ─────
-_preview_locks: dict[str, threading.Lock] = {
-    m.id: threading.Lock() for m in models.MODELS
-}
-
-
-# 고정 프로필 이미지가 있으면 이걸 우선 사용 (재생성 X, 비용 0, 얼굴 고정)
-STATIC_MODELS_DIR = BASE_DIR / "static" / "models"
-
-
-@app.get("/api/model-preview/{model_id}")
-def model_preview(model_id: str):
-    if model_id not in models.MODELS_BY_ID:
-        raise HTTPException(status_code=404, detail="unknown model")
-
-    # 1순위: 저장소에 박아둔 고정 이미지
-    for ext in ("png", "jpg", "jpeg", "webp"):
-        fixed = STATIC_MODELS_DIR / f"{model_id}.{ext}"
-        if fixed.exists():
-            mt = "image/jpeg" if ext in ("jpg", "jpeg") else f"image/{ext}"
-            return FileResponse(
-                str(fixed), media_type=mt,
-                headers={"Cache-Control": "public, max-age=604800"},
-            )
-
-    # 2순위: 없으면 그록으로 생성 후 캐시 (기존 동작)
-    path = config.OUTPUT_DIR / f"model_{model_id}.png"
-    if not path.exists():
-        if not config.XAI_API_KEY:
-            raise HTTPException(status_code=503, detail="no key")
-        with _preview_locks[model_id]:
-            if not path.exists():  # 락 안에서 재확인 (중복 생성 방지)
-                model = models.get_model(model_id)
-                try:
-                    png = xai_client.generate_tryon_image(
-                        models.build_portrait_prompt(model.appearance))
-                except Exception as e:  # noqa: BLE001
-                    # 실패하면 카드는 이모지로 폴백 (프론트 onerror)
-                    raise HTTPException(status_code=503, detail=str(e))
-                path.write_bytes(png)
-    return FileResponse(
-        str(path), media_type="image/png",
-        headers={"Cache-Control": "public, max-age=86400"},
-    )
-
-
-@app.get("/api/diag")
-def diag():
-    """계정에서 실제 사용 가능한 모델 목록 + 현재 설정된 후보 모델."""
-    out = {
-        "has_key": bool(config.XAI_API_KEY),
-        "configured": {
-            "vision": config.XAI_VISION_MODELS,
-            "image": config.XAI_IMAGE_MODELS,
-            "video": config.XAI_VIDEO_MODELS,
-        },
-    }
-    try:
-        out["available_models"] = xai_client.list_models()
-    except Exception as e:  # noqa: BLE001
-        out["available_models_error"] = str(e)
-    return out
 
 
 @app.get("/api/job/{job_id}")
@@ -247,6 +242,103 @@ def job_status(job_id: str):
         "video_prompt": j.get("video_prompt"),
         "error": j.get("error"),
     }
+
+
+# ── 갤러리 / 충전 ─────────────────────────────────────────────
+@app.get("/gallery", response_class=HTMLResponse)
+def gallery(request: Request):
+    user = _user(request)
+    if not user:
+        return RedirectResponse("/login", status_code=302)
+    items = db.list_generations(user["id"])
+    return templates.TemplateResponse(
+        request=request, name="gallery.html",
+        context={"user": user, "items": items})
+
+
+@app.get("/billing", response_class=HTMLResponse)
+def billing(request: Request):
+    user = _user(request)
+    if not user:
+        return RedirectResponse("/login", status_code=302)
+    return templates.TemplateResponse(
+        request=request, name="billing.html",
+        context={"user": user, "bank_info": config.BANK_INFO,
+                 "price": config.CREDIT_PRICE_KRW})
+
+
+# ── 관리자 ────────────────────────────────────────────────────
+@app.get("/admin", response_class=HTMLResponse)
+def admin(request: Request):
+    user = _user(request)
+    if not user:
+        return RedirectResponse("/login", status_code=302)
+    if not user["is_admin"]:
+        raise HTTPException(status_code=403, detail="관리자만 접근 가능합니다.")
+    return templates.TemplateResponse(
+        request=request, name="admin.html",
+        context={"user": user, "users": db.list_users()})
+
+
+@app.post("/admin/grant")
+def admin_grant(request: Request, user_id: int = Form(...), amount: int = Form(...)):
+    user = _require_user(request)
+    if not user["is_admin"]:
+        raise HTTPException(status_code=403, detail="관리자만 가능합니다.")
+    if not db.get_user(user_id):
+        raise HTTPException(status_code=404, detail="해당 회원이 없습니다.")
+    db.grant_credit(user_id, amount, f"admin_grant(by {user['email']})")
+    return RedirectResponse("/admin", status_code=303)
+
+
+# ── 모델 프로필 사진 ──────────────────────────────────────────
+_preview_locks: dict[str, threading.Lock] = {
+    m.id: threading.Lock() for m in models.MODELS
+}
+
+
+@app.get("/api/model-preview/{model_id}")
+def model_preview(model_id: str):
+    if model_id not in models.MODELS_BY_ID:
+        raise HTTPException(status_code=404, detail="unknown model")
+    for ext in ("png", "jpg", "jpeg", "webp"):
+        fixed = STATIC_MODELS_DIR / f"{model_id}.{ext}"
+        if fixed.exists():
+            mt = "image/jpeg" if ext in ("jpg", "jpeg") else f"image/{ext}"
+            return FileResponse(str(fixed), media_type=mt,
+                                headers={"Cache-Control": "public, max-age=604800"})
+    path = config.OUTPUT_DIR / f"model_{model_id}.png"
+    if not path.exists():
+        if not config.XAI_API_KEY:
+            raise HTTPException(status_code=503, detail="no key")
+        with _preview_locks[model_id]:
+            if not path.exists():
+                model = models.get_model(model_id)
+                try:
+                    png = xai_client.generate_tryon_image(
+                        models.build_portrait_prompt(model.appearance))
+                except Exception as e:  # noqa: BLE001
+                    raise HTTPException(status_code=503, detail=str(e))
+                path.write_bytes(png)
+    return FileResponse(str(path), media_type="image/png",
+                        headers={"Cache-Control": "public, max-age=86400"})
+
+
+@app.get("/api/diag")
+def diag():
+    out = {
+        "has_key": bool(config.XAI_API_KEY),
+        "configured": {
+            "vision": config.XAI_VISION_MODELS,
+            "image": config.XAI_IMAGE_MODELS,
+            "video": config.XAI_VIDEO_MODELS,
+        },
+    }
+    try:
+        out["available_models"] = xai_client.list_models()
+    except Exception as e:  # noqa: BLE001
+        out["available_models_error"] = str(e)
+    return out
 
 
 def main():

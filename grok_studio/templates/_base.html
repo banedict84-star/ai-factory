@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Grok Studio{% endblock %}</title>
+<style>
+  :root{--bg:#0b0d12;--card:#151922;--card2:#1c2130;--line:#2a3040;--ink:#eef1f6;
+    --sub:#9aa4b6;--accent:#7c5cff;--accent2:#4ac6ff;--ok:#38d39f;--err:#ff6b6b}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#1a1430 0,var(--bg) 55%);
+    color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",sans-serif}
+  a{color:var(--accent2);text-decoration:none}
+  .nav{display:flex;align-items:center;gap:16px;padding:12px 18px;border-bottom:1px solid var(--line);
+    background:rgba(12,14,20,.7);backdrop-filter:blur(6px);position:sticky;top:0;z-index:20;flex-wrap:wrap}
+  .nav .logo{font-weight:800;font-size:16px;color:var(--ink)}
+  .nav .sp{flex:1}
+  .nav a.link{color:var(--sub);font-size:14px}
+  .nav a.link:hover{color:var(--ink)}
+  .nav .cr{background:#241d3d;border:1px solid #3a2f5c;color:#c9b8ff;border-radius:99px;
+    padding:4px 12px;font-size:13px;font-weight:700}
+  .nav button.lg{background:transparent;border:1px solid var(--line);color:var(--sub);
+    border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer}
+  .wrap{max-width:920px;margin:0 auto;padding:28px 18px 80px}
+  .authbox{max-width:380px;margin:56px auto;background:var(--card);border:1px solid var(--line);
+    border-radius:18px;padding:28px}
+  .authbox h1{font-size:22px;margin:0 0 6px}
+  .authbox p.sub{color:var(--sub);margin:0 0 20px;font-size:14px}
+  label.f{display:block;font-size:13px;color:var(--sub);margin:14px 0 6px}
+  input.t{width:100%;background:var(--card2);color:var(--ink);border:1.5px solid var(--line);
+    border-radius:10px;padding:12px 14px;font-size:15px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;
+    background:linear-gradient(135deg,var(--accent),#5b7cff);color:#fff;border:0;border-radius:10px;
+    padding:13px;font-size:15px;font-weight:700;cursor:pointer;margin-top:20px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .muted{color:var(--sub);font-size:13px}
+  .err{color:var(--err);font-size:13.5px;margin-top:12px;min-height:18px}
+  h2{font-size:15px;letter-spacing:.02em;color:var(--sub);text-transform:uppercase;margin:26px 0 12px}
+  .cardbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--sub);font-weight:600}
+  .pill{background:#241d3d;border:1px solid #3a2f5c;color:#c9b8ff;border-radius:99px;padding:2px 9px;font-size:12px}
+</style>
+</head>
+<body>
+  <div class="nav">
+    <a class="logo" href="/">🎬 Grok Studio</a>
+    {% if user %}
+      <a class="link" href="/">홈</a>
+      <a class="link" href="/gallery">내 갤러리</a>
+      <a class="link" href="/billing">충전</a>
+      {% if user["is_admin"] %}<a class="link" href="/admin">관리자</a>{% endif %}
+      <div class="sp"></div>
+      <span class="cr">💎 {{ user["credits"] }} 크레딧</span>
+      <button class="lg" onclick="logout()">로그아웃</button>
+    {% else %}
+      <div class="sp"></div>
+      <a class="link" href="/login">로그인</a>
+      <a class="link" href="/signup">회원가입</a>
+    {% endif %}
+  </div>
+  {% block body %}{% endblock %}
+  <script>
+    async function logout(){ await fetch('/api/logout',{method:'POST'}); location.href='/login'; }
+  </script>
+  {% block script %}{% endblock %}
+</body>
+</html>

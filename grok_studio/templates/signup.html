@@ -1,0 +1,37 @@
+{% extends "_base.html" %}
+{% block title %}회원가입 · Grok Studio{% endblock %}
+{% block body %}
+<div class="authbox">
+  <h1>회원가입</h1>
+  <p class="sub">가입하면 무료 <b>{{ free }}크레딧</b>을 드려요 (영상 {{ free }}개 체험).</p>
+  <form id="f" onsubmit="return false">
+    <label class="f">이메일</label>
+    <input class="t" type="email" id="email" autocomplete="email" required>
+    <label class="f">비밀번호 (6자 이상)</label>
+    <input class="t" type="password" id="password" autocomplete="new-password" required>
+    <button class="btn" id="go">가입하고 시작하기</button>
+    <div class="err" id="err"></div>
+  </form>
+  <p class="muted" style="margin-top:16px;text-align:center">
+    이미 계정이 있으신가요? <a href="/login">로그인</a>
+  </p>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+const go=document.getElementById('go');
+document.getElementById('f').addEventListener('submit',submit);
+go.onclick=submit;
+async function submit(){
+  go.disabled=true; document.getElementById('err').textContent='';
+  const fd=new FormData();
+  fd.append('email',document.getElementById('email').value);
+  fd.append('password',document.getElementById('password').value);
+  try{
+    const r=await fetch('/api/signup',{method:'POST',body:fd});
+    if(!r.ok){ throw new Error((await r.json()).detail||'가입 실패'); }
+    location.href='/';
+  }catch(e){ document.getElementById('err').textContent='❌ '+e.message; go.disabled=false; }
+}
+</script>
+{% endblock %}

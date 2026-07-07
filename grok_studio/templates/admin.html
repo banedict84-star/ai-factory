@@ -1,0 +1,32 @@
+{% extends "_base.html" %}
+{% block title %}관리자 · Grok Studio{% endblock %}
+{% block body %}
+<div class="wrap">
+  <h2>관리자 · 회원 &amp; 크레딧</h2>
+  <div class="cardbox" style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr><th>ID</th><th>이메일</th><th>크레딧</th><th>권한</th><th>크레딧 지급</th></tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u["id"] }}</td>
+          <td>{{ u["email"] }}</td>
+          <td><span class="pill">💎 {{ u["credits"] }}</span></td>
+          <td>{{ "관리자" if u["is_admin"] else "일반" }}</td>
+          <td>
+            <form action="/admin/grant" method="post" style="display:flex;gap:6px;align-items:center">
+              <input type="hidden" name="user_id" value="{{ u['id'] }}">
+              <input class="t" style="width:80px;padding:6px 8px" type="number" name="amount" value="10" min="-9999" max="9999">
+              <button class="lg" type="submit" style="border-color:var(--accent);color:#c9b8ff">지급</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="muted" style="margin-top:12px">입금 확인 후 해당 회원 줄에서 수량을 넣고 <b>지급</b>을 누르면 크레딧이 충전됩니다. (음수면 차감)</p>
+</div>
+{% endblock %}

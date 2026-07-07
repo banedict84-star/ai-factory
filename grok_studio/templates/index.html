@@ -78,13 +78,30 @@
   input[type=file]{display:none}
   .gate{max-width:360px;margin:60px auto;text-align:center}
   .gate input{width:100%;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0}
+  .nav{display:flex;align-items:center;gap:16px;padding:12px 18px;border-bottom:1px solid var(--line);
+    background:rgba(12,14,20,.7);position:sticky;top:0;z-index:20;flex-wrap:wrap}
+  .nav .logo{font-weight:800;font-size:16px;color:var(--ink);text-decoration:none}
+  .nav a.link{color:var(--sub);font-size:14px;text-decoration:none}
+  .nav a.link:hover{color:var(--ink)}
+  .nav .sp{flex:1}
+  .nav .cr{background:#241d3d;border:1px solid #3a2f5c;color:#c9b8ff;border-radius:99px;padding:4px 12px;font-size:13px;font-weight:700}
+  .nav button.lg{background:transparent;border:1px solid var(--line);color:var(--sub);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer}
 </style>
 </head>
 <body>
+<div class="nav">
+  <a class="logo" href="/">🎬 Grok Studio</a>
+  <a class="link" href="/gallery">내 갤러리</a>
+  <a class="link" href="/billing">충전</a>
+  {% if user["is_admin"] %}<a class="link" href="/admin">관리자</a>{% endif %}
+  <div class="sp"></div>
+  <span class="cr" id="creditPill">💎 {{ user["credits"] }} 크레딧</span>
+  <button class="lg" onclick="logout()">로그아웃</button>
+</div>
 <div class="wrap">
   <header>
     <h1>Grok Studio <span class="badge">그록 영상</span></h1>
-    <p>모델을 고르고 · 옷 사진을 올리면 → 모델이 그 옷을 입은 <b>사진</b>과 <b>영상</b>을 만듭니다.</p>
+    <p>모델을 고르고 · 옷 사진을 올리면 → 모델이 그 옷을 입은 <b>사진</b>과 <b>영상</b>을 만듭니다. <span class="muted">(영상 1개 = {{ credit_cost }}크레딧)</span></p>
   </header>
 
   {% if not has_key %}
@@ -155,6 +172,10 @@
 <script>
 const $ = s => document.querySelector(s);
 let selectedModel = null, fileData = null, polling = null;
+const CREDIT_COST = {{ credit_cost }};
+let credits = {{ user["credits"] }};
+function setCredits(n){ credits = n; const p=$('#creditPill'); if(p) p.textContent = '💎 '+n+' 크레딧'; }
+async function logout(){ await fetch('/api/logout',{method:'POST'}); location.href='/login'; }
 
 // 모델 선택 (카드 클릭)
 document.querySelectorAll('.model').forEach(el=>{
@@ -229,8 +250,15 @@ $('#go').onclick = async ()=>{
 
   try{
     const r = await fetch('/api/generate', {method:'POST', body:fd});
+    if(r.status===402){
+      const d=(await r.json()).detail||'크레딧이 부족합니다.';
+      $('#status').textContent='';
+      $('#errbox').innerHTML='❌ '+d+' <a href="/billing" style="color:var(--accent2)">충전하러 가기 →</a>';
+      $('#go').disabled=false; return;
+    }
     if(!r.ok){ throw new Error((await r.json()).detail || r.statusText); }
     const {job_id} = await r.json();
+    setCredits(credits - CREDIT_COST);   // 시작 시 차감(서버와 동일)
     poll(job_id);
   }catch(e){ fail(e.message); $('#go').disabled=false; }
 };
@@ -246,7 +274,7 @@ function poll(id){
         ? '' : '<span class="spin"></span> '+j.stage_label;
       if(j.garment){ $('#garment').style.display='block'; $('#garment').textContent='🧵 인식된 옷: '+j.garment; }
       if(j.tryon_url){ $('#figImg').style.display='block'; $('#tryon').src=j.tryon_url; }
-      if(j.stage==='error'){ clearInterval(polling); fail(j.error||'알 수 없는 오류'); $('#go').disabled=false; }
+      if(j.stage==='error'){ clearInterval(polling); setCredits(credits + CREDIT_COST); fail((j.error||'알 수 없는 오류')+' (크레딧은 환불됩니다)'); $('#go').disabled=false; }
       if(j.stage==='done'){
         clearInterval(polling);
         $('#figVid').style.display='block';

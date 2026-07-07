@@ -1,0 +1,31 @@
+{% extends "_base.html" %}
+{% block title %}내 갤러리 · Grok Studio{% endblock %}
+{% block body %}
+<div class="wrap">
+  <h2>내 갤러리</h2>
+  {% if not items %}
+    <div class="cardbox muted">아직 만든 결과물이 없어요. <a href="/">홈에서 영상 만들기</a></div>
+  {% else %}
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">
+    {% for it in items %}
+    <div class="cardbox" style="padding:10px">
+      {% if it["video_url"] %}
+        <video src="{{ it['video_url'] }}" controls loop muted playsinline
+               style="width:100%;border-radius:8px;background:#000"></video>
+      {% elif it["tryon_url"] %}
+        <img src="{{ it['tryon_url'] }}" style="width:100%;border-radius:8px">
+      {% endif %}
+      <div class="muted" style="margin-top:8px;font-size:12.5px">
+        {{ it["model_id"] }} · {{ it["status"] }}
+      </div>
+      {% if it["garment"] %}<div class="muted" style="font-size:12px;margin-top:4px">🧵 {{ it["garment"][:80] }}</div>{% endif %}
+      <div style="margin-top:6px">
+        {% if it["video_url"] %}<a href="{{ it['video_url'] }}" download style="font-size:12.5px">⬇ 영상</a>{% endif %}
+        {% if it["tryon_url"] %} · <a href="{{ it['tryon_url'] }}" download style="font-size:12.5px">⬇ 사진</a>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

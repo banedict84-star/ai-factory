@@ -33,5 +33,21 @@ services:
         value: "3.11.9"
       - key: XAI_API_KEY
         sync: false           # ← Render 대시보드에서 그록 키 입력(비밀)
+      - key: ADMIN_EMAIL
+        sync: false           # ← 이 이메일로 가입하면 관리자(크레딧 지급 권한)
+      - key: BANK_INFO
+        sync: false           # ← (선택) 충전 안내 계좌 문구
       - key: APP_PASSWORD
         sync: false           # ← (선택) 사이트 접속 비밀번호. 비우면 잠금 없음
+      # ⚠️ 회원/크레딧 영구 저장:
+      # 무료(free) 플랜은 재배포 시 DB가 초기화됩니다(회원·크레딧 사라짐) — 테스트용.
+      # 실제 서비스로 유지하려면 ↓ 3가지를 함께 적용:
+      #   1) plan: free → starter (유료)
+      #   2) 아래 disk 주석 해제
+      #   3) GROK_STUDIO_DB 를 /var/data/grok_studio.db 로 지정(주석 해제)
+      # - key: GROK_STUDIO_DB
+      #   value: /var/data/grok_studio.db
+    # disk:
+    #   name: grok-studio-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
