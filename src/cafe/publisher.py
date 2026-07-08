@@ -69,31 +69,36 @@ def _collect_images(content: str, limit: int = 10) -> list[tuple[str, bytes]]:
 def _prettify_for_cafe(
     html: str, keep_images: bool = False, lead_space: bool = False
 ) -> str:
-    """네이버 카페는 블록 요소(<p>,<h3>) 간 여백이 거의 없어 문단이 붙어 보인다.
-    문단/목록 끝과 소제목 앞에 빈 줄(<br>)을 넣어 가독성 있게 다듬는다.
-
-    keep_images=False 면 외부 <img> 를 제거한다(네이버가 거부/999 방지). 인라인 이미지를
-    테스트할 때만 keep_images=True 로 남긴다.
+    """네이버 카페는 <p>/<h3> 같은 블록 태그 사이의 <br> 를 먹어버려 문단이 붙어 보인다.
+    그래서 블록 태그를 쓰지 않고 '굵은 글씨(<b>) + 줄바꿈(<br>)'으로 평평하게 바꿔,
+    간격이 확실히 유지되게 한다.
     """
     import re
 
+    flags = re.IGNORECASE | re.DOTALL
+
     if not keep_images:
-        # 외부 <img> 가 든 글을 네이버가 거부(999)할 수 있어 안전하게 제거한다.
         html = re.sub(r"<img\b[^>]*>", "", html, flags=re.IGNORECASE)
-        html = re.sub(r"<p>\s*</p>", "", html, flags=re.IGNORECASE)
 
-    # BENEAI 인사말을 한 줄로 분리하고 뒤에 빈 줄을 넣는다 (인사 → 줄바꿈 → 본문)
-    html = re.sub(
-        r"(베네아이\)\s*입니다\.)\s*", r"\1<br><br>", html, count=1, flags=re.IGNORECASE
-    )
+    # BENEAI 인사말을 한 줄로 분리하고 뒤에 빈 줄
+    html = re.sub(r"(베네아이\)\s*입니다\.)\s*", r"\1<br><br>", html, count=1, flags=re.IGNORECASE)
 
-    # 문단/목록 끝에 빈 줄 (소제목 뒤에는 넣지 않아 제목이 본문에 붙게)
-    html = re.sub(r"</(p|ul|ol)>", r"</\1><br>", html, flags=re.IGNORECASE)
-    # 소제목(h1~h4) 앞에 빈 줄 → 섹션 구분
-    html = re.sub(r"\s*<(h[1-4])(\b|>)", r"<br><\1\2", html, flags=re.IGNORECASE)
-    # 맨 앞에 생긴 <br> 는 제거
-    html = re.sub(r"^\s*(<br>\s*)+", "", html.strip(), flags=re.IGNORECASE)
-    # 상단 이미지가 있을 때만, 이미지 뒤 여백(빈 줄)을 준다
+    # 소제목(h1~h4) → 빈 줄 + 굵은 글씨 + 줄바꿈 (블록 대신 평평하게)
+    html = re.sub(r"\s*<h[1-4][^>]*>\s*(.*?)\s*</h[1-4]>\s*", r"<br><br><b>\1</b><br>", html, flags=flags)
+    # 목록 항목 → 불릿 + 줄바꿈, 목록 블록은 여백으로
+    html = re.sub(r"\s*<li[^>]*>\s*(.*?)\s*</li>\s*", r"• \1<br>", html, flags=flags)
+    html = re.sub(r"\s*</?(?:ul|ol)[^>]*>\s*", "<br>", html, flags=re.IGNORECASE)
+    # 문단 → 텍스트 + 빈 줄
+    html = re.sub(r"\s*<p[^>]*>\s*(.*?)\s*</p>\s*", r"\1<br><br>", html, flags=flags)
+
+    # 남은 태그 제거 (b, br 만 유지)
+    html = re.sub(r"</?(?!b\b|br\b)[a-zA-Z][^>]*>", "", html)
+    # <br> 3개 이상은 2개로 축소
+    html = re.sub(r"(?:\s*<br\s*/?>\s*){3,}", "<br><br>", html, flags=re.IGNORECASE)
+    # 앞뒤 <br> 정리
+    html = re.sub(r"^\s*(?:<br\s*/?>\s*)+", "", html.strip(), flags=re.IGNORECASE)
+    html = re.sub(r"(?:\s*<br\s*/?>\s*)+$", "", html, flags=re.IGNORECASE)
+
     if lead_space:
         html = "<br><br>" + html
     return html
