@@ -84,8 +84,8 @@ SIGNUP_FREE_CREDITS: int = int(os.getenv("SIGNUP_FREE_CREDITS", "2"))
 # 영상 1개 생성에 필요한 크레딧
 CREDIT_COST_VIDEO: int = int(os.getenv("CREDIT_COST_VIDEO", "1"))
 
-# 이 이메일로 가입하면 관리자 권한. (기본: 대표 이메일)
-ADMIN_EMAIL: str = os.getenv("ADMIN_EMAIL", "banedict84@gmail.com").strip().lower()
+# 이 이메일로 가입하면 관리자 권한. 환경변수 ADMIN_EMAIL 로만 지정(기본 없음).
+ADMIN_EMAIL: str = os.getenv("ADMIN_EMAIL", "").strip().lower()
 
 # 무통장입금 안내 문구 (충전 페이지에 표시)
 BANK_INFO: str = os.getenv(
