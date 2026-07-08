@@ -17,7 +17,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from .. import config
-from . import auth, content_generator, pipeline, review
+from . import auth, content_generator, images, pipeline, review
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -50,6 +50,9 @@ if _APP_PASSWORD:
 
     @app.middleware("http")
     async def _basic_auth(request: Request, call_next):
+        # 이미지(/img/)는 네이버·방문자가 불러가야 하므로 잠금 예외
+        if request.url.path.startswith("/img/"):
+            return await call_next(request)
         header = request.headers.get("authorization", "")
         ok = False
         if header.startswith("Basic "):
@@ -142,6 +145,40 @@ def edit_draft(draft_id: str, subject: str = Form(...), content: str = Form(...)
     """대시보드에서 편집한 제목/본문을 저장합니다."""
     review.update_post(draft_id, subject=subject.strip(), content=content)
     return RedirectResponse(f"/draft/{draft_id}", status_code=303)
+
+
+@app.post("/draft/{draft_id}/images")
+def generate_images(request: Request, draft_id: str):
+    """본문의 각 소제목마다 이미지를 생성·삽입합니다. (시간이 걸릴 수 있음)"""
+    d = review.load_draft(draft_id)
+    if d.status == "published":
+        return _render(
+            request, "message.html", status_code=400,
+            title="이미지 삽입 불가", message="이미 발행된 글입니다.", back=f"/draft/{draft_id}",
+        )
+    try:
+        new_content = images.add_section_images(
+            d.post.content, d.post.topic, draft_id, _public_base(request)
+        )
+    except Exception as e:
+        return _render(
+            request, "message.html", status_code=500,
+            title="이미지 생성 실패", message=str(e), back=f"/draft/{draft_id}",
+        )
+    review.update_post(draft_id, content=new_content)
+    return RedirectResponse(f"/draft/{draft_id}", status_code=303)
+
+
+@app.get("/img/{path:path}")
+def serve_image(path: str):
+    """GCS 에 저장된 이미지를 서빙합니다(공개, 잠금 예외)."""
+    from starlette.responses import Response
+
+    try:
+        data = images.fetch_image(f"{images.GCS_PREFIX}/{path}")
+    except Exception:
+        return Response(status_code=404)
+    return Response(content=data, media_type="image/png")
 
 
 @app.post("/api/rewrite")

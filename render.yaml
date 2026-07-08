@@ -39,6 +39,10 @@ services:
         sync: false           # (대안) Claude 키. OPENAI 키가 있으면 안 넣어도 됨
       - key: CAFE_LLM
         sync: false           # (선택) openai / anthropic 강제 지정
+      - key: CAFE_GCS_BUCKET
+        sync: false           # 이미지 저장용 Firebase Storage/GCS 버킷 이름
+      - key: CAFE_IMAGE_MODEL
+        sync: false           # (선택) gpt-image-1 / dall-e-3
       - key: APP_PASSWORD
         sync: false           # (강력 권장) 대시보드 접속 비밀번호
       - key: NAVER_CLIENT_ID
