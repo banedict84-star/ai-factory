@@ -12,7 +12,7 @@ from .. import config
 from .models import CafePost
 
 ANTHROPIC_MODEL = "claude-opus-4-8"
-OPENAI_MODEL_DEFAULT = "gpt-4o-mini"
+OPENAI_MODEL_DEFAULT = "gpt-4o"  # 사람 같은 글 품질 위해 기본을 4o 로 (env CAFE_OPENAI_MODEL 로 변경 가능)
 
 # Claude 가 반드시 이 형태의 JSON 으로만 답하도록 강제하는 스키마
 OUTPUT_SCHEMA = {
