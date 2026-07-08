@@ -112,10 +112,16 @@ def make_title_card(image_bytes: bytes, title: str, brand: str = "") -> bytes:
         from PIL import Image, ImageDraw
 
         img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        # 절반 높이의 가로 배너(2:1)로 크롭 — 카페에서 이미지가 너무 크지 않게
+        W0, H0 = img.size
+        target_h = W0 // 2
+        if H0 > target_h:
+            top = (H0 - target_h) // 2
+            img = img.crop((0, top, W0, top + target_h))
         W, H = img.size
         draw = ImageDraw.Draw(img, "RGBA")
         # 하단에 반투명 그라데이션 박스(글자 가독성)
-        band_h = int(H * 0.42)
+        band_h = int(H * 0.6)
         overlay = Image.new("RGBA", (W, band_h), (0, 0, 0, 0))
         od = ImageDraw.Draw(overlay)
         for i in range(band_h):
@@ -123,19 +129,19 @@ def make_title_card(image_bytes: bytes, title: str, brand: str = "") -> bytes:
             od.line([(0, i), (W, i)], fill=(0, 0, 0, a))
         img.paste(overlay, (0, H - band_h), overlay)
 
-        # 제목 줄바꿈 + 렌더
-        font = _korean_font(int(W * 0.062))
-        wrapped = textwrap.wrap(title, width=16) or [title]
-        wrapped = wrapped[:3]
-        line_h = int(W * 0.075)
-        y = H - int(W * 0.09) - line_h * len(wrapped)
+        # 제목 줄바꿈 + 렌더 (배너 높이에 맞춰 조금 작게)
+        font = _korean_font(int(W * 0.05))
+        wrapped = textwrap.wrap(title, width=20) or [title]
+        wrapped = wrapped[:2]
+        line_h = int(W * 0.062)
+        y = H - int(W * 0.06) - line_h * len(wrapped)
         for line in wrapped:
-            draw.text((int(W * 0.06), y), line, font=font, fill=(255, 255, 255, 255))
+            draw.text((int(W * 0.05), y), line, font=font, fill=(255, 255, 255, 255))
             y += line_h
         if brand:
-            bf = _korean_font(int(W * 0.032))
-            draw.text((int(W * 0.06), int(H * 0.05)), brand, font=bf,
-                      fill=(255, 255, 255, 230))
+            bf = _korean_font(int(W * 0.028))
+            draw.text((int(W * 0.05), int(H * 0.08)), brand, font=bf,
+                      fill=(255, 255, 255, 235))
 
         out = io.BytesIO()
         img.save(out, format="PNG")

@@ -66,7 +66,9 @@ def _collect_images(content: str, limit: int = 10) -> list[tuple[str, bytes]]:
     return out
 
 
-def _prettify_for_cafe(html: str, keep_images: bool = False) -> str:
+def _prettify_for_cafe(
+    html: str, keep_images: bool = False, lead_space: bool = False
+) -> str:
     """네이버 카페는 블록 요소(<p>,<h3>) 간 여백이 거의 없어 문단이 붙어 보인다.
     문단/목록 끝과 소제목 앞에 빈 줄(<br>)을 넣어 가독성 있게 다듬는다.
 
@@ -80,12 +82,20 @@ def _prettify_for_cafe(html: str, keep_images: bool = False) -> str:
         html = re.sub(r"<img\b[^>]*>", "", html, flags=re.IGNORECASE)
         html = re.sub(r"<p>\s*</p>", "", html, flags=re.IGNORECASE)
 
+    # BENEAI 인사말을 한 줄로 분리하고 뒤에 빈 줄을 넣는다 (인사 → 줄바꿈 → 본문)
+    html = re.sub(
+        r"(베네아이\)\s*입니다\.)\s*", r"\1<br><br>", html, count=1, flags=re.IGNORECASE
+    )
+
     # 문단/목록 끝에 빈 줄 (소제목 뒤에는 넣지 않아 제목이 본문에 붙게)
     html = re.sub(r"</(p|ul|ol)>", r"</\1><br>", html, flags=re.IGNORECASE)
     # 소제목(h1~h4) 앞에 빈 줄 → 섹션 구분
     html = re.sub(r"\s*<(h[1-4])(\b|>)", r"<br><\1\2", html, flags=re.IGNORECASE)
     # 맨 앞에 생긴 <br> 는 제거
     html = re.sub(r"^\s*(<br>\s*)+", "", html.strip(), flags=re.IGNORECASE)
+    # 상단 이미지가 있을 때만, 이미지 뒤 여백(빈 줄)을 준다
+    if lead_space:
+        html = "<br><br>" + html
     return html
 
 
@@ -174,7 +184,7 @@ class NaverCafePublisher:
 
         # 상세페이지 등 첨부 이미지가 명시되면 그걸로 multipart 발행(링크 모드 무시)
         if attach_images is not None:
-            text = _prettify_for_cafe(content, keep_images=False)
+            text = _prettify_for_cafe(content, keep_images=False, lead_space=True)
             data = {
                 "subject": quote(subject, encoding="utf-8"),
                 "content": quote(text, encoding="utf-8"),
@@ -210,7 +220,10 @@ class NaverCafePublisher:
             return _parse_article_result(resp.text)
 
         image_files = _collect_images(content)  # [(filename, bytes), ...]
-        text = _prettify_for_cafe(content, keep_images=False)  # <img> 제거 + 간격
+        # 상단에 이미지가 붙으면 이미지 뒤 여백을 준다
+        text = _prettify_for_cafe(
+            content, keep_images=False, lead_space=bool(image_files)
+        )
 
         if image_files:
             # multipart: subject/content 는 단일 URL 인코딩(UTF-8), 이미지는 파일 첨부
