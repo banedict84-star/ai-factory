@@ -18,17 +18,19 @@ from .models import CafePost
 API_BASE = "https://openapi.naver.com/v1/cafe"
 
 
-def _prettify_for_cafe(html: str) -> str:
+def _prettify_for_cafe(html: str, keep_images: bool = False) -> str:
     """네이버 카페는 블록 요소(<p>,<h3>) 간 여백이 거의 없어 문단이 붙어 보인다.
     문단/목록 끝과 소제목 앞에 빈 줄(<br>)을 넣어 가독성 있게 다듬는다.
+
+    keep_images=False 면 외부 <img> 를 제거한다(네이버가 거부/999 방지). 인라인 이미지를
+    테스트할 때만 keep_images=True 로 남긴다.
     """
     import re
 
-    # 외부 <img> 는 네이버가 거부(999)하고 렌더도 안 되므로 제거한다.
-    # (이미지는 별도 multipart 첨부 방식으로 넣어야 함)
-    html = re.sub(r"<img\b[^>]*>", "", html, flags=re.IGNORECASE)
-    # 이미지만 있던 <p></p> 빈 껍데기 정리
-    html = re.sub(r"<p>\s*</p>", "", html, flags=re.IGNORECASE)
+    if not keep_images:
+        # 외부 <img> 가 든 글을 네이버가 거부(999)할 수 있어 안전하게 제거한다.
+        html = re.sub(r"<img\b[^>]*>", "", html, flags=re.IGNORECASE)
+        html = re.sub(r"<p>\s*</p>", "", html, flags=re.IGNORECASE)
 
     # 문단/목록 끝에 빈 줄 (소제목 뒤에는 넣지 않아 제목이 본문에 붙게)
     html = re.sub(r"</(p|ul|ol)>", r"</\1><br>", html, flags=re.IGNORECASE)
@@ -104,7 +106,10 @@ class NaverCafePublisher:
         보내므로 Content-Type 은 charset 없이 form-urlencoded 로 두고 ASCII 로 전송.
         """
         url = f"{API_BASE}/{self.club_id}/menu/{self.menu_id}/articles"
-        content = _prettify_for_cafe(content)
+        keep_images = (config.env("CAFE_KEEP_IMAGES") or "").strip().lower() in (
+            "1", "true", "yes", "on",
+        )
+        content = _prettify_for_cafe(content, keep_images=keep_images)
         body = (
             f"subject={_naver_encode(subject)}"
             f"&content={_naver_encode(content)}"

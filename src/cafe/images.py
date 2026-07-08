@@ -56,9 +56,24 @@ def _bucket():
     return storage.Client().bucket(_bucket_name())
 
 
-def upload_image(data: bytes, object_path: str) -> None:
+def upload_image(data: bytes, object_path: str) -> str:
+    """이미지를 GCS 에 올리고, 공개 접근 가능한 Firebase 다운로드 URL 을 반환합니다.
+
+    firebasestorage.googleapis.com 은 구글 CDN 으로 빠르고 항상 켜져 있어, 네이버가
+    이미지를 안정적으로 불러올 수 있다(우리 앱 프록시보다 유리).
+    """
+    import uuid
+    from urllib.parse import quote as _q
+
+    bucket_name = _bucket_name()
     blob = _bucket().blob(object_path)
+    token = str(uuid.uuid4())
+    blob.metadata = {"firebaseStorageDownloadTokens": token}
     blob.upload_from_string(data, content_type="image/png")
+    return (
+        f"https://firebasestorage.googleapis.com/v0/b/{bucket_name}"
+        f"/o/{_q(object_path, safe='')}?alt=media&token={token}"
+    )
 
 
 def fetch_image(object_path: str) -> bytes:
@@ -91,8 +106,7 @@ def add_section_images(
     if not titles:
         data = generate_image_bytes(_image_prompt("대표 이미지", topic))
         obj = f"{GCS_PREFIX}/{draft_id}/top.png"
-        upload_image(data, obj)
-        url = f"{public_base}/img/{draft_id}/top.png"
+        url = upload_image(data, obj)
         return _img_tag(url) + "\n" + content
 
     urls: list[str] = []
@@ -100,8 +114,7 @@ def add_section_images(
         clean = re.sub("<[^>]+>", "", title).strip()
         data = generate_image_bytes(_image_prompt(clean, topic))
         obj = f"{GCS_PREFIX}/{draft_id}/sec{i}.png"
-        upload_image(data, obj)
-        urls.append(f"{public_base}/img/{draft_id}/sec{i}.png")
+        urls.append(upload_image(data, obj))
 
     counter = {"i": 0}
 
