@@ -122,6 +122,46 @@ def _generate_anthropic(prompt: str) -> dict[str, Any]:
     return json.loads(text)
 
 
+def _complete_text_openai(prompt: str) -> str:
+    from openai import OpenAI
+
+    client = OpenAI(api_key=config.env("OPENAI_API_KEY", required=True))
+    model = config.env("CAFE_OPENAI_MODEL") or OPENAI_MODEL_DEFAULT
+    resp = client.chat.completions.create(
+        model=model, messages=[{"role": "user", "content": prompt}]
+    )
+    return (resp.choices[0].message.content or "").strip()
+
+
+def _complete_text_anthropic(prompt: str) -> str:
+    import anthropic
+
+    client = anthropic.Anthropic(api_key=config.env("ANTHROPIC_API_KEY", required=True))
+    r = client.messages.create(
+        model=ANTHROPIC_MODEL,
+        max_tokens=1500,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return "".join(b.text for b in r.content if b.type == "text").strip()
+
+
+def rewrite_snippet(
+    text: str, instruction: str, cfg: dict[str, Any] | None = None
+) -> str:
+    """드래그로 선택한 본문 일부를 지시에 맞게 고쳐 '순수 텍스트'로 반환합니다."""
+    cfg = cfg or config.load_cafe_config()
+    tone = cfg.get("brand", {}).get("tone", "친근하게")
+    prompt = (
+        "너는 가죽공예 카페 글을 다듬는 편집자야. 아래 [원문]을 [지시]에 맞게 고쳐줘.\n"
+        "규칙: 고친 결과 '텍스트만' 출력(설명·따옴표·머리말 없이). "
+        "HTML 태그는 넣지 말고 순수 텍스트로. 원문의 의미와 분량은 크게 벗어나지 않게. "
+        f"말투는 '{tone}'.\n\n[지시] {instruction}\n\n[원문]\n{text}"
+    )
+    if _provider() == "anthropic":
+        return _complete_text_anthropic(prompt)
+    return _complete_text_openai(prompt)
+
+
 def generate_post(
     topic_hint: str | None = None,
     cfg: dict[str, Any] | None = None,

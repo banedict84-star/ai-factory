@@ -58,6 +58,21 @@ def list_drafts(status: str | None = None) -> list[Draft]:
     return drafts
 
 
+def update_post(
+    draft_id: str,
+    subject: str | None = None,
+    content: str | None = None,
+) -> Draft:
+    """초안의 제목/본문을 수정해서 다시 저장합니다(대시보드 편집용)."""
+    draft = load_draft(draft_id)
+    if subject is not None:
+        draft.post.subject = subject
+    if content is not None:
+        draft.post.content = content
+    _write(draft)
+    return draft
+
+
 def update_status(draft_id: str, status: str, note: str = "") -> Draft:
     draft = load_draft(draft_id)
     draft.status = status

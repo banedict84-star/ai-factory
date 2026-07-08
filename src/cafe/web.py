@@ -13,11 +13,11 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, Form, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from .. import config
-from . import auth, pipeline, review
+from . import auth, content_generator, pipeline, review
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -135,6 +135,28 @@ def draft_detail(request: Request, draft_id: str):
             title="초안 없음", message=f"{draft_id} 를 찾을 수 없습니다.", back="/",
         )
     return _render(request, "draft.html", d=d)
+
+
+@app.post("/draft/{draft_id}/edit")
+def edit_draft(draft_id: str, subject: str = Form(...), content: str = Form(...)):
+    """대시보드에서 편집한 제목/본문을 저장합니다."""
+    review.update_post(draft_id, subject=subject.strip(), content=content)
+    return RedirectResponse(f"/draft/{draft_id}", status_code=303)
+
+
+@app.post("/api/rewrite")
+async def api_rewrite(request: Request):
+    """선택한 본문 일부를 지시대로 AI가 고쳐 JSON 으로 돌려줍니다."""
+    data = await request.json()
+    text = (data.get("text") or "").strip()
+    instruction = (data.get("instruction") or "").strip()
+    if not text or not instruction:
+        return JSONResponse({"error": "선택 텍스트와 지시가 필요합니다."}, status_code=400)
+    try:
+        result = content_generator.rewrite_snippet(text, instruction)
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    return JSONResponse({"result": result})
 
 
 @app.post("/draft/{draft_id}/approve")

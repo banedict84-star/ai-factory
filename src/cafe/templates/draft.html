@@ -7,7 +7,6 @@
     <span class="badge {{ badge[0] }}">{{ badge[1] }}</span>
     <span class="sub">ID {{ d.id }}</span>
   </div>
-  <h1>{{ d.post.subject }}</h1>
   <p class="sub">소재: {{ d.post.topic }}</p>
   {% if d.post.summary %}<p class="chip">요약: {{ d.post.summary }}</p>{% endif %}
 
@@ -17,8 +16,33 @@
   {% endif %}
   {% if d.note %}<div class="banner">📝 메모: {{ d.note }}</div>{% endif %}
 
-  <h2>본문 미리보기</h2>
+  {% if d.status == 'published' %}
+  <h1>{{ d.post.subject }}</h1>
+  <h2>본문</h2>
   <div class="content-preview">{{ d.post.content | safe }}</div>
+  {% else %}
+  <h2>편집 <span class="sub">— 드래그해서 지우거나 고칠 수 있어요</span></h2>
+  <form method="post" action="/draft/{{ d.id }}/edit"
+        onsubmit="document.getElementById('content_field').value = document.getElementById('editor').innerHTML;">
+    <label class="sub">제목</label>
+    <input type="text" name="subject" value="{{ d.post.subject }}" style="font-weight:600;margin:4px 0 12px">
+    <label class="sub">본문 <span style="color:var(--accent)">(글자를 드래그하면 ✨AI 고치기 / 🗑삭제 버튼이 떠요)</span></label>
+    <div id="editor" contenteditable="true" class="content-preview" style="min-height:200px;margin-top:4px">{{ d.post.content | safe }}</div>
+    <input type="hidden" name="content" id="content_field">
+    <div class="row" style="margin-top:12px">
+      <button type="submit" class="primary">💾 편집 내용 저장</button>
+      <span class="sub">저장해야 발행에 반영돼요</span>
+    </div>
+  </form>
+
+  <!-- 드래그 선택 시 뜨는 플로팅 툴바 -->
+  <div id="seltools" style="display:none;position:absolute;z-index:50;gap:6px;
+       background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px;
+       box-shadow:0 4px 16px rgba(0,0,0,.18)">
+    <button type="button" id="btn-ai" class="primary" style="padding:6px 10px">✨ AI로 고치기</button>
+    <button type="button" id="btn-del" class="danger" style="padding:6px 10px">🗑 삭제</button>
+  </div>
+  {% endif %}
 
   {% if d.post.tags %}
   <p class="sub" style="margin-top:12px">태그: {% for t in d.post.tags %}<span class="chip">{{ t }}</span> {% endfor %}</p>
@@ -46,7 +70,62 @@
         <button class="danger" type="submit">🚫 반려</button>
       </form>
     </div>
-    <p class="sub" style="margin-top:8px">승인 후에만 발행할 수 있습니다.</p>
+    <p class="sub" style="margin-top:8px">편집 → 저장 → 승인 → 발행 순서예요. 승인 후에만 발행됩니다.</p>
     {% endif %}
   </div>
+
+  {% if d.status != 'published' %}
+  <script>
+  (function(){
+    var editor = document.getElementById('editor');
+    var bar = document.getElementById('seltools');
+    if(!editor || !bar) return;
+    var savedRange = null;
+
+    function hideBar(){ bar.style.display='none'; }
+    function showBar(rect){
+      bar.style.display='flex';
+      var top = window.scrollY + rect.top - bar.offsetHeight - 8;
+      var left = window.scrollX + rect.left;
+      bar.style.top = Math.max(0, top) + 'px';
+      bar.style.left = Math.max(0, left) + 'px';
+    }
+    editor.addEventListener('mouseup', function(){
+      setTimeout(function(){
+        var sel = window.getSelection();
+        if(sel && sel.rangeCount && !sel.isCollapsed && editor.contains(sel.anchorNode)){
+          savedRange = sel.getRangeAt(0).cloneRange();
+          showBar(savedRange.getBoundingClientRect());
+        } else { hideBar(); }
+      }, 10);
+    });
+    document.addEventListener('mousedown', function(e){
+      if(!bar.contains(e.target) && e.target !== editor && !editor.contains(e.target)) hideBar();
+    });
+
+    document.getElementById('btn-del').addEventListener('click', function(){
+      if(savedRange){ savedRange.deleteContents(); hideBar(); savedRange = null; }
+    });
+
+    document.getElementById('btn-ai').addEventListener('click', function(){
+      if(!savedRange) return;
+      var text = savedRange.toString();
+      var instruction = prompt('이 부분을 어떻게 고칠까요?\n예) 더 짧게 / 더 친근하게 / 쉽게 풀어서 / 존댓말로');
+      if(!instruction){ return; }
+      var btn = this; btn.disabled = true; var old = btn.textContent; btn.textContent = '고치는 중…';
+      fetch('/api/rewrite', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({text:text, instruction:instruction})
+      }).then(function(r){ return r.json(); }).then(function(j){
+        if(j.result){
+          savedRange.deleteContents();
+          savedRange.insertNode(document.createTextNode(j.result));
+        } else { alert('실패: ' + (j.error || '알 수 없음')); }
+      }).catch(function(e){ alert('오류: ' + e); }).finally(function(){
+        btn.disabled = false; btn.textContent = old; hideBar(); savedRange = null;
+      });
+    });
+  })();
+  </script>
+  {% endif %}
 {% endblock %}
