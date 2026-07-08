@@ -81,6 +81,47 @@ python -m src.cafe.main publish 20260708-153000
 python -m src.cafe.main draft --publish
 ```
 
+## 웹 배포 (Firebase / Cloud Run) + 네이버 원클릭 연결
+
+`Dockerfile` 이 있어 컨테이너로 배포됩니다. 앱은 `$PORT`(Cloud Run 기본 8080)를
+읽어 `0.0.0.0` 에 바인딩합니다. **Blaze 요금제**(외부 API 호출·Cloud Run 필요)가 켜진
+Firebase/GCP 프로젝트가 필요합니다.
+
+### 가장 쉬운 방법 — Google Cloud Shell (설치 불필요)
+GCP 콘솔 우측 상단의 **Cloud Shell(터미널 아이콘)** 을 열고:
+
+```bash
+git clone https://github.com/banedict84-star/ai-factory
+cd ai-factory && git checkout claude/new-conversation-5c681a
+
+gcloud run deploy cafe-agent \
+  --source . \
+  --project <프로젝트ID> \
+  --region asia-northeast3 \
+  --allow-unauthenticated
+```
+
+- 처음 실행 시 Cloud Build/Run API 활성화 여부를 물으면 **y** 로 진행합니다.
+- 완료되면 서비스 URL(예: `https://cafe-agent-xxxx-an.a.run.app`)이 출력됩니다.
+
+### 환경변수 설정 (배포 후)
+Cloud Run 콘솔 → `cafe-agent` → **수정 및 새 버전 배포 → 변수 및 보안 비밀** 에 추가:
+- `ANTHROPIC_API_KEY`, `APP_PASSWORD`(접속 비번, **강력 권장**)
+- `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`
+- `NAVER_CAFE_CLUB_ID`(또는 `NAVER_CAFE_URL_NAME`), `NAVER_CAFE_MENU_ID`
+- 연결 후 받은 `NAVER_REFRESH_TOKEN`
+
+또는 배포 시 `--set-env-vars KEY=VALUE,KEY2=VALUE2` 로 한 번에 넣어도 됩니다.
+
+### 네이버 연결
+1. 네이버 개발자센터 → API 설정 → Callback URL 에 `https://<서비스URL>/oauth/callback` 등록
+2. 대시보드 접속 → **🔗 네이버 연결** → 로그인 → 완료
+3. 화면의 `refresh_token` 을 Cloud Run 환경변수와 GitHub Secrets 에 저장
+
+### (선택) Firebase Hosting 도메인 붙이기
+`firebase.json` 이 모든 요청을 Cloud Run(`cafe-agent`, `asia-northeast3`)으로 rewrite 합니다.
+`firebase deploy --only hosting` 하면 `https://<프로젝트>.web.app` 로도 접속됩니다.
+
 ## 웹 배포 (Render) + 네이버 원클릭 연결
 
 대시보드를 인터넷에 배포하면, **'네이버 연결' 버튼 한 번**으로 로그인/토큰 발급이 끝납니다
