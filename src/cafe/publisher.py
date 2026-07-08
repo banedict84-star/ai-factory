@@ -36,6 +36,22 @@ def _fetch_image_bytes(src: str) -> bytes:
     return r.content
 
 
+def _images_to_links(content: str) -> str:
+    """본문의 <img src="url"> 를 그 자리(중간)에 '맨 URL 텍스트'로 바꾼다.
+
+    링크는 '글'이라 네이버가 막지 않으며, 네이버가 이미지 URL 을 자동으로 미리보기
+    이미지로 임베드해줄 수도 있다(될지는 실제 발행으로 확인).
+    """
+    import re
+
+    return re.sub(
+        r'<img\b[^>]*\bsrc=["\']([^"\']+)["\'][^>]*>',
+        r"<br>\1<br>",
+        content,
+        flags=re.IGNORECASE,
+    )
+
+
 def _collect_images(content: str, limit: int = 10) -> list[tuple[str, bytes]]:
     """본문의 <img src="..."> 들을 (파일명, 바이트) 목록으로 수집한다(최대 limit장)."""
     import re
@@ -139,10 +155,31 @@ class NaverCafePublisher:
           (네이버 API 는 본문 중간 삽입을 지원하지 않음).
         """
         url = f"{API_BASE}/{self.club_id}/menu/{self.menu_id}/articles"
-        image_files = _collect_images(content)  # [(filename, bytes), ...]
-        text = _prettify_for_cafe(content, keep_images=False)  # <img> 제거 + 간격
         openyn = "true" if open_to_public else "false"
         headers = self._auth_header()
+
+        # 이미지 처리 방식: attach(하단 첨부, 기본) / link(중간 URL 링크)
+        img_mode = (config.env("CAFE_IMG_MODE") or "attach").strip().lower()
+        if img_mode == "link":
+            # 이미지를 중간에 URL 링크로 남기고, 첨부는 하지 않는다(네이버 자동 임베드 기대)
+            linked = _images_to_links(content)
+            text = _prettify_for_cafe(linked, keep_images=False)
+            body = (
+                f"subject={_naver_encode(subject)}"
+                f"&content={_naver_encode(text)}"
+                f"&openyn={openyn}"
+            )
+            headers["Content-Type"] = "application/x-www-form-urlencoded"
+            resp = requests.post(url, headers=headers, data=body.encode("ascii"), timeout=60)
+            if not resp.ok:
+                raise RuntimeError(
+                    f"네이버 카페 발행 실패 (HTTP {resp.status_code}). 네이버 응답: "
+                    f"{resp.text[:600] or '(본문 없음)'}"
+                )
+            return _parse_article_result(resp.text)
+
+        image_files = _collect_images(content)  # [(filename, bytes), ...]
+        text = _prettify_for_cafe(content, keep_images=False)  # <img> 제거 + 간격
 
         if image_files:
             # multipart: subject/content 는 단일 URL 인코딩(UTF-8), 이미지는 파일 첨부
