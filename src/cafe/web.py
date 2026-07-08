@@ -157,9 +157,7 @@ def generate_images(request: Request, draft_id: str):
             title="이미지 삽입 불가", message="이미 발행된 글입니다.", back=f"/draft/{draft_id}",
         )
     try:
-        new_content = images.add_section_images(
-            d.post.content, d.post.topic, draft_id, _public_base(request)
-        )
+        new_content = images.add_hero_image(d.post.content, d.post.topic, draft_id)
     except Exception as e:
         return _render(
             request, "message.html", status_code=500,

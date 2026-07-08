@@ -37,10 +37,10 @@
 
   <div class="row" style="margin-top:10px">
     <form method="post" action="/draft/{{ d.id }}/images"
-          onsubmit="return confirm('소제목마다 이미지를 생성해 삽입합니다. 몇 초~1분 걸리고 OpenAI 이미지 비용이 듭니다. 진행할까요?');">
-      <button type="submit">🖼 소제목마다 이미지 생성·삽입</button>
+          onsubmit="return confirm('대표 이미지 1장을 생성해 글 상단에 넣습니다. 몇 초 걸리고 OpenAI 이미지 비용이 듭니다. 진행할까요?');">
+      <button type="submit">🖼 대표 이미지 생성 (상단)</button>
     </form>
-    <span class="sub">각 소제목 아래에 관련 이미지를 자동으로 넣어요</span>
+    <span class="sub">글을 대표하는 이미지 1장을 상단에 넣어요 (네이버는 이미지를 상단에 배치)</span>
   </div>
 
   <!-- 드래그 선택 시 뜨는 플로팅 툴바 -->

@@ -93,6 +93,20 @@ def _img_tag(url: str) -> str:
     return f'<p><img src="{url}" style="max-width:100%;border-radius:8px" alt=""></p>'
 
 
+def add_hero_image(content: str, topic: str, draft_id: str) -> str:
+    """글 대표 이미지 1장을 만들어 본문 맨 앞에 삽입합니다.
+
+    발행 시 multipart 로 첨부되며 네이버가 상단에 배치하므로, 대표(헤더) 이미지로 적합.
+    """
+    data = generate_image_bytes(_image_prompt("대표 이미지", topic))
+    url = upload_image(data, f"{GCS_PREFIX}/{draft_id}/hero.png")
+    # 이미 대표 이미지가 있으면(재생성) 기존 <img> 는 지우고 새로 넣는다
+    import re
+
+    content = re.sub(r"<p><img\b[^>]*></p>\s*", "", content, flags=re.IGNORECASE)
+    return _img_tag(url) + "\n" + content
+
+
 def add_section_images(
     content: str, topic: str, draft_id: str, public_base: str
 ) -> str:
