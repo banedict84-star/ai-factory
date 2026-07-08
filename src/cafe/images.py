@@ -144,6 +144,178 @@ def make_title_card(image_bytes: bytes, title: str, brand: str = "") -> bytes:
         return image_bytes
 
 
+def _fetch_bytes(src: str) -> bytes:
+    """이미지 src(우리 firebase/GCS URL 또는 일반 URL)에서 바이트를 가져온다."""
+    import re
+    from urllib.parse import unquote
+
+    m = re.search(r"/o/([^?]+)", src)
+    if "firebasestorage.googleapis.com" in src and m:
+        return fetch_image(unquote(m.group(1)))
+    import requests as _rq
+
+    r = _rq.get(src, timeout=30)
+    r.raise_for_status()
+    return r.content
+
+
+def _parse_blocks(html: str):
+    """본문 HTML 을 순서대로 (종류, 값) 블록 목록으로 파싱한다.
+
+    종류: heading / paragraph / list(문자열 리스트) / image(src)
+    """
+    from html.parser import HTMLParser
+
+    class _P(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.blocks = []
+            self.mode = None
+            self.buf = ""
+            self.items = None
+
+        def handle_starttag(self, tag, attrs):
+            tag = tag.lower()
+            if tag in ("h1", "h2", "h3", "h4"):
+                self.mode, self.buf = "heading", ""
+            elif tag == "p":
+                self.mode, self.buf = "paragraph", ""
+            elif tag in ("ul", "ol"):
+                self.items = []
+            elif tag == "li":
+                self.buf = ""
+            elif tag == "img":
+                src = dict(attrs).get("src")
+                if src:
+                    self.blocks.append(("image", src))
+            elif tag == "br":
+                self.buf += "\n"
+
+        def handle_endtag(self, tag):
+            tag = tag.lower()
+            if tag in ("h1", "h2", "h3", "h4") and self.mode == "heading":
+                t = self.buf.strip()
+                if t:
+                    self.blocks.append(("heading", t))
+                self.mode, self.buf = None, ""
+            elif tag == "p" and self.mode == "paragraph":
+                t = self.buf.strip()
+                if t:
+                    self.blocks.append(("paragraph", t))
+                self.mode, self.buf = None, ""
+            elif tag == "li" and self.items is not None:
+                t = self.buf.strip()
+                if t:
+                    self.items.append(t)
+                self.buf = ""
+            elif tag in ("ul", "ol") and self.items is not None:
+                if self.items:
+                    self.blocks.append(("list", self.items))
+                self.items = None
+
+        def handle_data(self, data):
+            self.buf += data
+
+    p = _P()
+    p.feed(html)
+    return p.blocks
+
+
+def _strip_emoji(text: str) -> str:
+    """Nanum 폰트가 못 그리는 이모지를 제거(두부 □ 방지)."""
+    import re
+
+    return re.sub(
+        "[\U0001f000-\U0001faff\U00002600-\U000027bf\U0000fe00-\U0000fe0f\U00002190-\U000021ff]",
+        "",
+        text,
+    ).strip()
+
+
+def _wrap(draw, text: str, font, max_w: int):
+    """픽셀 폭 기준 줄바꿈(한글은 글자 단위, 공백 있으면 우선 활용)."""
+    text = _strip_emoji(text)
+    lines = []
+    for para in text.split("\n"):
+        cur = ""
+        for ch in para:
+            if draw.textlength(cur + ch, font=font) <= max_w:
+                cur += ch
+            else:
+                lines.append(cur)
+                cur = ch
+        lines.append(cur)
+    return lines or [""]
+
+
+def render_detail_page(
+    content_html: str, title: str, brand: str = "", width: int = 880
+) -> bytes:
+    """본문(텍스트+이미지)을 하나의 긴 '상세페이지' PNG 로 렌더링한다(Pillow)."""
+    import io
+
+    from PIL import Image, ImageDraw
+
+    pad = 48
+    cw = width - pad * 2
+    ACCENT = (138, 90, 43)
+    TEXT = (55, 50, 45)
+    canvas = Image.new("RGB", (width, 30000), (255, 255, 255))
+    draw = ImageDraw.Draw(canvas)
+    f_title = _korean_font(46)
+    f_h = _korean_font(33)
+    f_p = _korean_font(25)
+    f_brand = _korean_font(20)
+
+    y = pad
+    if brand:
+        draw.text((pad, y), brand, font=f_brand, fill=ACCENT)
+        y += 36
+    for line in _wrap(draw, title, f_title, cw):
+        draw.text((pad, y), line, font=f_title, fill=(35, 28, 22))
+        y += 60
+    y += 8
+    draw.rectangle([pad, y, pad + 64, y + 6], fill=ACCENT)
+    y += 34
+
+    for kind, payload in _parse_blocks(content_html):
+        if kind == "heading":
+            y += 30
+            for line in _wrap(draw, payload, f_h, cw):
+                draw.text((pad, y), line, font=f_h, fill=ACCENT)
+                y += 46
+            y += 6
+        elif kind == "paragraph":
+            for line in _wrap(draw, payload, f_p, cw):
+                draw.text((pad, y), line, font=f_p, fill=TEXT)
+                y += 40
+            y += 18
+        elif kind == "list":
+            for item in payload:
+                lines = _wrap(draw, item, f_p, cw - 34)
+                for i, line in enumerate(lines):
+                    prefix = "•  " if i == 0 else "     "
+                    draw.text((pad + 8, y), prefix + line, font=f_p, fill=TEXT)
+                    y += 40
+            y += 18
+        elif kind == "image":
+            try:
+                im = Image.open(io.BytesIO(_fetch_bytes(payload))).convert("RGB")
+                nh = int(im.height * (cw / im.width))
+                im = im.resize((cw, nh))
+                y += 10
+                canvas.paste(im, (pad, y))
+                y += nh + 24
+            except Exception:
+                continue
+
+    y += pad
+    out = canvas.crop((0, 0, width, min(y, 30000)))
+    buf = io.BytesIO()
+    out.save(buf, format="PNG")
+    return buf.getvalue()
+
+
 def _image_prompt(section_title: str, topic: str) -> str:
     return (
         "A clean, realistic photograph related to leather craft (가죽공예). "

@@ -73,6 +73,14 @@ def update_post(
     return draft
 
 
+def set_detail_image(draft_id: str, url: str) -> Draft:
+    """상세페이지 이미지 URL 을 초안에 저장합니다."""
+    draft = load_draft(draft_id)
+    draft.post.detail_image_url = url
+    _write(draft)
+    return draft
+
+
 def update_status(draft_id: str, status: str, note: str = "") -> Draft:
     draft = load_draft(draft_id)
     draft.status = status

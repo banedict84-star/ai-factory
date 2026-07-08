@@ -14,6 +14,7 @@ class CafePost:
     content: str        # 본문 (HTML 또는 순수 텍스트)
     summary: str        # 검수용 한두 문장 요약
     tags: list[str] = field(default_factory=list)  # 참고용 키워드(발행엔 미사용 가능)
+    detail_image_url: str = ""  # 상세페이지 이미지(설정 시 발행에 첨부)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -26,6 +27,7 @@ class CafePost:
             content=data["content"],
             summary=data.get("summary", ""),
             tags=list(data.get("tags", [])),
+            detail_image_url=data.get("detail_image_url", ""),
         )
 
 

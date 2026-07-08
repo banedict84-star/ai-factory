@@ -141,11 +141,25 @@ class NaverCafePublisher:
 
     # ── 글쓰기 ─────────────────────────────────────────────────
     def publish(self, post: CafePost, open_to_public: bool = True) -> dict:
-        """게시글을 발행하고 {articleId, articleUrl} 를 반환합니다."""
+        """게시글을 발행하고 {articleId, articleUrl} 를 반환합니다.
+
+        상세페이지 이미지가 있으면 그 이미지 1장을 첨부하고 본문은 텍스트(검색용)로 보낸다.
+        """
+        detail = getattr(post, "detail_image_url", "") or ""
+        if detail:
+            blob = _fetch_image_bytes(detail)
+            return self.publish_raw(
+                post.subject, post.content, open_to_public,
+                attach_images=[("detail.png", blob)],
+            )
         return self.publish_raw(post.subject, post.content, open_to_public)
 
     def publish_raw(
-        self, subject: str, content: str, open_to_public: bool = True
+        self,
+        subject: str,
+        content: str,
+        open_to_public: bool = True,
+        attach_images: list | None = None,
     ) -> dict:
         """제목/본문 문자열로 발행합니다. 본문에 이미지가 있으면 multipart 로 첨부합니다.
 
@@ -157,6 +171,23 @@ class NaverCafePublisher:
         url = f"{API_BASE}/{self.club_id}/menu/{self.menu_id}/articles"
         openyn = "true" if open_to_public else "false"
         headers = self._auth_header()
+
+        # 상세페이지 등 첨부 이미지가 명시되면 그걸로 multipart 발행(링크 모드 무시)
+        if attach_images is not None:
+            text = _prettify_for_cafe(content, keep_images=False)
+            data = {
+                "subject": quote(subject, encoding="utf-8"),
+                "content": quote(text, encoding="utf-8"),
+                "openyn": openyn,
+            }
+            files = [("image", (n, b, "image/png")) for n, b in attach_images]
+            resp = requests.post(url, headers=headers, data=data, files=files, timeout=120)
+            if not resp.ok:
+                raise RuntimeError(
+                    f"네이버 카페 발행 실패 (HTTP {resp.status_code}). 네이버 응답: "
+                    f"{resp.text[:600] or '(본문 없음)'}"
+                )
+            return _parse_article_result(resp.text)
 
         # 이미지 처리 방식: attach(하단 첨부, 기본) / link(중간 URL 링크)
         img_mode = (config.env("CAFE_IMG_MODE") or "attach").strip().lower()

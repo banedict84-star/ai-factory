@@ -170,6 +170,34 @@ def generate_images(request: Request, draft_id: str):
     return RedirectResponse(f"/draft/{draft_id}", status_code=303)
 
 
+@app.post("/draft/{draft_id}/detail")
+def make_detail(request: Request, draft_id: str):
+    """글+이미지를 하나의 상세페이지 이미지로 만들어 초안에 저장합니다."""
+    d = review.load_draft(draft_id)
+    if d.status == "published":
+        return _render(
+            request, "message.html", status_code=400,
+            title="상세페이지 생성 불가", message="이미 발행된 글입니다.",
+            back=f"/draft/{draft_id}",
+        )
+    try:
+        content = d.post.content
+        if "<img" not in content.lower():
+            # 이미지가 없으면 소제목마다 이미지를 만들어 넣는다(상세페이지용)
+            content = images.add_section_images(content, d.post.topic, draft_id, "")
+            review.update_post(draft_id, content=content)
+        brand = config.load_cafe_config().get("brand", {}).get("name", "")
+        png = images.render_detail_page(content, d.post.subject, brand)
+        url = images.upload_image(png, f"{images.GCS_PREFIX}/{draft_id}/detail.png")
+        review.set_detail_image(draft_id, url)
+    except Exception as e:
+        return _render(
+            request, "message.html", status_code=500,
+            title="상세페이지 생성 실패", message=str(e), back=f"/draft/{draft_id}",
+        )
+    return RedirectResponse(f"/draft/{draft_id}", status_code=303)
+
+
 @app.get("/img/{path:path}")
 def serve_image(path: str):
     """GCS 에 저장된 이미지를 서빙합니다(공개, 잠금 예외)."""

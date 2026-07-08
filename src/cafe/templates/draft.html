@@ -40,8 +40,20 @@
           onsubmit="return confirm('제목이 얹힌 타이틀 카드 이미지를 생성해 글 상단에 넣습니다. 몇 초 걸리고 OpenAI 이미지 비용이 듭니다. 진행할까요?');">
       <button type="submit">🖼 타이틀 카드 생성 (상단)</button>
     </form>
-    <span class="sub">AI 이미지 + 제목으로 블로그 썸네일 같은 카드를 만들어 상단에 넣어요</span>
+    <form method="post" action="/draft/{{ d.id }}/detail"
+          onsubmit="return confirm('글+이미지를 하나의 상세페이지 이미지로 만듭니다. 소제목마다 이미지를 생성하므로 1분쯤 걸리고 OpenAI 비용이 듭니다. 진행할까요?');">
+      <button type="submit" class="primary">📄 상세페이지 이미지 만들기</button>
+    </form>
   </div>
+  <p class="sub" style="margin-top:6px">📄 상세페이지: 글과 사진을 한 장의 긴 이미지로 만들어 발행 시 첨부해요 (레이아웃 그대로!)</p>
+
+  {% if d.post.detail_image_url %}
+  <div class="card">
+    <div class="row"><span class="badge green">상세페이지 준비됨</span>
+      <span class="sub">발행하면 이 이미지가 첨부되고, 본문 텍스트도 함께 올라가요.</span></div>
+    <img src="{{ d.post.detail_image_url }}" style="max-width:100%;border:1px solid var(--border);border-radius:8px;margin-top:8px">
+  </div>
+  {% endif %}
 
   <!-- 드래그 선택 시 뜨는 플로팅 툴바 -->
   <div id="seltools" style="display:none;position:absolute;z-index:50;gap:6px;
