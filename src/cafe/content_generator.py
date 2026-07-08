@@ -1,15 +1,18 @@
-"""초안 생성 — Claude 가 cafe.yaml 설정을 읽고 카페에 올릴 글(제목+본문)을 씁니다."""
+"""초안 생성 — OpenAI 또는 Claude 가 cafe.yaml 설정을 읽고 카페 글(제목+본문)을 씁니다.
+
+제공자 선택: 환경변수 CAFE_LLM(openai/anthropic). 없으면 있는 키로 자동 선택
+(OPENAI_API_KEY 있으면 openai, 아니면 ANTHROPIC_API_KEY 로 anthropic).
+"""
 from __future__ import annotations
 
 import json
 from typing import Any
 
-import anthropic
-
 from .. import config
 from .models import CafePost
 
-MODEL = "claude-opus-4-8"
+ANTHROPIC_MODEL = "claude-opus-4-8"
+OPENAI_MODEL_DEFAULT = "gpt-4o-mini"
 
 # Claude 가 반드시 이 형태의 JSON 으로만 답하도록 강제하는 스키마
 OUTPUT_SCHEMA = {
@@ -73,6 +76,52 @@ def _build_prompt(
     )
 
 
+def _provider() -> str:
+    """사용할 LLM 제공자('openai' 또는 'anthropic')를 결정합니다."""
+    p = config.env("CAFE_LLM")
+    if p:
+        return p.strip().lower()
+    if config.env("OPENAI_API_KEY"):
+        return "openai"
+    if config.env("ANTHROPIC_API_KEY"):
+        return "anthropic"
+    return "openai"  # 기본. 키가 없으면 아래에서 안내와 함께 에러
+
+
+def _generate_openai(prompt: str) -> dict[str, Any]:
+    from openai import OpenAI
+
+    client = OpenAI(api_key=config.env("OPENAI_API_KEY", required=True))
+    model = config.env("CAFE_OPENAI_MODEL") or OPENAI_MODEL_DEFAULT
+    resp = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "cafe_post",
+                "schema": OUTPUT_SCHEMA,
+                "strict": True,
+            },
+        },
+    )
+    return json.loads(resp.choices[0].message.content)
+
+
+def _generate_anthropic(prompt: str) -> dict[str, Any]:
+    import anthropic
+
+    client = anthropic.Anthropic(api_key=config.env("ANTHROPIC_API_KEY", required=True))
+    response = client.messages.create(
+        model=ANTHROPIC_MODEL,
+        max_tokens=3000,
+        messages=[{"role": "user", "content": prompt}],
+        output_config={"format": {"type": "json_schema", "schema": OUTPUT_SCHEMA}},
+    )
+    text = next(block.text for block in response.content if block.type == "text")
+    return json.loads(text)
+
+
 def generate_post(
     topic_hint: str | None = None,
     cfg: dict[str, Any] | None = None,
@@ -84,17 +133,10 @@ def generate_post(
     recent_topics 를 주면 최근 올린 소재와 겹치지 않게 유도합니다.
     """
     cfg = cfg or config.load_cafe_config()
-    client = anthropic.Anthropic(api_key=config.env("ANTHROPIC_API_KEY", required=True))
+    prompt = _build_prompt(cfg, topic_hint, recent_topics)
 
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=3000,
-        messages=[
-            {"role": "user", "content": _build_prompt(cfg, topic_hint, recent_topics)}
-        ],
-        output_config={"format": {"type": "json_schema", "schema": OUTPUT_SCHEMA}},
-    )
-
-    text = next(block.text for block in response.content if block.type == "text")
-    data = json.loads(text)
+    if _provider() == "anthropic":
+        data = _generate_anthropic(prompt)
+    else:
+        data = _generate_openai(prompt)
     return CafePost.from_dict(data)

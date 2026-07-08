@@ -83,8 +83,8 @@
   </header>
   <main>
     {% if not has_key %}
-    <div class="banner">⚠️ ANTHROPIC_API_KEY 가 설정되지 않아 초안 생성이 안 됩니다.
-      <code>.env</code> 에 키를 넣어주세요.</div>
+    <div class="banner">⚠️ AI 키(<code>OPENAI_API_KEY</code> 또는 <code>ANTHROPIC_API_KEY</code>)가
+      없어 초안 생성이 안 됩니다. 환경변수에 키를 넣어주세요.</div>
     {% endif %}
     {% block body %}{% endblock %}
   </main>

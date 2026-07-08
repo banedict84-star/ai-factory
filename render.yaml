@@ -33,8 +33,12 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.9"
+      - key: OPENAI_API_KEY
+        sync: false           # 초안 생성용 OpenAI 키 (권장)
       - key: ANTHROPIC_API_KEY
-        sync: false           # 초안 생성용 Claude 키
+        sync: false           # (대안) Claude 키. OPENAI 키가 있으면 안 넣어도 됨
+      - key: CAFE_LLM
+        sync: false           # (선택) openai / anthropic 강제 지정
       - key: APP_PASSWORD
         sync: false           # (강력 권장) 대시보드 접속 비밀번호
       - key: NAVER_CLIENT_ID

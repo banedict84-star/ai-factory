@@ -66,8 +66,8 @@ if _APP_PASSWORD:
         return await call_next(request)
 
 
-def _has_anthropic() -> bool:
-    return bool(os.getenv("ANTHROPIC_API_KEY"))
+def _has_llm_key() -> bool:
+    return bool(os.getenv("OPENAI_API_KEY") or os.getenv("ANTHROPIC_API_KEY"))
 
 
 def _public_base(request: Request) -> str:
@@ -88,7 +88,7 @@ def _render(request: Request, name: str, status_code: int = 200, **kw):
     """모던 Starlette 시그니처(request 우선)로 템플릿을 렌더링합니다."""
     ctx = {
         "status_badge": STATUS_BADGE,
-        "has_key": _has_anthropic(),
+        "has_key": _has_llm_key(),
         "connected": auth.is_connected(),
     }
     ctx.update(kw)
@@ -213,8 +213,8 @@ def main() -> None:
     # 로컬은 CAFE_WEB_PORT(기본 8010) + 127.0.0.1.
     port = int(os.getenv("PORT", os.getenv("CAFE_WEB_PORT", "8010")))
     host = "0.0.0.0" if os.getenv("PORT") else "127.0.0.1"
-    print(f"[가죽공예 카페 에이전트] {host}:{port}  (ANTHROPIC_API_KEY="
-          f"{'set' if _has_anthropic() else 'MISSING'})")
+    print(f"[가죽공예 카페 에이전트] {host}:{port}  (AI키="
+          f"{'set' if _has_llm_key() else 'MISSING'})")
     uvicorn.run(app, host=host, port=port)
 
 
