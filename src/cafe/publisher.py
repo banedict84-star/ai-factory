@@ -18,6 +18,21 @@ from .models import CafePost
 API_BASE = "https://openapi.naver.com/v1/cafe"
 
 
+def _prettify_for_cafe(html: str) -> str:
+    """네이버 카페는 블록 요소(<p>,<h3>) 간 여백이 거의 없어 문단이 붙어 보인다.
+    문단/목록 끝과 소제목 앞에 빈 줄(<br>)을 넣어 가독성 있게 다듬는다.
+    """
+    import re
+
+    # 문단/목록 끝에 빈 줄 (소제목 뒤에는 넣지 않아 제목이 본문에 붙게)
+    html = re.sub(r"</(p|ul|ol)>", r"</\1><br>", html, flags=re.IGNORECASE)
+    # 소제목(h1~h4) 앞에 빈 줄 → 섹션 구분
+    html = re.sub(r"\s*<(h[1-4])(\b|>)", r"<br><\1\2", html, flags=re.IGNORECASE)
+    # 맨 앞에 생긴 <br> 는 제거
+    html = re.sub(r"^\s*(<br>\s*)+", "", html.strip(), flags=re.IGNORECASE)
+    return html
+
+
 def _naver_encode(s: str) -> str:
     """네이버 카페 API 명세대로 이중 URL 인코딩: UTF-8 인코딩 후 MS949로 재인코딩.
 
@@ -83,6 +98,7 @@ class NaverCafePublisher:
         보내므로 Content-Type 은 charset 없이 form-urlencoded 로 두고 ASCII 로 전송.
         """
         url = f"{API_BASE}/{self.club_id}/menu/{self.menu_id}/articles"
+        content = _prettify_for_cafe(content)
         body = (
             f"subject={_naver_encode(subject)}"
             f"&content={_naver_encode(content)}"
