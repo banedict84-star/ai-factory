@@ -24,6 +24,12 @@ def _prettify_for_cafe(html: str) -> str:
     """
     import re
 
+    # 외부 <img> 는 네이버가 거부(999)하고 렌더도 안 되므로 제거한다.
+    # (이미지는 별도 multipart 첨부 방식으로 넣어야 함)
+    html = re.sub(r"<img\b[^>]*>", "", html, flags=re.IGNORECASE)
+    # 이미지만 있던 <p></p> 빈 껍데기 정리
+    html = re.sub(r"<p>\s*</p>", "", html, flags=re.IGNORECASE)
+
     # 문단/목록 끝에 빈 줄 (소제목 뒤에는 넣지 않아 제목이 본문에 붙게)
     html = re.sub(r"</(p|ul|ol)>", r"</\1><br>", html, flags=re.IGNORECASE)
     # 소제목(h1~h4) 앞에 빈 줄 → 섹션 구분
