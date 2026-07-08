@@ -18,6 +18,15 @@ from .models import CafePost
 API_BASE = "https://openapi.naver.com/v1/cafe"
 
 
+def _naver_encode(s: str) -> str:
+    """네이버 카페 API 명세대로 이중 URL 인코딩: UTF-8 인코딩 후 MS949로 재인코딩.
+
+    (공식 예: URLEncoder.encode(URLEncoder.encode(s, "UTF-8"), "MS949"))
+    1차에서 한글→UTF-8 %인코딩, 2차에서 그 결과(ASCII)의 % 등을 다시 %인코딩한다.
+    """
+    return quote(quote(s, safe="", encoding="utf-8"), safe="", encoding="cp949")
+
+
 class NaverCafePublisher:
     def __init__(
         self,
@@ -69,22 +78,19 @@ class NaverCafePublisher:
     ) -> dict:
         """제목/본문 문자열로 직접 발행합니다.
 
-        ⚠️ 한글 깨짐 해법: subject/content 를 손으로 URL 인코딩하거나 charset 을
-        지정하지 말고, requests 에 dict 를 넘겨 표준 form 인코딩(UTF-8, quote_plus)에
-        맡긴다. 수동 인코딩이 네이버 파서와 어긋나 한글이 깨지던 원인이었다.
-        (검증된 방식: urlencode({'subject':..,'content':..}) 와 동일)
+        ⚠️ 한글 깨짐 해법(네이버 공식 명세): subject/content 는 'UTF-8 URL 인코딩 후
+        MS949로 재 URL 인코딩'한 이중 인코딩 값으로 보내야 한다. 이미 %인코딩된 본문을
+        보내므로 Content-Type 은 charset 없이 form-urlencoded 로 두고 ASCII 로 전송.
         """
         url = f"{API_BASE}/{self.club_id}/menu/{self.menu_id}/articles"
-        resp = requests.post(
-            url,
-            headers=self._auth_header(),
-            data={
-                "subject": subject,
-                "content": content,
-                "openyn": "true" if open_to_public else "false",
-            },
-            timeout=60,
+        body = (
+            f"subject={_naver_encode(subject)}"
+            f"&content={_naver_encode(content)}"
+            f"&openyn={'true' if open_to_public else 'false'}"
         )
+        headers = self._auth_header()
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
+        resp = requests.post(url, headers=headers, data=body.encode("ascii"), timeout=60)
         if not resp.ok:
             # 네이버가 준 실제 사유(권한/제한/토큰 등)를 그대로 노출해 진단을 돕는다.
             raise RuntimeError(
