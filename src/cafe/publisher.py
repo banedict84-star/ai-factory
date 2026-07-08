@@ -69,16 +69,21 @@ class NaverCafePublisher:
     ) -> dict:
         """제목/본문 문자열로 직접 발행. subject·content 는 URL 인코딩해서 전송합니다."""
         url = f"{API_BASE}/{self.club_id}/menu/{self.menu_id}/articles"
-        # 네이버 카페 글쓰기 API 는 subject/content 를 URL 인코딩한 폼 바디로 받습니다.
+        # ⚠️ 네이버 카페 글쓰기 API 는 subject/content 를 euc-kr(ms949)로 URL 인코딩해야
+        # 한글이 깨지지 않습니다(UTF-8 로 보내면 글자가 �로 깨짐). ms949 로 표현 불가한
+        # 이모지 등은 HTML 엔티티(&#...;)로 대체해 그대로 렌더되게 합니다.
+        enc = "cp949"
+        subj = quote(subject, encoding=enc, errors="xmlcharrefreplace")
+        cont = quote(content, encoding=enc, errors="xmlcharrefreplace")
         body = (
-            f"subject={quote(subject)}"
-            f"&content={quote(content)}"
+            f"subject={subj}"
+            f"&content={cont}"
             f"&openyn={'true' if open_to_public else 'false'}"
         )
         headers = self._auth_header()
         headers["Content-Type"] = "application/x-www-form-urlencoded"
 
-        resp = requests.post(url, headers=headers, data=body.encode("utf-8"), timeout=60)
+        resp = requests.post(url, headers=headers, data=body.encode("ascii"), timeout=60)
         resp.raise_for_status()
         return _parse_article_result(resp.text)
 
