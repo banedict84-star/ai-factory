@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ d.post.subject }} · 초안{% endblock %}
+{% block body %}
+  {% set badge = status_badge.get(d.status, ('', d.status)) %}
+  <p class="sub"><a class="link" href="/">← 대시보드</a></p>
+  <div class="row">
+    <span class="badge {{ badge[0] }}">{{ badge[1] }}</span>
+    <span class="sub">ID {{ d.id }}</span>
+  </div>
+  <h1>{{ d.post.subject }}</h1>
+  <p class="sub">소재: {{ d.post.topic }}</p>
+  {% if d.post.summary %}<p class="chip">요약: {{ d.post.summary }}</p>{% endif %}
+
+  {% if d.article_url %}
+  <div class="banner">✅ 발행됨 · <a class="link" href="{{ d.article_url }}" target="_blank" rel="noopener">카페에서 보기</a>
+    {% if d.published_at %} ({{ d.published_at[:16] }}){% endif %}</div>
+  {% endif %}
+  {% if d.note %}<div class="banner">📝 메모: {{ d.note }}</div>{% endif %}
+
+  <h2>본문 미리보기</h2>
+  <div class="content-preview">{{ d.post.content | safe }}</div>
+
+  {% if d.post.tags %}
+  <p class="sub" style="margin-top:12px">태그: {% for t in d.post.tags %}<span class="chip">{{ t }}</span> {% endfor %}</p>
+  {% endif %}
+
+  <h2>검수</h2>
+  <div class="card">
+    {% if d.status == 'published' %}
+      <div class="empty">이미 발행된 글입니다.</div>
+    {% else %}
+    <div class="row">
+      {% if d.status != 'approved' %}
+      <form class="inline" method="post" action="/draft/{{ d.id }}/approve">
+        <button class="primary" type="submit">✅ 승인</button>
+      </form>
+      {% endif %}
+      {% if d.status == 'approved' %}
+      <form class="inline" method="post" action="/draft/{{ d.id }}/publish"
+            onsubmit="return confirm('카페에 실제로 발행합니다. 진행할까요?');">
+        <button class="primary" type="submit">📮 카페에 발행</button>
+      </form>
+      {% endif %}
+      <form class="inline" method="post" action="/draft/{{ d.id }}/reject" style="flex:1">
+        <input type="text" name="note" placeholder="반려 사유(선택)">
+        <button class="danger" type="submit">🚫 반려</button>
+      </form>
+    </div>
+    <p class="sub" style="margin-top:8px">승인 후에만 발행할 수 있습니다.</p>
+    {% endif %}
+  </div>
+{% endblock %}

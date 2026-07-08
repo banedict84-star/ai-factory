@@ -110,6 +110,12 @@ python -m src.cafe.main approve <id>   # 검수 후 승인
 python -m src.cafe.main publish <id>   # 승인된 초안만 발행
 ```
 
+**관리 대시보드**로 브라우저에서 검수·발행할 수 있습니다:
+
+```bash
+python -m src.cafe.web     # http://127.0.0.1:8010 (검수 대기·승인·발행 관리)
+```
+
 **매일 1회 자동 발행**은 `.github/workflows/cafe-daily.yml` 이 한국시간 12:00 에 실행합니다
-(`python -m src.cafe.main daily`). 설정은 `config/cafe.yaml`, 설치·인증·스케줄 가이드는
+(`python -m src.cafe.main daily`). 설정은 `config/cafe.yaml`, 설치·인증·스케줄·대시보드 가이드는
 [`docs/CAFE.md`](docs/CAFE.md) 참고.

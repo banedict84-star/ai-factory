@@ -81,6 +81,23 @@ python -m src.cafe.main publish 20260708-153000
 python -m src.cafe.main draft --publish
 ```
 
+## 관리 대시보드 (웹)
+
+브라우저에서 초안을 생성·검수·발행할 수 있는 대시보드가 있습니다.
+
+```bash
+python -m src.cafe.web          # http://127.0.0.1:8010
+# 또는: uvicorn src.cafe.web:app --reload
+```
+
+화면 구성:
+- **대시보드** (`/`) — 검수 대기 / 승인됨 / 최근 발행을 한눈에. 상단에서 새 초안 생성.
+- **초안 상세** (`/draft/<id>`) — 본문 미리보기 + 승인 / 반려 / 카페에 발행 버튼.
+- **설정** (`/settings`) — `config/cafe.yaml` 의 브랜드·글 규격·소재 풀을 확인.
+
+CLI(`draft`/`approve`/`publish`)와 같은 검수 저장소(`output/cafe_drafts/`)를 공유하므로,
+웹과 터미널을 섞어 써도 됩니다. 포트는 `CAFE_WEB_PORT` 로 바꿀 수 있습니다.
+
 ## 매일 1회 자동 발행 (GitHub Actions)
 
 `.github/workflows/cafe-daily.yml` 이 **매일 한국시간 12:00(UTC 03:00)** 에
