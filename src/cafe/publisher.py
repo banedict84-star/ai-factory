@@ -67,30 +67,24 @@ class NaverCafePublisher:
     def publish_raw(
         self, subject: str, content: str, open_to_public: bool = True
     ) -> dict:
-        """제목/본문 문자열로 직접 발행. subject·content 는 URL 인코딩해서 전송합니다."""
-        url = f"{API_BASE}/{self.club_id}/menu/{self.menu_id}/articles"
-        # ⚠️ 네이버 카페 API 의 한글 인코딩이 까다로워, 바이트 인코딩과 선언 charset 을
-        # 각각 env 로 바꿔가며 맞출 수 있게 한다(재배포 없이 env 만 바꿔 테스트).
-        #   CAFE_ENC_BYTES  : content 를 URL 인코딩할 바이트 인코딩 (euc-kr | utf-8)
-        #   CAFE_ENC_DECLARE: Content-Type 에 선언할 charset (utf-8 | euc-kr | none)
-        # euc-kr 로 표현 불가한 이모지 등은 HTML 엔티티(&#...;)로 대체.
-        bytes_enc = (config.env("CAFE_ENC_BYTES") or "euc-kr").strip().lower()
-        declare = (config.env("CAFE_ENC_DECLARE") or "utf-8").strip().lower()
-        py_enc = "cp949" if bytes_enc in ("euc-kr", "euckr", "ms949", "cp949") else "utf-8"
-        subj = quote(subject, encoding=py_enc, errors="xmlcharrefreplace")
-        cont = quote(content, encoding=py_enc, errors="xmlcharrefreplace")
-        body = (
-            f"subject={subj}"
-            f"&content={cont}"
-            f"&openyn={'true' if open_to_public else 'false'}"
-        )
-        headers = self._auth_header()
-        ct = "application/x-www-form-urlencoded"
-        if declare and declare != "none":
-            ct += f"; charset={declare}"
-        headers["Content-Type"] = ct
+        """제목/본문 문자열로 직접 발행합니다.
 
-        resp = requests.post(url, headers=headers, data=body.encode("ascii"), timeout=60)
+        ⚠️ 한글 깨짐 해법: subject/content 를 손으로 URL 인코딩하거나 charset 을
+        지정하지 말고, requests 에 dict 를 넘겨 표준 form 인코딩(UTF-8, quote_plus)에
+        맡긴다. 수동 인코딩이 네이버 파서와 어긋나 한글이 깨지던 원인이었다.
+        (검증된 방식: urlencode({'subject':..,'content':..}) 와 동일)
+        """
+        url = f"{API_BASE}/{self.club_id}/menu/{self.menu_id}/articles"
+        resp = requests.post(
+            url,
+            headers=self._auth_header(),
+            data={
+                "subject": subject,
+                "content": content,
+                "openyn": "true" if open_to_public else "false",
+            },
+            timeout=60,
+        )
         if not resp.ok:
             # 네이버가 준 실제 사유(권한/제한/토큰 등)를 그대로 노출해 진단을 돕는다.
             raise RuntimeError(
