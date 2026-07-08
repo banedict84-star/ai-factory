@@ -52,6 +52,15 @@ def _cmd_draft(args) -> int:
     return 0
 
 
+def _cmd_daily(args) -> int:
+    """매일 1회 자동 발행 (검수 생략). GitHub Actions 등 스케줄러에서 호출."""
+    d = pipeline.run_daily(topic_hint=args.topic)
+    print(f"✅ 자동 발행 완료: {d.id}")
+    print(f"   제목: {d.post.subject}")
+    print(f"   URL : {d.article_url or d.article_id or 'OK'}")
+    return 0
+
+
 def _cmd_list(args) -> int:
     drafts = review.list_drafts(status=args.status)
     if not drafts:
@@ -102,6 +111,10 @@ def main(argv: list[str] | None = None) -> int:
         "--publish", action="store_true", help="생성 후 대화식으로 확인/승인/발행"
     )
     p_draft.set_defaults(func=_cmd_draft)
+
+    p_daily = sub.add_parser("daily", help="매일 1회 자동 발행(검수 생략)")
+    p_daily.add_argument("-t", "--topic", help="소재 지정(없으면 설정 topics 에서 선택)")
+    p_daily.set_defaults(func=_cmd_daily)
 
     p_list = sub.add_parser("list", help="저장된 초안 목록")
     p_list.add_argument(

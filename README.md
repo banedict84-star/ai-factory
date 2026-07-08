@@ -110,4 +110,6 @@ python -m src.cafe.main approve <id>   # 검수 후 승인
 python -m src.cafe.main publish <id>   # 승인된 초안만 발행
 ```
 
-설정은 `config/cafe.yaml`, 설치·인증 가이드는 [`docs/CAFE.md`](docs/CAFE.md) 참고.
+**매일 1회 자동 발행**은 `.github/workflows/cafe-daily.yml` 이 한국시간 12:00 에 실행합니다
+(`python -m src.cafe.main daily`). 설정은 `config/cafe.yaml`, 설치·인증·스케줄 가이드는
+[`docs/CAFE.md`](docs/CAFE.md) 참고.

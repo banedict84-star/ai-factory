@@ -81,6 +81,37 @@ python -m src.cafe.main publish 20260708-153000
 python -m src.cafe.main draft --publish
 ```
 
+## 매일 1회 자동 발행 (GitHub Actions)
+
+`.github/workflows/cafe-daily.yml` 이 **매일 한국시간 12:00(UTC 03:00)** 에
+초안 생성 → 자동 발행까지 실행합니다. (검수 없이 바로 게시)
+
+수동 명령으로도 동일하게 실행할 수 있습니다:
+
+```bash
+python -m src.cafe.main daily              # 초안 생성 → 자동 승인 → 발행
+python -m src.cafe.main daily -t "소재 지정"
+```
+
+### GitHub 설정 (Secrets / Variables)
+
+저장소 **Settings → Secrets and variables → Actions** 에 등록:
+
+| 종류 | 이름 | 값 |
+|---|---|---|
+| Secret | `ANTHROPIC_API_KEY` | Claude 키 |
+| Secret | `NAVER_CLIENT_ID` | 네이버 앱 클라이언트 ID |
+| Secret | `NAVER_CLIENT_SECRET` | 네이버 앱 시크릿 |
+| Secret | `NAVER_REFRESH_TOKEN` | `login` 으로 받은 refresh token |
+| Secret | `NAVER_CAFE_CLUB_ID` | 숫자 카페 ID (있으면) |
+| Secret | `NAVER_CAFE_MENU_ID` | 게시판(메뉴) ID |
+| Variable | `NAVER_CAFE_URL_NAME` | (club_id 대신) 카페 URL 이름 |
+
+- 발행 시각을 바꾸려면 워크플로의 `cron` 값을 수정하세요 (UTC 기준).
+- **Actions** 탭에서 **Run workflow** 로 언제든 수동 실행할 수 있습니다.
+- 매 실행마다 초안/발행 기록이 아티팩트(`cafe-drafts-*`)로 30일간 보관되어,
+  **무엇이 언제 올라갔는지** 나중에 확인할 수 있습니다.
+
 ## 안전장치
 
 - `publish` 는 기본적으로 **승인(approved) 된 초안만** 발행합니다. (`--force` 로만 우회)

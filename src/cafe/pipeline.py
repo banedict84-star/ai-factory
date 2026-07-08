@@ -33,6 +33,18 @@ def draft(topic_hint: str | None = None) -> DraftResult:
     return DraftResult(draft=saved, preview_path=preview)
 
 
+def run_daily(topic_hint: str | None = None) -> Draft:
+    """매일 1회 자동 발행 — 초안 생성 → 자동 승인 → 발행 을 한 번에.
+
+    검수 없이 바로 올라가지만, 초안/발행 결과는 output/cafe_drafts 에 기록되어
+    나중에 무엇이 언제 올라갔는지 확인할 수 있습니다.
+    """
+    result = draft(topic_hint=topic_hint)
+    draft_id = result.draft.id
+    review.approve(draft_id, note="daily 자동 발행")
+    return publish(draft_id, require_approved=False)
+
+
 def publish(draft_id: str, require_approved: bool = True) -> Draft:
     """검수된 초안을 실제로 발행합니다.
 
