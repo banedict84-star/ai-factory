@@ -84,7 +84,12 @@ class NaverCafePublisher:
         headers["Content-Type"] = "application/x-www-form-urlencoded"
 
         resp = requests.post(url, headers=headers, data=body.encode("ascii"), timeout=60)
-        resp.raise_for_status()
+        if not resp.ok:
+            # 네이버가 준 실제 사유(권한/제한/토큰 등)를 그대로 노출해 진단을 돕는다.
+            raise RuntimeError(
+                f"네이버 카페 발행 실패 (HTTP {resp.status_code}). 네이버 응답: "
+                f"{resp.text[:600] or '(본문 없음)'}"
+            )
         return _parse_article_result(resp.text)
 
     # ── 내부 ───────────────────────────────────────────────────
