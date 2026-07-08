@@ -18,6 +18,38 @@ from .models import CafePost
 API_BASE = "https://openapi.naver.com/v1/cafe"
 
 
+def _fetch_image_bytes(src: str) -> bytes:
+    """본문 <img> 의 src 에서 이미지 바이트를 가져온다.
+
+    우리 firebase/GCS 이미지면 GCS 에서 직접 읽고, 그 외에는 HTTP GET.
+    """
+    import re
+    from urllib.parse import unquote
+
+    m = re.search(r"/o/([^?]+)", src)
+    if "firebasestorage.googleapis.com" in src and m:
+        from . import images
+
+        return images.fetch_image(unquote(m.group(1)))
+    r = requests.get(src, timeout=30)
+    r.raise_for_status()
+    return r.content
+
+
+def _collect_images(content: str, limit: int = 10) -> list[tuple[str, bytes]]:
+    """본문의 <img src="..."> 들을 (파일명, 바이트) 목록으로 수집한다(최대 limit장)."""
+    import re
+
+    srcs = re.findall(r'<img\b[^>]*\bsrc=["\']([^"\']+)["\']', content, flags=re.IGNORECASE)
+    out: list[tuple[str, bytes]] = []
+    for i, src in enumerate(srcs[:limit]):
+        try:
+            out.append((f"image{i}.png", _fetch_image_bytes(src)))
+        except Exception:
+            continue  # 못 가져온 이미지는 건너뛴다
+    return out
+
+
 def _prettify_for_cafe(html: str, keep_images: bool = False) -> str:
     """네이버 카페는 블록 요소(<p>,<h3>) 간 여백이 거의 없어 문단이 붙어 보인다.
     문단/목록 끝과 소제목 앞에 빈 줄(<br>)을 넣어 가독성 있게 다듬는다.
@@ -99,27 +131,41 @@ class NaverCafePublisher:
     def publish_raw(
         self, subject: str, content: str, open_to_public: bool = True
     ) -> dict:
-        """제목/본문 문자열로 직접 발행합니다.
+        """제목/본문 문자열로 발행합니다. 본문에 이미지가 있으면 multipart 로 첨부합니다.
 
-        ⚠️ 한글 깨짐 해법(네이버 공식 명세): subject/content 는 'UTF-8 URL 인코딩 후
-        MS949로 재 URL 인코딩'한 이중 인코딩 값으로 보내야 한다. 이미 %인코딩된 본문을
-        보내므로 Content-Type 은 charset 없이 form-urlencoded 로 두고 ASCII 로 전송.
+        - 이미지 없음: form-urlencoded + 이중 인코딩(UTF-8→MS949). (네이버 명세)
+        - 이미지 있음: 본문의 <img> 를 파일로 추출해 multipart image[] 로 첨부하고,
+          본문은 텍스트만(단일 UTF-8 인코딩) 보낸다. 이미지는 글 하단에 붙는다
+          (네이버 API 는 본문 중간 삽입을 지원하지 않음).
         """
         url = f"{API_BASE}/{self.club_id}/menu/{self.menu_id}/articles"
-        keep_images = (config.env("CAFE_KEEP_IMAGES") or "").strip().lower() in (
-            "1", "true", "yes", "on",
-        )
-        content = _prettify_for_cafe(content, keep_images=keep_images)
-        body = (
-            f"subject={_naver_encode(subject)}"
-            f"&content={_naver_encode(content)}"
-            f"&openyn={'true' if open_to_public else 'false'}"
-        )
+        image_files = _collect_images(content)  # [(filename, bytes), ...]
+        text = _prettify_for_cafe(content, keep_images=False)  # <img> 제거 + 간격
+        openyn = "true" if open_to_public else "false"
         headers = self._auth_header()
-        headers["Content-Type"] = "application/x-www-form-urlencoded"
-        resp = requests.post(url, headers=headers, data=body.encode("ascii"), timeout=60)
+
+        if image_files:
+            # multipart: subject/content 는 단일 URL 인코딩(UTF-8), 이미지는 파일 첨부
+            data = {
+                "subject": quote(subject, encoding="utf-8"),
+                "content": quote(text, encoding="utf-8"),
+                "openyn": openyn,
+            }
+            files = [
+                ("image", (name, blob, "image/png")) for name, blob in image_files
+            ]
+            resp = requests.post(url, headers=headers, data=data, files=files, timeout=120)
+        else:
+            # form-urlencoded: 이중 인코딩(공식 명세)
+            body = (
+                f"subject={_naver_encode(subject)}"
+                f"&content={_naver_encode(text)}"
+                f"&openyn={openyn}"
+            )
+            headers["Content-Type"] = "application/x-www-form-urlencoded"
+            resp = requests.post(url, headers=headers, data=body.encode("ascii"), timeout=60)
+
         if not resp.ok:
-            # 네이버가 준 실제 사유(권한/제한/토큰 등)를 그대로 노출해 진단을 돕는다.
             raise RuntimeError(
                 f"네이버 카페 발행 실패 (HTTP {resp.status_code}). 네이버 응답: "
                 f"{resp.text[:600] or '(본문 없음)'}"
