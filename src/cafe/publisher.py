@@ -80,19 +80,27 @@ def _prettify_for_cafe(
     if not keep_images:
         html = re.sub(r"<img\b[^>]*>", "", html, flags=re.IGNORECASE)
 
+    # 강조 태그(strong/em/b) → <b> 로 통일 (굵은 라벨 유지)
+    html = re.sub(r"<(?:strong|em|b)\b[^>]*>", "<b>", html, flags=re.IGNORECASE)
+    html = re.sub(r"</(?:strong|em|b)>", "</b>", html, flags=re.IGNORECASE)
+
     # BENEAI 인사말을 한 줄로 분리하고 뒤에 빈 줄
     html = re.sub(r"(베네아이\)\s*입니다\.)\s*", r"\1<br><br>", html, count=1, flags=re.IGNORECASE)
 
-    # 소제목(h1~h4) → 빈 줄 + 굵은 글씨 + 줄바꿈 (블록 대신 평평하게)
-    html = re.sub(r"\s*<h[1-4][^>]*>\s*(.*?)\s*</h[1-4]>\s*", r"<br><br><b>\1</b><br>", html, flags=flags)
+    # 소제목(h1~h4) → 빈 줄 + 큰 글씨(font size=5) + 굵게 + 줄바꿈 (블록 대신 평평하게)
+    html = re.sub(
+        r"\s*<h[1-4][^>]*>\s*(.*?)\s*</h[1-4]>\s*",
+        r'<br><br><font size="5"><b>\1</b></font><br>',
+        html, flags=flags,
+    )
     # 목록 항목 → 불릿 + 줄바꿈, 목록 블록은 여백으로
     html = re.sub(r"\s*<li[^>]*>\s*(.*?)\s*</li>\s*", r"• \1<br>", html, flags=flags)
     html = re.sub(r"\s*</?(?:ul|ol)[^>]*>\s*", "<br>", html, flags=re.IGNORECASE)
     # 문단 → 텍스트 + 빈 줄
     html = re.sub(r"\s*<p[^>]*>\s*(.*?)\s*</p>\s*", r"\1<br><br>", html, flags=flags)
 
-    # 남은 태그 제거 (b, br 만 유지)
-    html = re.sub(r"</?(?!b\b|br\b)[a-zA-Z][^>]*>", "", html)
+    # 남은 태그 제거 (b, br, font 만 유지)
+    html = re.sub(r"</?(?!b\b|br\b|font\b)[a-zA-Z][^>]*>", "", html)
     # <br> 3개 이상은 2개로 축소
     html = re.sub(r"(?:\s*<br\s*/?>\s*){3,}", "<br><br>", html, flags=re.IGNORECASE)
     # 앞뒤 <br> 정리
