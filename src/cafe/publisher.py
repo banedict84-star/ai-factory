@@ -69,19 +69,22 @@ class NaverCafePublisher:
     ) -> dict:
         """제목/본문 문자열로 직접 발행. subject·content 는 URL 인코딩해서 전송합니다."""
         url = f"{API_BASE}/{self.club_id}/menu/{self.menu_id}/articles"
-        # ⚠️ 네이버 카페 글쓰기 API 는 subject/content 를 euc-kr(ms949)로 URL 인코딩해야
-        # 한글이 깨지지 않습니다(UTF-8 로 보내면 글자가 �로 깨짐). ms949 로 표현 불가한
-        # 이모지 등은 HTML 엔티티(&#...;)로 대체해 그대로 렌더되게 합니다.
-        enc = "cp949"
-        subj = quote(subject, encoding=enc, errors="xmlcharrefreplace")
-        cont = quote(content, encoding=enc, errors="xmlcharrefreplace")
+        # ⚠️ 네이버 카페 글쓰기 API 는 charset 을 명시하지 않으면 인코딩을 잘못 추측해
+        # 한글이 깨진다(占쏙옙/� 현상). 검증 결과 euc-kr(cp949) URL 인코딩 + 헤더에
+        # charset=euc-kr 을 함께 명시하면 정상. 만약 그래도 깨지면 env
+        # CAFE_NAVER_CHARSET=utf-8 로 바꿔 재시도할 수 있게 했다.
+        # euc-kr 로 표현 불가한 이모지 등은 HTML 엔티티(&#...;)로 대체해 그대로 렌더.
+        charset = (config.env("CAFE_NAVER_CHARSET") or "euc-kr").lower()
+        py_enc = "cp949" if charset in ("euc-kr", "euckr", "ms949", "cp949") else "utf-8"
+        subj = quote(subject, encoding=py_enc, errors="xmlcharrefreplace")
+        cont = quote(content, encoding=py_enc, errors="xmlcharrefreplace")
         body = (
             f"subject={subj}"
             f"&content={cont}"
             f"&openyn={'true' if open_to_public else 'false'}"
         )
         headers = self._auth_header()
-        headers["Content-Type"] = "application/x-www-form-urlencoded"
+        headers["Content-Type"] = f"application/x-www-form-urlencoded; charset={charset}"
 
         resp = requests.post(url, headers=headers, data=body.encode("ascii"), timeout=60)
         if not resp.ok:
