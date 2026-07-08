@@ -97,3 +97,17 @@ python -m oms.main serve
 `src/` 에는 실제 인스타 콘텐츠를 생성·게시하는 파이프라인 초안이 있습니다.
 지금 OS 는 **실제 AI/게시 API 를 연결하지 않습니다.** 나중에 직원의 Decision/작업 자리에
 이 실행기를 연결하면, AI 직원들이 실제로 콘텐츠를 만들어 올리게 됩니다.
+
+## `src/cafe/` — 네이버 카페 자동 발행 에이전트
+
+카페 게시글을 **AI 초안 → 대표 검수 → 네이버 카페 공식 OpenAPI 발행** 흐름으로 올립니다.
+
+```bash
+python -m src.cafe.main login          # 최초 1회: 네이버 로그인 → refresh_token
+python -m src.cafe.main draft          # AI 초안 생성(검수 대기)
+python -m src.cafe.main list           # 초안 목록/상태 확인
+python -m src.cafe.main approve <id>   # 검수 후 승인
+python -m src.cafe.main publish <id>   # 승인된 초안만 발행
+```
+
+설정은 `config/cafe.yaml`, 설치·인증 가이드는 [`docs/CAFE.md`](docs/CAFE.md) 참고.
