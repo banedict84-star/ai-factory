@@ -17,7 +17,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from .. import config
-from . import pipeline, review
+from . import auth, pipeline, review
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -39,14 +39,58 @@ STATUS_BADGE = {
 
 app = FastAPI(title="가죽공예 카페 에이전트")
 
+# ── (선택) 비밀번호 잠금 ──────────────────────────────────
+# APP_PASSWORD 를 설정하면 공개 주소로 배포해도 남이 내 카페에 글을 쓰거나
+# 내 크레딧을 쓰지 못하게 막아줍니다. 비워두면 잠금 없음.
+_APP_PASSWORD = os.getenv("APP_PASSWORD")
+if _APP_PASSWORD:
+    import base64
+
+    from starlette.responses import Response
+
+    @app.middleware("http")
+    async def _basic_auth(request: Request, call_next):
+        header = request.headers.get("authorization", "")
+        ok = False
+        if header.startswith("Basic "):
+            try:
+                decoded = base64.b64decode(header[6:]).decode("utf-8")
+                ok = decoded.split(":", 1)[1] == _APP_PASSWORD
+            except Exception:
+                ok = False
+        if not ok:
+            return Response(
+                "비밀번호가 필요합니다.", status_code=401,
+                headers={"WWW-Authenticate": 'Basic realm="cafe-agent"'},
+            )
+        return await call_next(request)
+
 
 def _has_anthropic() -> bool:
     return bool(os.getenv("ANTHROPIC_API_KEY"))
 
 
+def _public_base(request: Request) -> str:
+    """배포 도메인 기준 base URL. 프록시(https) 뒤에서도 https 로 맞춥니다."""
+    override = os.getenv("CAFE_PUBLIC_URL")
+    if override:
+        return override.rstrip("/")
+    proto = request.headers.get("x-forwarded-proto", request.url.scheme)
+    host = request.headers.get("x-forwarded-host") or request.url.netloc
+    return f"{proto}://{host}"
+
+
+def _redirect_uri(request: Request) -> str:
+    return f"{_public_base(request)}/oauth/callback"
+
+
 def _render(request: Request, name: str, status_code: int = 200, **kw):
     """모던 Starlette 시그니처(request 우선)로 템플릿을 렌더링합니다."""
-    ctx = {"status_badge": STATUS_BADGE, "has_key": _has_anthropic()}
+    ctx = {
+        "status_badge": STATUS_BADGE,
+        "has_key": _has_anthropic(),
+        "connected": auth.is_connected(),
+    }
     ctx.update(kw)
     return TEMPLATES.TemplateResponse(request, name, ctx, status_code=status_code)
 
@@ -123,13 +167,55 @@ def settings(request: Request):
     return _render(request, "settings.html", cfg=cfg, path=str(config.CAFE_CONFIG_PATH))
 
 
+# ── 네이버 연결 (OAuth) ─────────────────────────────────────
+@app.get("/connect")
+def connect(request: Request):
+    """네이버 로그인 페이지로 보냅니다. redirect_uri 는 이 배포 도메인 기준."""
+    if not os.getenv("NAVER_CLIENT_ID"):
+        return _render(
+            request, "message.html", status_code=400,
+            title="네이버 설정 필요",
+            message="NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 환경변수가 없습니다. "
+                    "배포 환경(예: Render)의 환경변수에 넣어주세요.",
+            back="/",
+        )
+    url = auth.build_authorize_url(_redirect_uri(request), state="aifactory")
+    return RedirectResponse(url, status_code=303)
+
+
+@app.get("/oauth/callback")
+def oauth_callback(request: Request, code: str = "", state: str = "", error: str = ""):
+    """네이버가 돌려보낸 code 를 토큰으로 교환하고 refresh_token 을 저장/안내합니다."""
+    if error or not code:
+        return _render(
+            request, "message.html", status_code=400,
+            title="네이버 연결 취소/실패",
+            message=f"인증 코드가 없습니다. (error={error or '없음'})",
+            back="/",
+        )
+    try:
+        tokens = auth.exchange_code_for_tokens(code, state or "aifactory")
+    except Exception as e:
+        return _render(
+            request, "message.html", status_code=500,
+            title="토큰 교환 실패", message=str(e), back="/",
+        )
+    refresh = tokens.get("refresh_token")
+    if refresh:
+        auth.save_refresh_token(refresh)
+    return _render(request, "connected.html", refresh_token=refresh or "")
+
+
 def main() -> None:
     import uvicorn
 
-    port = int(os.getenv("CAFE_WEB_PORT", "8010"))
-    print(f"[가죽공예 카페 에이전트] http://127.0.0.1:{port}  (ANTHROPIC_API_KEY="
+    # Render 등 호스팅은 $PORT 를 지정하고 0.0.0.0 바인딩을 요구합니다.
+    # 로컬은 CAFE_WEB_PORT(기본 8010) + 127.0.0.1.
+    port = int(os.getenv("PORT", os.getenv("CAFE_WEB_PORT", "8010")))
+    host = "0.0.0.0" if os.getenv("PORT") else "127.0.0.1"
+    print(f"[가죽공예 카페 에이전트] {host}:{port}  (ANTHROPIC_API_KEY="
           f"{'set' if _has_anthropic() else 'MISSING'})")
-    uvicorn.run(app, host="127.0.0.1", port=port)
+    uvicorn.run(app, host=host, port=port)
 
 
 if __name__ == "__main__":

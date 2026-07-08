@@ -81,6 +81,28 @@ python -m src.cafe.main publish 20260708-153000
 python -m src.cafe.main draft --publish
 ```
 
+## 웹 배포 (Render) + 네이버 원클릭 연결
+
+대시보드를 인터넷에 배포하면, **'네이버 연결' 버튼 한 번**으로 로그인/토큰 발급이 끝납니다
+(터미널 `login` 의 URL 복붙이 필요 없음).
+
+### 배포 순서
+1. [Render](https://render.com) 가입 → **New + → Blueprint** → 이 저장소 선택
+   - `render.yaml` 의 `cafe-agent` 서비스가 자동 인식됩니다.
+2. 환경변수 입력 (Render 대시보드에서, 모두 `sync:false` 라 직접 입력):
+   - `ANTHROPIC_API_KEY`, `APP_PASSWORD`(대시보드 접속 비번, **강력 권장**)
+   - `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`
+   - `NAVER_CAFE_CLUB_ID`(또는 `NAVER_CAFE_URL_NAME`), `NAVER_CAFE_MENU_ID`
+3. 배포되면 도메인이 나옵니다 (예: `https://cafe-agent.onrender.com`).
+4. **네이버 개발자센터 → API 설정 → Callback URL** 에
+   `https://<그 도메인>/oauth/callback` 을 등록합니다. ⚠️ 정확히 일치해야 합니다.
+5. 대시보드 접속 → **🔗 네이버 연결** 클릭 → 네이버 로그인/동의 → 연결 완료.
+6. 화면에 나온 `refresh_token` 을 Render 의 `NAVER_REFRESH_TOKEN` 환경변수와
+   (매일 자동 발행용) GitHub Secrets 에도 저장하면, 재배포·재시작 후에도 유지됩니다.
+
+> Render 무료 플랜은 미사용 시 잠들었다가 접속하면 깨어납니다(콜드 스타트).
+> 파일에 저장된 토큰은 재시작 시 사라지므로, `NAVER_REFRESH_TOKEN` 을 환경변수로 넣는 것을 권장합니다.
+
 ## 관리 대시보드 (웹)
 
 브라우저에서 초안을 생성·검수·발행할 수 있는 대시보드가 있습니다.

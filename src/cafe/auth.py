@@ -15,6 +15,7 @@
 """
 from __future__ import annotations
 
+import json
 from urllib.parse import parse_qs, urlencode, urlparse
 
 import requests
@@ -23,6 +24,38 @@ from .. import config
 
 AUTHORIZE_URL = "https://nid.naver.com/oauth2.0/authorize"
 TOKEN_URL = "https://nid.naver.com/oauth2.0/token"
+
+# 웹에서 '네이버 연결'로 받은 refresh_token 을 저장하는 파일(런타임 편의용).
+# 영구 보관은 환경변수(NAVER_REFRESH_TOKEN)를 권장합니다.
+TOKEN_FILE = config.OUTPUT_DIR / "naver_token.json"
+
+
+def save_refresh_token(refresh_token: str) -> None:
+    """웹 연결로 받은 refresh_token 을 파일에 저장합니다."""
+    config.OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    TOKEN_FILE.write_text(
+        json.dumps({"refresh_token": refresh_token}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
+def stored_refresh_token() -> str | None:
+    """파일에 저장된 refresh_token (없으면 None)."""
+    if not TOKEN_FILE.exists():
+        return None
+    try:
+        return json.loads(TOKEN_FILE.read_text(encoding="utf-8")).get("refresh_token")
+    except (ValueError, OSError):
+        return None
+
+
+def is_connected() -> bool:
+    """발행에 쓸 토큰이 하나라도 확보돼 있는지."""
+    return bool(
+        config.env("NAVER_ACCESS_TOKEN")
+        or config.env("NAVER_REFRESH_TOKEN")
+        or stored_refresh_token()
+    )
 
 
 def build_authorize_url(redirect_uri: str, state: str = "aifactory") -> str:
@@ -92,14 +125,14 @@ def get_access_token() -> str:
     if access:
         return access
 
-    refresh = config.env("NAVER_REFRESH_TOKEN")
+    refresh = config.env("NAVER_REFRESH_TOKEN") or stored_refresh_token()
     if refresh:
         return refresh_access_token(refresh)
 
     raise RuntimeError(
-        "네이버 토큰이 없습니다. `python -m src.cafe.main login` 으로 로그인해 "
-        "refresh_token 을 받아 .env 의 NAVER_REFRESH_TOKEN 에 넣으세요. "
-        "(또는 단발성으로 NAVER_ACCESS_TOKEN 을 직접 지정)"
+        "네이버 토큰이 없습니다. 대시보드에서 '네이버 연결'을 하거나, "
+        "`python -m src.cafe.main login` 으로 refresh_token 을 받아 "
+        ".env 의 NAVER_REFRESH_TOKEN 에 넣으세요."
     )
 
 
