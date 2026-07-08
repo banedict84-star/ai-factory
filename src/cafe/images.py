@@ -81,6 +81,69 @@ def fetch_image(object_path: str) -> bytes:
 
 
 # ── 본문 삽입 ───────────────────────────────────────────────
+_FONT_CANDIDATES = [
+    "/usr/share/fonts/truetype/nanum/NanumGothicBold.ttf",
+    "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
+    "/usr/share/fonts/truetype/noto/NotoSansCJK-Bold.ttc",
+]
+
+
+def _korean_font(size: int):
+    from PIL import ImageFont
+
+    for path in _FONT_CANDIDATES:
+        try:
+            return ImageFont.truetype(path, size)
+        except OSError:
+            continue
+    return ImageFont.load_default()
+
+
+def make_title_card(image_bytes: bytes, title: str, brand: str = "") -> bytes:
+    """대표 이미지 위에 제목을 얹어 '타이틀 카드' PNG 를 만든다.
+
+    폰트/렌더 실패 시 원본 이미지를 그대로 반환(발행이 깨지지 않게).
+    """
+    try:
+        import io
+        import textwrap
+
+        from PIL import Image, ImageDraw
+
+        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        W, H = img.size
+        draw = ImageDraw.Draw(img, "RGBA")
+        # 하단에 반투명 그라데이션 박스(글자 가독성)
+        band_h = int(H * 0.42)
+        overlay = Image.new("RGBA", (W, band_h), (0, 0, 0, 0))
+        od = ImageDraw.Draw(overlay)
+        for i in range(band_h):
+            a = int(200 * (i / band_h))
+            od.line([(0, i), (W, i)], fill=(0, 0, 0, a))
+        img.paste(overlay, (0, H - band_h), overlay)
+
+        # 제목 줄바꿈 + 렌더
+        font = _korean_font(int(W * 0.062))
+        wrapped = textwrap.wrap(title, width=16) or [title]
+        wrapped = wrapped[:3]
+        line_h = int(W * 0.075)
+        y = H - int(W * 0.09) - line_h * len(wrapped)
+        for line in wrapped:
+            draw.text((int(W * 0.06), y), line, font=font, fill=(255, 255, 255, 255))
+            y += line_h
+        if brand:
+            bf = _korean_font(int(W * 0.032))
+            draw.text((int(W * 0.06), int(H * 0.05)), brand, font=bf,
+                      fill=(255, 255, 255, 230))
+
+        out = io.BytesIO()
+        img.save(out, format="PNG")
+        return out.getvalue()
+    except Exception:
+        return image_bytes
+
+
 def _image_prompt(section_title: str, topic: str) -> str:
     return (
         "A clean, realistic photograph related to leather craft (가죽공예). "
@@ -93,12 +156,17 @@ def _img_tag(url: str) -> str:
     return f'<p><img src="{url}" style="max-width:100%;border-radius:8px" alt=""></p>'
 
 
-def add_hero_image(content: str, topic: str, draft_id: str) -> str:
-    """글 대표 이미지 1장을 만들어 본문 맨 앞에 삽입합니다.
+def add_hero_image(
+    content: str, topic: str, draft_id: str, title: str = "", brand: str = ""
+) -> str:
+    """글 대표 '타이틀 카드' 1장을 만들어 본문 맨 앞에 삽입합니다.
 
-    발행 시 multipart 로 첨부되며 네이버가 상단에 배치하므로, 대표(헤더) 이미지로 적합.
+    AI 이미지 위에 제목을 얹어 블로그 썸네일 같은 카드로 만든다. 발행 시 multipart 로
+    첨부되며 네이버가 상단에 배치하므로 헤더로 적합.
     """
     data = generate_image_bytes(_image_prompt("대표 이미지", topic))
+    if title:
+        data = make_title_card(data, title, brand=brand)
     url = upload_image(data, f"{GCS_PREFIX}/{draft_id}/hero.png")
     # 이미 대표 이미지가 있으면(재생성) 기존 <img> 는 지우고 새로 넣는다
     import re

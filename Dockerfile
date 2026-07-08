@@ -10,6 +10,11 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PORT=8080
 
+# 한글 폰트(타이틀 카드 렌더용)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends fonts-nanum \
+    && rm -rf /var/lib/apt/lists/*
+
 # 의존성 먼저 설치 (레이어 캐시)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
