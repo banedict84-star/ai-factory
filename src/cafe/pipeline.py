@@ -23,9 +23,22 @@ class DraftResult:
     preview_path: str
 
 
+def _recent_topics(limit: int = 7) -> list[str]:
+    """최근 초안들의 소재 목록 (중복 발행 방지용). 최신 limit 건."""
+    seen: list[str] = []
+    for d in review.list_drafts():
+        if d.post.topic and d.post.topic not in seen:
+            seen.append(d.post.topic)
+        if len(seen) >= limit:
+            break
+    return seen
+
+
 def draft(topic_hint: str | None = None) -> DraftResult:
     """AI 초안을 생성해 검수 대기(pending) 상태로 저장합니다. 발행하지 않습니다."""
-    post = content_generator.generate_post(topic_hint=topic_hint)
+    post = content_generator.generate_post(
+        topic_hint=topic_hint, recent_topics=_recent_topics()
+    )
     now = datetime.now()
     draft_id = now.strftime("%Y%m%d-%H%M%S")
     saved = review.save_draft(post, draft_id=draft_id, created_at=now.isoformat())

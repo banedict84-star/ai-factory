@@ -42,15 +42,26 @@ OUTPUT_SCHEMA = {
 }
 
 
-def _build_prompt(cfg: dict[str, Any], topic_hint: str | None) -> str:
+def _build_prompt(
+    cfg: dict[str, Any],
+    topic_hint: str | None,
+    recent_topics: list[str] | None,
+) -> str:
     hint_line = (
         f"\n[이번 글 소재 지정] {topic_hint}\n" if topic_hint else ""
     )
+    recent_line = ""
+    if recent_topics:
+        joined = "\n".join(f"- {t}" for t in recent_topics)
+        recent_line = (
+            "\n[최근 이미 올린 소재 — 겹치지 않게 다른 소재를 고르거나 새 각도로]\n"
+            f"{joined}\n"
+        )
     return (
         "너는 네이버 카페를 운영하는 커뮤니티 매니저야.\n"
         "아래 카페 설정을 바탕으로, 회원들에게 올릴 게시글 1개를 작성해줘.\n\n"
         f"[카페 설정]\n{json.dumps(cfg, ensure_ascii=False, indent=2)}\n"
-        f"{hint_line}\n"
+        f"{hint_line}{recent_line}\n"
         "요구사항:\n"
         "- brand.tone 말투를 지킬 것 (친근하되 정보는 정확하게)\n"
         "- topics 목록에서 하나를 고르거나 자연스럽게 변주할 것 (소재 지정이 있으면 그것 우선)\n"
@@ -65,10 +76,12 @@ def _build_prompt(cfg: dict[str, Any], topic_hint: str | None) -> str:
 def generate_post(
     topic_hint: str | None = None,
     cfg: dict[str, Any] | None = None,
+    recent_topics: list[str] | None = None,
 ) -> CafePost:
     """카페 게시글 초안 한 건을 생성합니다.
 
     topic_hint 를 주면 그 소재로, 없으면 설정의 topics 풀에서 고릅니다.
+    recent_topics 를 주면 최근 올린 소재와 겹치지 않게 유도합니다.
     """
     cfg = cfg or config.load_cafe_config()
     client = anthropic.Anthropic(api_key=config.env("ANTHROPIC_API_KEY", required=True))
@@ -76,7 +89,9 @@ def generate_post(
     response = client.messages.create(
         model=MODEL,
         max_tokens=3000,
-        messages=[{"role": "user", "content": _build_prompt(cfg, topic_hint)}],
+        messages=[
+            {"role": "user", "content": _build_prompt(cfg, topic_hint, recent_topics)}
+        ],
         output_config={"format": {"type": "json_schema", "schema": OUTPUT_SCHEMA}},
     )
 
