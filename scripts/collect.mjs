@@ -108,7 +108,7 @@ function keep(member, a) {
 }
 
 async function collectFor(member) {
-  const query = `${member.n} 의원`;   // ← 검색어 (여기서 조정)
+  const query = `${member.n}의원`;   // ← 검색어 (여기서 조정). 현재: 붙여쓰기(예: 김남국의원)
   let raw;
   try {
     raw = await provider(query);
