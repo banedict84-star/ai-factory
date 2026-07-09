@@ -197,6 +197,14 @@ const LV = {
 const PC={D:'#0b57a4',K:'#d0272e'}, PBG={D:'#eaf1fb',K:'#fdecec'}, PFULL={D:'더불어민주당',K:'국민의힘'};
 const ACCENT='#0b57a4';
 const CITY_SG=["가선거구","나선거구","다선거구","라선거구","마선거구","바선거구","사선거구","아선거구","비례대표"];
+const NAT_ORDER=["안산갑","안산을","안산병"];
+const TORDER={nat:0,prov:1,city:2};
+function distIdx(m){ // 급별 지역구 정렬 인덱스
+  if(m.t==='nat') return NAT_ORDER.indexOf(m.sd);
+  if(m.t==='prov') return parseInt(m.sd,10)||99;      // "1선거구"→1
+  if(m.t==='city') return CITY_SG.indexOf(m.sd);
+  return 99;
+}
 
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 function dongsOf(dk){ const g=DONG[dk]; if(!g||!g.length) return ['안산시 전역']; return g.flatMap(x=>x.d); }
@@ -224,9 +232,8 @@ function render(){
   const cN=M.filter(m=>m.t==='nat').length, cD=M.filter(m=>m.t==='prov').length, cS=M.filter(m=>m.t==='city').length;
   const dem=M.filter(m=>m.p==='D').length, ppp=M.filter(m=>m.p==='K').length;
   const ranked=[...M].sort((a,b)=>b.c-a.c).slice(0,5);
-  const cityOrder = filter==='city';
   const filtered=M.filter(m=>filter==='all'||m.t===filter).sort((a,b)=>
-    cityOrder ? (CITY_SG.indexOf(a.sd)-CITY_SG.indexOf(b.sd)) || (b.c-a.c) : (b.c-a.c));
+    (TORDER[a.t]-TORDER[b.t]) || (distIdx(a)-distIdx(b)) || (b.c-a.c));
   const sel=M.find(m=>m.n===selectedN);
   const cnt={all:tot,nat:cN,prov:cD,city:cS};
 
@@ -281,7 +288,7 @@ function render(){
         <div class="tabs">
           ${FILTERS.map(([k,l])=>`<button class="tab ${k===filter?'on':''}" data-filter="${k}"><span>${l}</span><span class="c tnum">${cnt[k]}</span></button>`).join('')}
         </div>
-        <div class="fmeta">${FILTERS.find(f=>f[0]===filter)[1]} · <b class="tnum">${filtered.length}</b>명 · ${cityOrder?'선거구순':'보도순'}</div>
+        <div class="fmeta">${FILTERS.find(f=>f[0]===filter)[1]} · <b class="tnum">${filtered.length}</b>명 · 지역구순</div>
       </div>
       <div class="ld">
         <div class="card list">
