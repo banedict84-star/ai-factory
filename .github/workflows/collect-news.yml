@@ -12,6 +12,11 @@ on:
     - cron: "0 5 * * *"   # 14:00 KST
     - cron: "0 11 * * *"  # 20:00 KST
   workflow_dispatch:
+  push:
+    branches: [claude/ansan-council-dashboard-5v9teu]
+    paths:
+      - "scripts/**"
+      - ".github/workflows/collect-news.yml"
 
 permissions:
   contents: write
