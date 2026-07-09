@@ -1,6 +1,6 @@
 {
-  "generatedAt": null,
-  "source": "seed(수기 큐레이션)",
+  "generatedAt": "2026-07-09 15:28 KST",
+  "source": "구글 뉴스 RSS",
   "members": [
     {
       "n": "김남국",
@@ -14,31 +14,63 @@
       "dist": "안산시갑",
       "a": [
         {
-          "t": "김남국 \"안산 변화가 곧 국정 성과\"…신안산선 연장·ASV 강조",
-          "s": "인천일보",
-          "d": "07.07",
-          "u": "https://www.incheonilbo.com/news/articleView.html?idxno=1326781"
+          "t": "김남국 국회의원, 안산시장과 정책간담회 경제자유구역 기업 유치 전략 논의",
+          "s": "반월신문",
+          "d": "07.08",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBScTRMaVlIZnYtczRiM25DS0g2dlQxM3owZm5TdFQzRGo2dTdhV1J0ZDdmcW1jcWtWaW8tMVZzeUFrRldvQkZtNEdhWFNTZHZBLUpXN0xTWVA4R1ZzTU5iUkpoY1BZZTQ?oc=5",
+          "iso": "2026-07-08T00:12:58.000Z"
         },
         {
-          "t": "안산시·김남국 의원 맞손…ASV 경제자유구역 '실전형 기업유치'",
+          "t": "안산시-김남국 정책간담회…ASV 경제자유구역·국비 확보 공조",
+          "s": "MSN",
+          "d": "07.07",
+          "u": "https://news.google.com/rss/articles/CBMi_wJBVV95cUxQYWRjbDAxZXY1UWw3WjNTMzg1X0h6SUY2YTZBRnZiMFJPQlJ1R1ZIdjhOSWN4RVo5d0h4aENCSUlSYlNxc1VmVl9sbV9zNGtVZjMwTkl4NS1tS1oxdmJ0RnZPWC1hbHNTT2ozQ19xOG80NU1Jcjg0b2ctbG1PYVhQdEZVNXRUQWN3MjlzN3dsbGJVM0pWejZMODRHRHRxNDRzQUdZdllRVnBJUDNWc3pWdUNUcjVLRWRtWUFtMWUyYV9rTG9NUjhxLUNzZ05waHZLWjFKMHF1a1VXQnZHbF9WUDVKcXFxNzc5NjVXVnRoMC1zSlA3NnlFR0dGbmg4Y0x0U2YzcV9wVUs1S3RDdVRUQmhLQ3lrWm90OVg5SW90em5URzZnWGpET0tMZHhzRnhjcTllZThhMVlpNXpkT183RTlRSE9WeUN0OTdKcWxGY0w0aDJ4eTJIMURhaVRucHppTFZlb3dXSUJWdkM5ZjBVUWZBdVV4NkJZVmRFTkVVVQ?oc=5",
+          "iso": "2026-07-07T10:56:32.000Z"
+        },
+        {
+          "t": "김남국 더불어민주당 경기 안산시갑 의원 “안산 변화, 곧 국정 성과…신안산선 반드시 속도”",
+          "s": "v.daum.net",
+          "d": "07.07",
+          "u": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE5IVHpKSVFmTDdQS2xXeXZGUGpWWTFfcGdGSzVob1lwbGt3ejNfT1o1LTNabmVVVHJLYkEwSE8wczdHUk9MVm5BVG5wUQ?oc=5",
+          "iso": "2026-07-07T10:40:02.000Z"
+        },
+        {
+          "t": "안산시·김남국의원 맞손… ASV 경제자유구역 ‘실전형 기업유치’ 한뜻",
           "s": "경기신문",
           "d": "07.06",
-          "u": "https://www.kgnews.co.kr/news/article.html?no=902670"
+          "u": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE50bUd2b0N6UDBaNjM1eVJkZ1pqRjN6N2dnZktNOWQ3WGpIcy15Wk1CU01DbGxCdTYzcGwxVktiQVRVMVh3MlZ3UHlNRENzaFMwQ3YyajZ4ZWt5RWxZTGNPUVRR?oc=5",
+          "iso": "2026-07-06T07:39:30.000Z"
         },
         {
-          "t": "안산시, 정책간담회 개최…경기경제자유구역·국비 확보 논의",
-          "s": "브릿지경제",
+          "t": "안산시, 김남국 국회의원과 정책간담회 개최… 지역 현안 해결 위해 ‘맞손’",
+          "s": "경인신문",
           "d": "07.06",
-          "u": "https://www.viva100.com/article/20260706500321"
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBrdF8ySEVnaEJ2RmRjYTNNTFNqY25McVpNWXdnRk5sS3g4b2NkMlljT2dUNDBnVi1Dd0w2RkszWEcxVmNLMy1TaGVSOUI0cEtKUHF3aDZYMUZMNjhTTFpqUkE2Yk9mWjg?oc=5",
+          "iso": "2026-07-06T00:29:57.000Z"
         },
         {
-          "t": "안산시·김남국 의원, 안산사이언스밸리 개발 국비 확보 공조",
-          "s": "매일일보",
+          "t": "김남국 의원, 안산시장과 만나 경제자유구역 현안 점검… \"이제는 기업 유치 실전\"",
+          "s": "뉴스후플러스",
+          "d": "07.05",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9aeDZ0Y0Fib214eUlJYjBlam5PVENrdXFoZWs1X1RSRUEyajdfLUljb2hhSUpxT2FzS3g3Rnp6ZUdZanNpNml2SUZQaW5EY241NGUxdUFnTFROLWl4cEtHUWFINTM0SHVQd2ZUMWR3?oc=5",
+          "iso": "2026-07-05T11:30:00.000Z"
+        },
+        {
+          "t": "안산시&김남국 국회의원, 경제자유구역 개발 등 주요현안 간담회",
+          "s": "gukjenews.com",
           "d": "07.03",
-          "u": "https://www.m-i.kr/news/articleView.html?idxno=1388064"
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE42blFCdnphdVlydlVmNGFPdUxRTkhabUFnd19XN2xuTEcxQ0Rycnp0R1d1ZjJtUWFya3BUYjBkSjNxRGxnVm1fRHBjMGoyZXJ2RDlvWXhQV1h4U3JKLTQ5YlB2dl95MkEzSWtKaXNn?oc=5",
+          "iso": "2026-07-03T10:32:54.000Z"
+        },
+        {
+          "t": "안산시, 김남국 의원과 ASV 경제자유구역 협력 논의",
+          "s": "서울경제TV",
+          "d": "07.03",
+          "u": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBDcm01ZGcxbWZOdEVGZktjUjBXWlFyWWp4RWpla05YU0Vsbm5IZy1tUkZvWTFlVTA0eFM1anB4ZHBVMVJmMEpJZWxudlR6TWMxMjhrVHlRVjZ6TXNCSk1jV3QwZjU?oc=5",
+          "iso": "2026-07-03T08:41:59.000Z"
         }
       ],
-      "c": 4
+      "c": 8
     },
     {
       "n": "김현",
@@ -52,31 +84,63 @@
       "dist": "안산시을",
       "a": [
         {
-          "t": "與 김현 \"청소년 유해 음원, 무방비 유통·확산 막을 것\"…음산법·정보통신망법 발의",
-          "s": "헤럴드경제",
-          "d": "07.08",
-          "u": "https://n.news.naver.com/mnews/article/016/0002667207?sid=100"
+          "t": "“국회의원이 지방의회 사주냐” 박태순 안산시의장 김현 의원 지적",
+          "s": "참좋은뉴스",
+          "d": "05.06",
+          "u": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1JT0k2NkpGeFJsa3pPLU9QTEhMNDh3dU01UU5sRWpLbWtvclVYYWNsd3d2UE0wWXY4bi03N1VXY2RKb25yYWhKOGFRNmFhaDdMbURFSXgtSjYxdUlRMFA2UFZHcjZlNGNZYXo4ZkhWQUV2WkE?oc=5",
+          "iso": "2026-05-06T07:00:00.000Z"
         },
         {
-          "t": "청소년 제작 '19금 음원' 유통사가 유해성 검사 의무화 추진",
-          "s": "경인일보",
-          "d": "07.07",
-          "u": "https://www.kyeongin.com/article/1766927"
+          "t": "김현 의원, 박태순 안산시의장에 “의장 자리 우리가 만든 것”... 고압적 태도 논란",
+          "s": "경인신문",
+          "d": "05.06",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9NbnRiVmxFQXU4UDFYelA0VzBWdTVXTmRBVmlIY3NobEt1aDNlcnQwNGVLMTBVcXdka3BKYkk3amxxSGhpdnBXTHE4YUg5enk3OHRWTDVzb2QyOUphVHhZQ3pJRzFBazg?oc=5",
+          "iso": "2026-05-06T07:00:00.000Z"
         },
         {
-          "t": "與 김현 \"우주 기술 패권 거머쥐자\"…KARI 항공우주기술 포럼 주최",
-          "s": "TV조선",
-          "d": "07.02",
-          "u": "https://n.news.naver.com/mnews/article/448/0000623886?sid=100"
+          "t": "\"안산시의장 자리 저희가 만들었다\"…김현 의원, 박태순 의장과 통화 신경전",
+          "s": "뉴스1",
+          "d": "05.06",
+          "u": "https://news.google.com/rss/articles/CBMiVkFVX3lxTFBmb1FwUHpzTm9IXzlpUXpXdzZ0aEdQcVNjNWxzbW0tVXo3MDFGNEtqYTJha0RQWDhDT19hOWpnai1tMFBKSUwtZWZKM1B1LXhndXNDdFJn?oc=5",
+          "iso": "2026-05-06T07:00:00.000Z"
         },
         {
-          "t": "김현, '존폐 위기' 케이블TV에 \"입법·제도적 지원 최선\"",
-          "s": "TV조선",
-          "d": "07.02",
-          "u": "https://n.news.naver.com/mnews/article/448/0000623776?sid=100"
+          "t": "안산시의회 의장-김현 국회의원 '지방의회 후보공천' 정면충돌",
+          "s": "네이트",
+          "d": "05.06",
+          "u": "https://news.google.com/rss/articles/CBMiU0FVX3lxTFBDbV9aaWtiN3o2QU1RUXJ0czZiUmV5UlBBZFN3aXFHQmhpcVgtenZXcjN4VW9UZ1JFSWtmb0hIRlU3SVV6ZFFGQ2kzaWU1RTBoalJv?oc=5",
+          "iso": "2026-05-06T07:00:00.000Z"
+        },
+        {
+          "t": "김현 의원 \"김철민 안산시장 후보, 허위사실 유포…즉각 사과해야\"",
+          "s": "더팩트",
+          "d": "04.22",
+          "u": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9jcW90emUxQkEyZjhjdkYxNDBIbi12ZXpaYm1iYWtSSHdKM1lCQURQMmhocE5RTHRYNmFQV0RWQzFnSHlmZGhSMC1ENDZ3OTRhZFRrYmFaa3I1cm_SAVZBVV95cUxPeXlDOENKdVQ2LTNkWWREekxXYW9xUnlSSWtfcFo4TXlUMTJzc1FpaWQtVndubGhicXdXODZoOFliYm5KVDRUQmtSUmtGRldKUGh1Y3c0QQ?oc=5",
+          "iso": "2026-04-22T07:00:00.000Z"
+        },
+        {
+          "t": "김현, 안산 '의석 축소' 벼랑 끝에서 멈춰 세웠다",
+          "s": "신아일보",
+          "d": "04.19",
+          "u": "https://news.google.com/rss/articles/CBMicEFVX3lxTE92U0x5ckpEX1N1NEZYeWh0MHM5MzlkUDJURXYyeExrQmtSdXYyTF9LLUw4NGxaSC1jUWxCeHRvNE51ZTdSQjVqWkRhaVR2NkJtRHhjb3d5WXhzb2k4RU5Qdm5vR1NBWVdNSGxNT2JnckE?oc=5",
+          "iso": "2026-04-19T07:00:00.000Z"
+        },
+        {
+          "t": "김현 국회의원, 안산 시·도의원 3개 지역구 지켜내...정개특위 선거제 개편 통과",
+          "s": "엔디엔뉴스",
+          "d": "04.19",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE03cmV1YUhNQTdSdTVWR2dyclBQX0NlNkhtVHZJN1RDMFU5UnpaZ3VDZzlkSEwxSDRQOGQ5Sy1YVFlPSWw4eGthcUxOa2RwT3NUb3lXTGFwZFJmMGl0YUE3ZzNENVdBQWZTR09rSGVB0gFyQVVfeXFMTWw5UFg1d1JORFp2YkRoaXMtd05MMkZNRDNqdVl5VThwM0dsYTZ1RWRlV08tbmJvY0lBcmdmakNyNndPSkNyaE4wRXVBZ013encxMVBpSThhaUxOTndNTm5jZ1o3N0liZGxYWEdVQU9aTjBB?oc=5",
+          "iso": "2026-04-19T07:00:00.000Z"
+        },
+        {
+          "t": "정개특위 선거제 개편,김현 의원 안산 시·도의원 3개 지역구 지켜내",
+          "s": "글로벌뉴스통신GNA",
+          "d": "04.19",
+          "u": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBHeFdSWUVCeGtUUlljYkppTURUbTdEenVUY19OZVozVmlTZG9JSUU0Wi1lVHEyQ3F6ejNFQnBPMG1lWFU0NW53NzFXZ1BhQTJPVG4tb3BSUjVDTHZrSjd0Mi1wc2lwVzI0dnR6S28zOHBOOWl6?oc=5",
+          "iso": "2026-04-19T07:00:00.000Z"
         }
       ],
-      "c": 4
+      "c": 8
     },
     {
       "n": "박해철",
@@ -90,31 +154,21 @@
       "dist": "안산시병",
       "a": [
         {
-          "t": "'김정호 위원장·이소영 여당 간사' 후반기 기후노동위 첫발…박해철 위원 배치",
-          "s": "매일노동뉴스",
-          "d": "07.09",
-          "u": "https://www.labortoday.co.kr/news/articleView.html?idxno=235590"
+          "t": "박해철 의원, “안산시 청년창업펀드, 취지 무색... 2호 펀드 관내 기업 투자율 1%대에 그쳐”",
+          "s": "뉴스데일리",
+          "d": "04.17",
+          "u": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBYQTZEUUJvdzdXNU1aNjg4MGlSU0RuaGVnVWtxZFFwOUdvZTl0bS1EZTJXOHlmX1NJSFVfeXJQdHRtdjNvMDVUdVpaWHNXNHNKeE9WUUtNVUlsRm9FR1ptUXJydnhSbE55cVEw?oc=5",
+          "iso": "2026-04-17T07:00:00.000Z"
         },
         {
-          "t": "방위산업의 날? 노동3권은 '반쪽짜리'…박해철 등 기자회견",
-          "s": "매일노동뉴스",
-          "d": "07.08",
-          "u": "https://www.labortoday.co.kr/news/articleView.html?idxno=235564"
-        },
-        {
-          "t": "한국형 제시카법 다시 주목…박해철 등 아동성범죄자 거주제한 발의",
-          "s": "경인일보",
-          "d": "07.04",
-          "u": "https://www.kyeongin.com/article/1766715"
-        },
-        {
-          "t": "박해철 발의 '농어업인 삶의 질 향상법' 국회 본회의 통과",
-          "s": "신아일보",
-          "d": "06.18",
-          "u": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5032119"
+          "t": "박해철 의원 “안산시청년창업 2호 펀드 관내 투자율 1%대 그쳐”",
+          "s": "안산뉴스",
+          "d": "04.16",
+          "u": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBzb2xCbFlDRndELXFOWFQ1Qk40S21hNF9pYnBoMG13bVZkV2xYa3J5ZVlXc2ZYNUNhSlhCdEpud1RjNWE1cTctRHJkZmdnOUZvRU85TklweFIxODc1VUotZnN1c1R3Wjh6cGNwOQ?oc=5",
+          "iso": "2026-04-16T07:00:00.000Z"
         }
       ],
-      "c": 4
+      "c": 2
     },
     {
       "n": "김동규",
@@ -128,13 +182,49 @@
       "dist": "안산 제1선거구",
       "a": [
         {
-          "t": "안산시·김남국 국회의원 정책간담회 참석(ASV 경제자유구역)",
-          "s": "브릿지경제",
-          "d": "07.06",
-          "u": "https://www.viva100.com/article/20260706500321"
+          "t": "[인터뷰] 김동규 경기도의원 “복지로 시민 삶 지키고, 안산 미래 키우겠다”",
+          "s": "천지일보",
+          "d": "07.01",
+          "u": "https://news.google.com/rss/articles/CBMiakFVX3lxTE0tOEpWcF9hb2dCRllLcVhqaVNpYm9rZ2R0Ynptdlo0NndtUmlpZ2hZdFBSSC1qLUtPRWN2aWVHZjU1a081aXg1ckNya0t6UVdMdVk2SmRYbGYzLUVzc0s2TFNWa0J3TktZNlE?oc=5",
+          "iso": "2026-07-01T12:34:30.000Z"
+        },
+        {
+          "t": "[인터뷰] 김동규 경기도의원 \"복지전문가로 안산의 변화 이끌겠다\"",
+          "s": "뉴스프리존",
+          "d": "06.29",
+          "u": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1rQzRqc1N1N1pQeWdSWVNDYUJIT2xJUnR0dzduY0ZEU19IeHZSUXVRZ3dDQVdqVEdhOGxPQnZ5dlFqREVvcHhRRU03NnAyc2RfRVNhVjg5RTZsa01Nd0dzVmF4LTAwSTJvdktRTmxBNnhLWm8?oc=5",
+          "iso": "2026-06-29T00:59:08.000Z"
+        },
+        {
+          "t": "김동규 도의원, 안산교육지원청과 교육현안 논의",
+          "s": "경기연합신문",
+          "d": "06.16",
+          "u": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFAwVjQ2cExneEVCc1k2VjJ4X05KOFJ4V3EwTXhEbUdpcXRzcWRIdl9Md21DcDhKc0ZQSHN0NzVWb2N3RWdFR2NHX25YU0JwVTRkenBDUW1PamtHNExtVGZTRkxoVU5CQQ?oc=5",
+          "iso": "2026-06-16T07:00:00.000Z"
+        },
+        {
+          "t": "김동규 의원, 안산시 상록구 주민 교육민원 해결 ‘앞장’",
+          "s": "일간경기",
+          "d": "06.16",
+          "u": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE0xb2VBd0FXZlU0amFiOTdVSjQ2RVRSLXFmdjRfLUQwNUlxMTRnQmgyYmdGVEQtbmhPbTlpT1NfbWZLb2Rwdjc5SVQ2LV9tcmVKSm5GSmVDMjR6azl5cGhmY2ktUzNSZWtM?oc=5",
+          "iso": "2026-06-16T03:01:28.000Z"
+        },
+        {
+          "t": "“안산 학생들 통학 불편 막았다”…김동규 의원, 공동학구 반대 확인·모듈러 교실 대안 제시",
+          "s": "선데이뉴스신문",
+          "d": "06.15",
+          "u": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBIbXRCc3M4ZTZBd1BjZHpFSmNDazItd04yNEIxRllNallVbG0tQjQzc3lITzM3dDFweHgzT2FTRmxobVVfTGxFVE5lSzBMYXBQalVfU3d6R09YeWs?oc=5",
+          "iso": "2026-06-15T07:09:00.000Z"
+        },
+        {
+          "t": "김동규 도의원, 안산교육지원청과 간담회 가져",
+          "s": "뉴스프리존",
+          "d": "06.15",
+          "u": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9UcTg2cnl4dEFoTEtxaDZDU0JZam9XZ3ZNZUFsS1R4ckI2UmZmTFdzemdJN2R1MWh5bDk0Rk5pVWd3b29adVpRU2NPY3plTWc5U0FLZlRnNzhtYzhyWVdUd09yR2g4dGNsdkFpOEdyN3B4U03SAXdBVV95cUxPeFVFT0lma2VEaExCR082MmVMQjJ4MzlhclRfT1Q5ZGZNSzNnaGhFdUE1WUJnZ2J4WXMzTHM5MmVQTGhiXzlhU2pBZzFGS0t6TlFKVWMtMnJwZDJ5MmRZYjY5djF5SWpPaWR1QmZlVmlDTnJYcnhrdw?oc=5",
+          "iso": "2026-06-15T07:00:00.000Z"
         }
       ],
-      "c": 1
+      "c": 6
     },
     {
       "n": "김태희",
@@ -149,19 +239,42 @@
       "star2": true,
       "a": [
         {
-          "t": "경기도의회 온 정청래 전 대표…김태희 정책위원장 등 참석",
-          "s": "KPI뉴스",
-          "d": "07.06",
-          "u": "https://www.kpinews.kr/newsView/1065598872370312"
+          "t": "김태희 의원, 의왕·군포·안산 공공주택사업 추진계획 점검",
+          "s": "경기종합뉴스",
+          "d": "06.10",
+          "u": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5NWHVGSjV1X0k2LXcyN3hpOWhIaFRZNTVkQnExZnlQS3R3Si1IaVdOY250MDkwNUFyMW1uTC1UOWZDVUxIQ21TV0ltUW1tUDZ0NXlzMHYxTWFVVHZFRmJBYzgtOFc2dzc2RHQ1eThmZ1FSMGxp?oc=5",
+          "iso": "2026-06-10T10:05:14.000Z"
         },
         {
-          "t": "경기도의회 민주당 12대 전반기 정책위원장에 김태희(안산2)",
-          "s": "기호일보",
-          "d": "06.28",
-          "u": "https://www.kihoilbo.co.kr/news/articleView.html?idxno=3027223"
+          "t": "김태희 의원, 의왕·군포·안산 공공주택사업 추진계획 점검",
+          "s": "경인신문",
+          "d": "06.10",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE51eEh1UjM0XzFHRDlNWVJSM25BQ1RrVHFOYTNRNzE4dHJEYmRjMHZaZ1J6dDBJZE5lWEZ2U09zcllpVk1OcmNRZHBpLXZnWDdJOXhiRXZCenlSZ3VTV3M5Y2Qza3JCZVk?oc=5",
+          "iso": "2026-06-10T07:00:00.000Z"
+        },
+        {
+          "t": "김태희 경기도의원, 의왕·군포·안산 공공주택지구 점검…“주택 공급과 생활 인프라 적기 구축해야”",
+          "s": "서울신문",
+          "d": "06.10",
+          "u": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQa2R0MkZhUGEtblZteWNrMnJQTG1qOGQwZ2tJX08wTzNSZGFBRkJPZE5COVp0Q20yam5ZMlFPWU9fbUJQM3oxZGMzTGNjQjJHVUZwTE9yRExrVEJHakxIdDdFQnRQN0RwQjloOFl2ZExST3BQT2pJcDYyMG5veDlHWEtHNm9KcXhyQWxkUUw5aUpoUTQ?oc=5",
+          "iso": "2026-06-10T07:00:00.000Z"
+        },
+        {
+          "t": "경기도의회 김태희 의원, 의왕·군포·안산 공공주택사업 추진계획 점검",
+          "s": "웹이코노미",
+          "d": "06.10",
+          "u": "https://news.google.com/rss/articles/CBMickFVX3lxTE5QU2ZwblFBdmtXcDVrR0ZfTDh0enRjOS0wY21rc3hMTU9kZExlNndrQXptNGNBRmNhZGxTVTM1cHUxZXlJaTdaV3Z5WVdRNGpmOElEN0hwQnlNbTNVTDNHUTdhT0p0TjZaOTNrOS1YeWJTdw?oc=5",
+          "iso": "2026-06-10T07:00:00.000Z"
+        },
+        {
+          "t": "김태희 경기도의원, 의왕·군포·안산 공공주택지구 점검…“주택 공급과 생활 인프라 적기 구축해야”",
+          "s": "twig24.com",
+          "d": "06.10",
+          "u": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNWkR4Qk1ieVl3OUxMb1pNN2JXalp0Mk5vTDVxZ3Q2d01fWWwyM1N0MzRxX2I4RzlwOVZmUXl4QUxSQkl5eWVFaVNxNUt3WWZxZUFZYVZwZzNXeE41ZWRNWk5BckhoTjZ0U0pWSUlFWW1NRU12bXBXS01UMDZ0eWh0Sw?oc=5",
+          "iso": "2026-06-10T07:00:00.000Z"
         }
       ],
-      "c": 2
+      "c": 5
     },
     {
       "n": "장윤정",
@@ -175,31 +288,56 @@
       "dist": "안산 제3선거구",
       "a": [
         {
-          "t": "장윤정 의원 \"교육예산 유보, 절감보다 적기 집행이 우선\"",
+          "t": "장윤정 \"교육·주거·문화가 함께 성장하는 안산 만들겠다\"",
+          "s": "안전신문",
+          "d": "06.02",
+          "u": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5wMWVvSGdEVVhfX0hHRE1fZURKYi1OUjVPd3I5SjR1STAydy1DMHZIbEQ1QVFLYUszUkcteHR1VjFTcjMwNmZNc3B0Y3FVWF82SG5fcWctQi1oTThHUWtVTndNRkJQd1VSdVZVZlBUaHY?oc=5",
+          "iso": "2026-06-02T07:56:20.000Z"
+        },
+        {
+          "t": "장윤정 경기도의원 후보 “교육·지역경제 함께 성장하는 안산 만들 것”",
+          "s": "뉴스프리존",
+          "d": "05.28",
+          "u": "https://news.google.com/rss/articles/CBMic0FVX3lxTE45OHNIeUxramRDR1dsYnVpb1VrXzRjbGdCQXFoXzV4Q1ZCTzN6d3lzbDlfdDBaSDIyeXFOZlhWZUd6dWxQUEliaGxVR1hDeFZDdGhnakxPZGxrLU5sVzg0QlBCMVpQeWVaTEhfb01KMmt1RG_SAXdBVV95cUxQRWRkWGpqeWRPZVJvdXdITXh0ZmVxWFJPanVncTBDc1VrRXc5OS1OOFFwcHIzR1JHZmo0UWZIT3BMMXNiVDJuQXhENllHMzVTVE94WGFJMHhDRzd3QW03REVoTnBraXh1OGlZYWJob2c4amNXdmZNRQ?oc=5",
+          "iso": "2026-05-28T07:00:00.000Z"
+        },
+        {
+          "t": "장윤정 경기도의원, 안산 제3선거구 공천 확정... \"무도한 권력에 대한 당원들의 엄중한 심판\"",
+          "s": "경인신문",
+          "d": "05.11",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1lUTd5aEhXbmtjLTVva3RfUC1DOGdJSkRnVWt4RWlJRThQRm1PR3N1SFpJYXZhclpic0Jsc2xBWHF5UHNQS2pxMl9RU2pzTVpfVWx3aDdZSkhKaFcyNEVUUlRJU1I1WjA?oc=5",
+          "iso": "2026-05-11T07:00:00.000Z"
+        },
+        {
+          "t": "기울어진 운동장 안 된다”…장윤정 경기도의원, 안산 정치권 녹취 파장 정면 비판",
+          "s": "일간투데이",
+          "d": "05.09",
+          "u": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9PNjdvWkxMWnZ6SFlOczZKSW40VnhSd3dXMzFPYnFPckp3b3A0V2taR1lPcnJTc01XR1l6VkJIY3JieHRxYm15ZFdYN25aOEttQmtwbGFlYTJGYmt0REItTzBJVlBETmZvcU5J?oc=5",
+          "iso": "2026-05-09T07:00:00.000Z"
+        },
+        {
+          "t": "[표]민주당 경기도당, 안산3 장윤정 등 광역의원 경선 결과 발표",
+          "s": "뉴시스",
+          "d": "05.09",
+          "u": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE1IS3FFSzg3eHVIQzdjdVFWNjhwa2w2ZEg0TTFPWkhNUE5PQl94ZGl3bmxDc2ItUDhVQ2JPd1E0TXFlQ3NrQVFSUjdCbnNEai05UTJ3UC1TOG1meThtSVUyTnJB?oc=5",
+          "iso": "2026-05-09T07:00:00.000Z"
+        },
+        {
+          "t": "[표]민주당 경기도당, 안산3 장윤정 등 광역의원 경선 결과 발표",
+          "s": "뉴시스",
+          "d": "05.09",
+          "u": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBJQjhGdDAtcUU4dWRCRkhmaDBoQ1NHaEh3bFg4SmlfQS1RZWZHblJtWHJLdzdwNVdSSzZrSkxwRjZOUm0zdmxMSUhUaGNLYk1XWE40TUo1T2lJcElOOUxKSdIBeEFVX3lxTE5FLTRicWFjcmJBWHRrdmJDVnF0Sm8zbFRlWUYxcFJ3MjZCQ3Zpd2pORXY2MWZjU05XWHhsZktYRXp2SEdndFozbktzRFEtZzNhV1R1MHd1RzZmT2taaEJyQVY3YWk0TzRDdFY1M3ZMNTZnSElqSmJycg?oc=5",
+          "iso": "2026-05-09T07:00:00.000Z"
+        },
+        {
+          "t": "[6·3 지선] 장윤정 의원 \"안산 정치권 경선 개입 의혹 녹취 제보\"… 파장 확산",
           "s": "더리포트",
-          "d": "06.12",
-          "u": "https://www.thereport.co.kr/news/articleView.html?idxno=88724"
-        },
-        {
-          "t": "장윤정 경기도의원, 경기도교육청 예산유보 운영 점검",
-          "s": "서울신문",
-          "d": "06.12",
-          "u": "https://n.news.naver.com/mnews/article/081/0003652172?sid=102"
-        },
-        {
-          "t": "경기도의회 의정홍보위원회 활동 종료…장윤정 위원 참여",
-          "s": "이뉴스투데이",
-          "d": "06.09",
-          "u": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2437303"
-        },
-        {
-          "t": "안산소방서 수암119안전센터 개청식 참석",
-          "s": "경기일보",
-          "d": "06.24",
-          "u": "https://n.news.naver.com/mnews/article/666/0000112451?sid=102"
+          "d": "05.05",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1FZkl4bzBBV1VKcGk2M2NNQm16WnpjUDU0VlZWVjRkc0pDQ0lCLXJPTUwxY2pILUZoT3ZTREJ4MWhkRjZaaWh5YUVBVVVGVW9GR0lGd2hDR1BLdXFBcl81dncxeHI3UGNmcl9CYXBB?oc=5",
+          "iso": "2026-05-05T07:00:00.000Z"
         }
       ],
-      "c": 4
+      "c": 7
     },
     {
       "n": "유재수",
@@ -213,19 +351,35 @@
       "dist": "안산 제4선거구",
       "a": [
         {
-          "t": "안산소방서 수암119안전센터 개청식 참석(장윤정·유재수)",
-          "s": "경기일보",
-          "d": "06.24",
-          "u": "https://n.news.naver.com/mnews/article/666/0000112451?sid=102"
+          "t": "안산동 김장 봉사 참여 안산 경기도의원 제4선거구 유재수 후보",
+          "s": "반월신문",
+          "d": "05.27",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBRWVoya29mN0FvS3Zfel9pMHd0QjFMLUN6RzdjMWtGNi1FWmJmZXlmdmVPZGRtdk1IcHRXclp6SmJJWHAtMHpkeDBFZzlYOC1fSXFKR0l5c2lURk1pSnoxSWx3aXZJakE?oc=5",
+          "iso": "2026-05-27T07:00:00.000Z"
         },
         {
-          "t": "안산시의원에서 경기도의원으로 체급 높인 유재수(안산4)",
-          "s": "강원도민일보",
-          "d": "06.08",
-          "u": "https://n.news.naver.com/mnews/article/654/0000184416?sid=100"
+          "t": "유재수 경기도의원 후보, ‘선거사무소 방문의 날’ 성황리 개최… “안산의 민원해결사 될 것”",
+          "s": "경인신문",
+          "d": "05.12",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9vQkNGQlRRSWNzTThYQWFST0Q0RXVCTzkzTmRFM3lDY1EtbFBPZkZLSmd2TllGUUpFcG9UemhOWVJCTWxhczRFYXJsRGJWb2lDa1hXUGxweC1QUU5yWGUzUDg1LUtCR0k?oc=5",
+          "iso": "2026-05-12T07:00:00.000Z"
+        },
+        {
+          "t": "“안산시의원 8년 경험, 이제 경기도로”… 유재수 경기도의원 후보 ‘선거사무소 방문의 날’ 성료",
+          "s": "엔디엔뉴스",
+          "d": "05.12",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE4zYUh5dHdDMzhfc3J5TDVZR2Z2ODhiMlNhQnRxMF9tVTFCRlo5aGFGMUpNTENqMXBGQUZEYl8wMERCYlBrVUNKV190M2JGUERMaEZtWHJhVG1YZnNZa1llMlZ4R1g1dl9WZHJNV0RR0gFyQVVfeXFMT3Zmc0hzRVRVbUtnMXJsX1YwTm9abllhNTlyRFp6ZHI5ZGxVQ3VmcU84T2pNSm1od0xMWUk2SnhmZ093ZGt4TndvR1NPUVFYRzMxN2o0RlhiUXgyamY1c3lHaWNETDF6VkpBU0dUWU5oWnVB?oc=5",
+          "iso": "2026-05-12T07:00:00.000Z"
+        },
+        {
+          "t": "이은미 경기도의원·유재수·최진호 안산시의원, 천영미 안산시장 예비후보 지지선언!",
+          "s": "엔디엔뉴스",
+          "d": "04.18",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9uczJNanNubG5OOTVpdkxxZnRvdV9VUGRqd1VyR0xIaFJjbGZURzFuZ3hLQ3hoTU5jMDVPR0ZxOEt6X3dLbzVEMWFDVEJjU3RweVpsUWQ5VENPZ1VYLUlJSk9IelIyLVExTC12TkJR0gFyQVVfeXFMT04yYjZlLU03Vlltc0FWcFBCU001bGpPbGtVSkxQT1c4VWpyOTF6MlluZTZQc2xrMXd1ei1JTTI5M1ppRXRjRHR6NU9tZ0JhLUJaSnNUTC14eEF4N1JacEZEYmZkU1FnVGcwWGYyX3ZyQnl3?oc=5",
+          "iso": "2026-04-18T07:00:00.000Z"
         }
       ],
-      "c": 2
+      "c": 4
     },
     {
       "n": "이은미",
@@ -239,19 +393,56 @@
       "dist": "안산 제5선거구",
       "a": [
         {
-          "t": "이은미 경기도의원 \"수암119안전센터 인력 증원·안산소방서 이전\" 촉구",
-          "s": "서울신문",
-          "d": "06.12",
-          "u": "https://n.news.naver.com/mnews/article/081/0003652109?sid=102"
+          "t": "이은미 경기도의원, 안산 소방서비스 강화 대책 점검",
+          "s": "전국매일신문",
+          "d": "06.15",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5JWFNFcDZEVzdoWFJmVU15LXA2U1JLdDk2RzN6OHQtaU9kQ2J5d0NaQ3VKM01SSFhkZnJGY1pwMURnNUNremFxWk83Z240UzlDZmhiMHNfNWVYa1lESUJyWGgwZDdXTWVWTF9Hdzd3?oc=5",
+          "iso": "2026-06-15T07:00:00.000Z"
         },
         {
-          "t": "이은미 \"경기안산1교, 대한민국 다문화 교육의 새 기준\"",
-          "s": "경인방송",
-          "d": "06.11",
-          "u": "https://news.ifm.kr/news/articleView.html?idxno=472789"
+          "t": "이은미 경기도의원, “안산 시민 안전망 강화” 수암119안전센터 인력 증원·소방서 이전 점검",
+          "s": "경기종합뉴스",
+          "d": "06.14",
+          "u": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1UWnNaMXJqbkFSMTY1ZW1URmI5TDg0VXNVUFVlYjVTLTROQUh5WU9HVFk1anRoM0FwRFpwTDZWVDc0UHJteVQxR0RIZ0xEdVJwOE1IYzlpWHl6VVJPTld0RWFWSFhyZExZMDB1R0RvSEF0V05z?oc=5",
+          "iso": "2026-06-14T13:59:39.000Z"
+        },
+        {
+          "t": "이은미 경기도의원, 안산 시민 안전망 강화를 위한 수암119안전센터 인력 증원 및 소방서 이전 점검",
+          "s": "더코리아",
+          "d": "06.12",
+          "u": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5BVE53OHl5MFRjdWVjUjY3ZEh0ZlFnMHhWblFhdk5hNWZwd0MwVnlRNl9Rei1ULWlMeWV1QUNyanRrRHlCX2pYQmNzNWhYZWFCOW01VEh2eEZhT1hWQ2hyZExaQVJVQ0hhU0ZidVFGZ0Q?oc=5",
+          "iso": "2026-06-12T15:55:00.000Z"
+        },
+        {
+          "t": "“안산의 자부심, 다시 뛴다”… 이은미 경기도의원 후보, 선거사무소 ‘방문의 날’ 성료",
+          "s": "엔디엔뉴스",
+          "d": "05.15",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE03UzJQcl9oZ3BsTjhMSkpTRkNIeTdSRmIxZ1pfUUtDaTN5Z0RFRmNHWGo4Vzk0UUhYbzRjcm1MY2hPeEs1cV9wZXJucldnZkFaclFmQ2gycjJwY1N2TG96OTJVRHduVWJ4ZnhocVJn0gFyQVVfeXFMTVY3bEF5Q1hLSkJqYVYtd1JRRHkzWGdCSUlRUkRxQ2U4bENmeFk2YmU2X0I2SzNjSVpwTGFEalRybzYwX2l1cGZxb0RKVXkyXy1sblYtbEViMmtRbGlMOEhqdUlzUmV1UjJ0R3pYVldBcnFn?oc=5",
+          "iso": "2026-05-15T07:00:00.000Z"
+        },
+        {
+          "t": "경기도의회 이은미 의원, 대표성 줄이고 부담은 그대로... 안산 의원정수 축소 비판",
+          "s": "경인통신",
+          "d": "04.30",
+          "u": "https://news.google.com/rss/articles/CBMiREFVX3lxTFB0b1hWMDk5NDNPZGdKRHRMYXhsYm1lMVU0MDNmcUhhU3k4Yk9BcUNyTzIzSnhGWld2UzdKQmlUM0hkQUVz?oc=5",
+          "iso": "2026-04-30T09:07:00.000Z"
+        },
+        {
+          "t": "이은미 경기도의원 “행정 수요 폭주하는 안산, 기초의원 감축은 형평성 위배”",
+          "s": "서울Pn",
+          "d": "04.30",
+          "u": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBtNzVtLWVOSml1a0lIWEJ0ZlhOYzdqVUwtRjNYeUwzV2U0RTI3dngwVlJiU051S2FPVWlFQ0wwSGRsOUEzU2NLODVjUU8yZ0RlcndlUzhYbnVxenBvWFppNWlYZ2cyWkc1OVE?oc=5",
+          "iso": "2026-04-30T07:00:00.000Z"
+        },
+        {
+          "t": "이은미 경기도의원·유재수·최진호 안산시의원, 천영미 안산시장 예비후보 지지선언!",
+          "s": "엔디엔뉴스",
+          "d": "04.18",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9uczJNanNubG5OOTVpdkxxZnRvdV9VUGRqd1VyR0xIaFJjbGZURzFuZ3hLQ3hoTU5jMDVPR0ZxOEt6X3dLbzVEMWFDVEJjU3RweVpsUWQ5VENPZ1VYLUlJSk9IelIyLVExTC12TkJR0gFyQVVfeXFMT04yYjZlLU03Vlltc0FWcFBCU001bGpPbGtVSkxQT1c4VWpyOTF6MlluZTZQc2xrMXd1ei1JTTI5M1ppRXRjRHR6NU9tZ0JhLUJaSnNUTC14eEF4N1JacEZEYmZkU1FnVGcwWGYyX3ZyQnl3?oc=5",
+          "iso": "2026-04-18T07:00:00.000Z"
         }
       ],
-      "c": 2
+      "c": 7
     },
     {
       "n": "박은경",
@@ -285,13 +476,63 @@
       "dist": "안산 제7선거구",
       "a": [
         {
-          "t": "체급 낮춘 손혜원부터 첫 중국동포 출신까지…황은화(안산7) 당선인",
-          "s": "한국경제",
-          "d": "06.05",
-          "u": "https://n.news.naver.com/mnews/article/015/0005295556?sid=162"
+          "t": "황은화 경기도의원 안산시협회장기 탁구대회 참석 격려",
+          "s": "반월신문",
+          "d": "06.17",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBySmVKVnE2blByOTUxR0N6M0RLX1oxU216WUM3TVVIUUZ3LTQ4NnVQU1ZSYU5QcUczYVk3RU5ZUlhYV3JwVmQ5SHBSQ3V1S1MwcWhaWm04TDQ4TXMtVHVEYkZKRXJZWkk?oc=5",
+          "iso": "2026-06-17T07:00:00.000Z"
+        },
+        {
+          "t": "황은화 손 잡은 방우성…안산 7선거구 전격 단일화",
+          "s": "신아일보",
+          "d": "05.31",
+          "u": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1VNWlnU29ORk91UVVpTzF2Vm4wZ1BHTWtnMENuWWVVTzhzV0hCQ2E3Y25WX2NlM2RjM1lfbmpOZVFUX0pYbC1uVUxaUm14LTA4SDN0aS1IcHNsalhyWkg4RlBOa2U3T0liQ1VwbU4zc3I?oc=5",
+          "iso": "2026-05-31T07:00:00.000Z"
+        },
+        {
+          "t": "황은화·방우성 안산 경기도의원 후보 단일화",
+          "s": "경인매일",
+          "d": "05.28",
+          "u": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBVTDlrcEtIUXBhV2hiOE5MR3pJSGtmS1lyY0Y1NGVRLWxBZUc1UmFORS1JQXVBYkp4WFlKX1RkTm1ZYkVBSXhjZ0tIREFZRmZEZWk2dThNd09kMmpjU29fTHViZHNGRTlD?oc=5",
+          "iso": "2026-05-28T07:00:00.000Z"
+        },
+        {
+          "t": "민주·진보, 안산시 제7선거구 경기도의원 후보 황은화로 단일화…방우성 사퇴",
+          "s": "v.daum.net",
+          "d": "05.28",
+          "u": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE1STGNFUFdUTGtwMmF0bXNGRGFqWklidmhzSVVDOXNqQ1lOTTRXRmJMQjZuNnZ6RW1HV1FXbnh1N0U5TGFSeTlnYlJZSQ?oc=5",
+          "iso": "2026-05-28T07:00:00.000Z"
+        },
+        {
+          "t": "황은화·방우성 안산 경기도의원 후보 단일화… “안산 발전과 민생 회복 위해 힘 모은다”",
+          "s": "경인신문",
+          "d": "05.28",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE01N3M1T3RSZ3paaG52UEhDeHhZb2pyT2Q4S2VKa0pPYzRFa0F2dFVKdldnbFpmUnp1ejYwSVF3ZGJLSUJPSW1GMUlIWm1kdV8zQWFUdWtCWXA0aVY2UHhnbUlXY0xYMkE?oc=5",
+          "iso": "2026-05-28T07:00:00.000Z"
+        },
+        {
+          "t": "“안산의 첫 다문화 시의원에서 경기도로”… 황은화, ‘생활정치 확장’ 선언",
+          "s": "엔디엔뉴스",
+          "d": "05.17",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9qY2tmdE1STnVWYU10d0RWZ2ZRMDhzMkJGZGR5VUxkeXJuU2FNS1VNbHg1czlpMHRFdS0xVlE2NGFScy1xN2V0aXJlR0F6Y0dOUDUwdVAwY1FqNS10ck1HWXVhOGN3Y3Rxejk3YWlB0gFyQVVfeXFMT24tYlNEaHgxNFYxc1pCaGtPZ3llRDJEajFYY2V6bnYxN3BSZ1RyQW02eGZWNmQwcElzd01XaDNuR1V1WDVmNGU3U3dvSEd0WW84NGNZZ1R1VksyTC0zSllTYzZCUkpjM3piN0s2RU40S0hB?oc=5",
+          "iso": "2026-05-17T07:00:00.000Z"
+        },
+        {
+          "t": "황은화 안산시의원, 경기도의원 예비후보 선거사무소 개소식 성황",
+          "s": "경인신문",
+          "d": "05.17",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1ITWRoc3V6aXpnNHg0ZEY3VXlJSE1DTzI1WUE2LUhNY0thN2h3X2theEREMmU5SlN1T2dYcE8zOGJxZ0ZuUXV4Q0lTdXNoOUxFVzI3WFdoNUR0bHhHeGIzckJHZURsTzA?oc=5",
+          "iso": "2026-05-17T07:00:00.000Z"
+        },
+        {
+          "t": "황은화 경기도의원 예비후보, “안산의 현장 경기도로 잇다”",
+          "s": "반월신문",
+          "d": "05.11",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9HdzVGWVl0OVNhengzWlY1NE11a2l1aVdzcTJTbGxZaXhEcHl2QVVyR1NpRlJBNF9HLWFiT1NLZ2ZUTVBnQlIyNE1Da3JWTWRXeGRpU0o3N3lhcWZMR0FnOXNyQnJwdEk?oc=5",
+          "iso": "2026-05-11T07:00:00.000Z"
         }
       ],
-      "c": 1
+      "c": 8
     },
     {
       "n": "이철형",
@@ -325,19 +566,63 @@
       "dist": "가선거구",
       "a": [
         {
-          "t": "안산시의회 제10대 의장에 한명훈, 부의장 현옥순 선출",
-          "s": "인천일보",
-          "d": "07.01",
-          "u": "https://www.incheonilbo.com/news/articleView.html?idxno=1326355"
+          "t": "안산시의회 제10대 원구성 완료…한명훈 의장 체제 출범",
+          "s": "안산타임스",
+          "d": "07.06",
+          "u": "https://news.google.com/rss/articles/CBMib0FVX3lxTE82cHl1d1lVSlg1ZGJYdTZsQzkyNHAwOXNWUDhYYlhDRDZBTm00N1BlVFNBQ25rRWx2UTdtVERMZHZldkhfSEVmWFcySERhaUw5dVFXYVJsRFQ1OXlmQWhPTzV6YWptUlVlbHNJUTNxUdIBc0FVX3lxTE5mYVl2QWo4Um1Va3NldG9naVQ5eEUwNG9yTE5KUEN6VXJreHNkSmVVdVl0MlRaN0JwOHFFWGtBSmM0OTBKNzg1QTVmeGZZY2ZKQkllcDBuN3A4NTJQMG9LRkZocDBrT1Iyc0pIZVE4LUdpMm8?oc=5",
+          "iso": "2026-07-06T04:50:31.000Z"
         },
         {
-          "t": "안산시·김남국 국회의원 정책간담회 참석(한명훈 의장)",
-          "s": "브릿지경제",
-          "d": "07.06",
-          "u": "https://www.viva100.com/article/20260706500321"
+          "t": "한명훈 안산시의회 의장 \"시민이 가장 먼저 믿는 의회 되겠다\"",
+          "s": "뉴스프리존",
+          "d": "07.03",
+          "u": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBSN2taYzZNbXp1NEJmTjJnOUctc19XR1hJVEhocVpSZDhWb1ZnZDFseldLdHhCb3R1c284ckFESHNHQlBWbE5USFRHUTI0RGRzOU5qaTZtcXp1bjJ0Z01nbEFURS0zaldab3k1ZFRRSW5JbE0?oc=5",
+          "iso": "2026-07-03T02:29:44.000Z"
+        },
+        {
+          "t": "안산시의회 10대 개원…한명훈 의장 \"행동으로 답할 것\"",
+          "s": "일간경기",
+          "d": "07.02",
+          "u": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE0zcHdFeW1QdzhYR3ktYmhCdnRkdmNMWUh2aEpIRjhQdV9jM2FFdzUwRU94c1lBMWtuRG5UY0h3SEd2VTBJMDA4eHp0ekh6S1M2eDJSWXNkOEV4OWpUMWlsWFUtMDFzbmJW?oc=5",
+          "iso": "2026-07-02T08:19:51.000Z"
+        },
+        {
+          "t": "안산시의회 제10대 의장 한명훈 선출 “시민 뜻 먼저 살피겠다”",
+          "s": "v.daum.net",
+          "d": "07.02",
+          "u": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE5oc3lwQzFmOWlKd2FyallvZmtEX2xKODg2TnpMWFY2bUo0T2Q5UlF4UWxFUmIxSjdGYndHV3hFdFp1Ul95bFRXX3RINGVyMFU?oc=5",
+          "iso": "2026-07-02T03:33:41.000Z"
+        },
+        {
+          "t": "안산시의회 제10대 출범… 한명훈 의장 선출",
+          "s": "천지일보",
+          "d": "07.01",
+          "u": "https://news.google.com/rss/articles/CBMiakFVX3lxTE02b21OMlh5eUZhS1MxQWJ3RUhDOGdjZWFZNkFScjVNaWJscEhkV0dLQ2VKT1RUN2tIWEFSeU55XzNvY3UtYU9YMlJHZEhhUVpyek1xMHROYVdxNnJwWkp3akxrWDRaZ3gxVGc?oc=5",
+          "iso": "2026-07-01T16:23:33.000Z"
+        },
+        {
+          "t": "안산시의회, 제10대 의장 한명훈 선출…상임위원장 인선 완료",
+          "s": "퍼블릭뉴스통신",
+          "d": "07.01",
+          "u": "https://news.google.com/rss/articles/CBMia0FVX3lxTE01RmphT040Q2tvbC1YQjJ6X3JLdEplTFI5d0ktQ2phZUMwb1hEVDZYdmt4NTRfX0trSXZIREhfQVBfcGdYeUJva0R5d1hHNGNKbjNXVi1wdjY4YUs3YzJCal8zUlBfYjAyN2R3?oc=5",
+          "iso": "2026-07-01T11:57:07.000Z"
+        },
+        {
+          "t": "[시·군 의회 ‘전반기 의장단’] 안산시의회 의장 한명훈… 부의장 현옥순 의원 선출",
+          "s": "경인일보",
+          "d": "07.01",
+          "u": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE5RenN5T0hMcFdwYUZGb2dQamwtMk1wSWthZklucFRkVVRaNmtIY2pwLVZoRDlEVUpOZkRIR29aQlBIc0dNdzZSMmdqUS0yVlVsd3c?oc=5",
+          "iso": "2026-07-01T11:36:08.000Z"
+        },
+        {
+          "t": "안산시의회 제10대 첫 회기 개막...한명훈 의장·현옥순 부의장 선출",
+          "s": "gukjenews.com",
+          "d": "07.01",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9TOEV2WnBTMkhDVDJWalRRa0oyN0I4Y3NjUUdCUGRKemZfMFpnREQwX3ZzOURmY2puQXRPX1cyWjh5LVFiODJzYU9rUjhFd1ptT2pjMUcyd0phUVpaLS04eGZab185VlRfZnJZSU53?oc=5",
+          "iso": "2026-07-01T10:03:06.000Z"
         }
       ],
-      "c": 2
+      "c": 8
     },
     {
       "n": "현옥순",
@@ -354,10 +639,60 @@
           "t": "안산시의회 의장에 한명훈, 부의장은 현옥순 의원 선출…원구성 마쳐",
           "s": "브릿지경제",
           "d": "07.02",
-          "u": "https://www.viva100.com/article/20260702500257"
+          "u": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE81MHI2V3ltME5FRVBOMEo3RjBnb21pTlJReXBQR1RNeTE0eVdfMkV5WUZIU0hlekNiTW50OUJjNHllTUNfaE5wZDdxbmU1ZERmQkVmd01SNGR0dw?oc=5",
+          "iso": "2026-07-02T00:38:00.000Z"
+        },
+        {
+          "t": "[시·군 의회 ‘전반기 의장단’] 안산시의회 의장 한명훈… 부의장 현옥순 의원 선출",
+          "s": "경인일보",
+          "d": "07.01",
+          "u": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE5RenN5T0hMcFdwYUZGb2dQamwtMk1wSWthZklucFRkVVRaNmtIY2pwLVZoRDlEVUpOZkRIR29aQlBIc0dNdzZSMmdqUS0yVlVsd3c?oc=5",
+          "iso": "2026-07-01T11:36:08.000Z"
+        },
+        {
+          "t": "안산시의회 제10대 첫 회기 개막...한명훈 의장·현옥순 부의장 선출",
+          "s": "gukjenews.com",
+          "d": "07.01",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9TOEV2WnBTMkhDVDJWalRRa0oyN0I4Y3NjUUdCUGRKemZfMFpnREQwX3ZzOURmY2puQXRPX1cyWjh5LVFiODJzYU9rUjhFd1ptT2pjMUcyd0phUVpaLS04eGZab185VlRfZnJZSU53?oc=5",
+          "iso": "2026-07-01T10:03:06.000Z"
+        },
+        {
+          "t": "안산시의회, 제10대 전반기 원구성 완료 의장 한명훈·부의장 현옥순 선출",
+          "s": "브레이크뉴스",
+          "d": "07.01",
+          "u": "https://news.google.com/rss/articles/CBMiSEFVX3lxTE5Wd2lQT2ZOb0NDNHo3NDdGaXVkRWNDMXI3NTd2OWJBUEtzYWFJWkpYd0I0ZHpLdGN0Wll1WU5VdW1VOGpRcDRQMg?oc=5",
+          "iso": "2026-07-01T08:51:00.000Z"
+        },
+        {
+          "t": "안산시의회 제10대 전반기, 의장 한명훈, 부의장 현옥순 당선",
+          "s": "투데이안산",
+          "d": "07.01",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE8wSllkdnJMTWdDNFAtZGRZVWtaMkNnLU41Z3BWbWtuOGhyaXJuQnFMWEEwY1FxWDBRcWRCWTlLSzAtT1JtbG1xQ0MzLU1WZTBSbnp2TVdZTDBGSkkxWXJjVjVJdGFmNkNlWVRhcGVR0gFyQVVfeXFMUEhiN3VyZGE1aWRwODRRLXl5aXFtWjJraUJSbVNoeURtRV94MDJIRDBnUDN6bVcxakFYd3lhWjBsTTBKSlM0VmJpOW1zVXdHLUdLOHNSOUJJLVZ1YXNrZFF1b1M2YXltTV9wZTNmR3VfZUZB?oc=5",
+          "iso": "2026-07-01T08:24:34.000Z"
+        },
+        {
+          "t": "안산시의회, 의장 한명훈·부의장 현옥순 의원 선출",
+          "s": "인천일보",
+          "d": "07.01",
+          "u": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1HWk5oc2pOYjdWVklDaDRxSzN3U3JQRHlaR3ZuWndsT1Q2cWNRTDBCcEZWaWdtN1lGYUJtYk1MNGhTcjhIak1RSmVpNU5ySGUyRVZ4c2I1S0Q5Ullqdkk4d0NJTkJTbjVhQWN3VlhTUHM?oc=5",
+          "iso": "2026-07-01T08:23:00.000Z"
+        },
+        {
+          "t": "현옥순 의원, 제10대 안산시의회 전반기 부의장 선출…“소통과 협치의 가교 역할 하겠다”",
+          "s": "반월신문",
+          "d": "07.01",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBQUjNMMUNyaHFWcWVTVWs0SGdTZ3RKYWVXTHZ3UnRIR1prdkxxUHQwQ0NlUmpiN2lhY2k1ekJtaWxTNGNad2pHMV81RldFR0FUUmZDOWIwcjUzWEFfV21feGhoV0xGdEU?oc=5",
+          "iso": "2026-07-01T07:14:17.000Z"
+        },
+        {
+          "t": "제10대 안산시의회 원구성 완료… 한명훈 의장·현옥순 부의장 선출",
+          "s": "경인일보",
+          "d": "07.01",
+          "u": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1QRmc3WU1UWURkSXEwT0tROEQ3bGlCUE1nRm1hTldUWFdVWmlCeWt5NlptVWpWZi1oZktKYkNDbVpfeGlNYnhldm5mWGxPY29KclE?oc=5",
+          "iso": "2026-07-01T07:13:54.000Z"
         }
       ],
-      "c": 1
+      "c": 8
     },
     {
       "n": "이재복",
@@ -371,16 +706,18 @@
       "dist": "라선거구",
       "a": [
         {
-          "t": "안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출",
-          "s": "경인일보",
+          "t": "이재복 의원, 제10대 안산시의회 전반기 의회운영위원장 선출…\"시민 신뢰받는 의회 만들겠다\"",
+          "s": "반월신문",
           "d": "07.01",
-          "u": "https://www.kyeongin.com/article/1766556"
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFA1ZXFNSWRGQVZPa25CLXJJQjFJa0ZtRUdXOHpHMUJaWTZFYUpsbFFlOF9vMmFXaVZYdUg1R1FOQ2NsQmZaNEczMWFnWHZEaERha2NBSDFQeEJoV2U5bkZxUEwtOV9jMjQ?oc=5",
+          "iso": "2026-07-01T07:18:22.000Z"
         },
         {
-          "t": "안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범",
-          "s": "뉴스천지",
-          "d": "07.05",
-          "u": "https://www.newscj.com/news/articleView.html?idxno=3414648"
+          "t": "이재복·설호영·안두회·김재국 후보 안산시의회의원 무투표 4명 당선",
+          "s": "반월신문",
+          "d": "05.22",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9ySDhqaGswbkFuemZGLWFpRUx2SFcyZVh1TmRRM0JWVGNaYmRkNENPX0xoUnh2WVQtdW4tMDY2aFIyVHZmbDJLMzdsSVN5dTRwdkVfVzQyS3JyLXNnUWIxNmJ2OFVPRXc?oc=5",
+          "iso": "2026-05-22T07:00:00.000Z"
         }
       ],
       "c": 2
@@ -398,19 +735,28 @@
       "star2": true,
       "a": [
         {
-          "t": "안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출",
-          "s": "경인일보",
+          "t": "박은정 의원, 제10대 안산시의회 전반기 기획행정위원장 선출…\"공정하고 투명한 상임위 운영\"",
+          "s": "반월신문",
           "d": "07.01",
-          "u": "https://www.kyeongin.com/article/1766556"
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBZWkRyM0Jqb0tnZm9sMzhoVjBsRUpkNXJsNFBKY3BYVWoxN2dWbGc4ZUhlYThnb3piVF9sX1lFbWdDQllBbEtPVV9SWXQ1U0VlVjhwc292THpJYnpvdlp2b1gtRG1mRzg?oc=5",
+          "iso": "2026-07-01T07:20:12.000Z"
         },
         {
-          "t": "안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범",
-          "s": "뉴스천지",
-          "d": "07.05",
-          "u": "https://www.newscj.com/news/articleView.html?idxno=3414648"
+          "t": "제9회 지방선거 더불어민주당 박은정 당선인, 제10대 안산시의회 입성…전체 후보 최고 득표율",
+          "s": "반월신문",
+          "d": "06.08",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5UYUpIMGZvbEoyem5ZYXdmeGlYNjN5cDhXR3lTZFQ4b01IMU5OX0hpZ0ttSFZKd3g2VDVzeGpBU1lDRkdpZHNHNG9mSGEwYWlBVDJWVWFydlJjNGQ0WVh3OFRGWVdidXM?oc=5",
+          "iso": "2026-06-08T07:00:00.000Z"
+        },
+        {
+          "t": "박은정 더불어민주당 안산시의원 후보, 선거사무소 개소",
+          "s": "투데이안산",
+          "d": "05.19",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9IVlpwS0xxV3k5YzVwVnNrUTRzZGFER2xadWpBY2pBYW5RWExaeWRYTTBuNm5mekFJZ3Q0ZzliZ1c4V1pVa3NhRWYwR0pSOUtIQ2R6bWVfVUdoZ01NZTJ5d095TUp3bWJ0RlFwQnV30gFyQVVfeXFMTV9ibG8xc0J1TkFHUTVWLV9mdFVVekNYOHBYdV9YNFRvbjVTMWluTHpXUG1uSWczcEVDZ2RfU2sxZS1ub191NU5lbEpQU3N3TndUQ1MtLUZVRXJYam9hUFNwb3NEeGEtMlh2UjFlaHhzSDFB?oc=5",
+          "iso": "2026-05-19T07:00:00.000Z"
         }
       ],
-      "c": 2
+      "c": 3
     },
     {
       "n": "이진분",
@@ -425,19 +771,42 @@
       "star2": true,
       "a": [
         {
-          "t": "안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출",
-          "s": "경인일보",
+          "t": "이진분 의원, 제10대 안산시의회 전반기 문화복지위원장 선출…\"시민과 함께하는 문화복지위원회 만들겠다\"",
+          "s": "반월신문",
           "d": "07.01",
-          "u": "https://www.kyeongin.com/article/1766556"
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFB5ZkdPbENweXhjTWlTZ19sTEppY1VJZzZva0JvbldwQk1VcW9JMmtyN25uWF9jaXBHYVJaWlI5YTRFYTZTand5SmFtcXBra2pULXpnQUZOS0IzZmgyUGdCVF9QWTM3eHc?oc=5",
+          "iso": "2026-07-01T07:19:49.000Z"
         },
         {
-          "t": "안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범",
-          "s": "뉴스천지",
-          "d": "07.05",
-          "u": "https://www.newscj.com/news/articleView.html?idxno=3414648"
+          "t": "이진분 안산시의원 당선인 감사인사 “주민 목소리 의정활동에 반영 지역 발전 위해 최선 다하겠다”",
+          "s": "반월신문",
+          "d": "06.17",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5GbVhaRUhFcEZDRFRNclRuTFNEMTJseTJwcnJIYkxOUzVfRk9rRldKWDFoMVhXVjZQemZCTnZ3N3VtWnhNNzl2QXNJUTdLWW5hZWxDUVV0ZHk2UzFrb2tTQnFKYmh5Vnc?oc=5",
+          "iso": "2026-06-17T07:00:00.000Z"
+        },
+        {
+          "t": "이진분 안산시의원 후보, 주말 현장유세 통해 “주민 곁에서 답 찾겠다” 강조",
+          "s": "엔디엔뉴스",
+          "d": "05.23",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE96QkpYbDNhUHp5V3F3UEtGTnNmbmd1Vmc0RGhVVm9wc0p1Qk1OMnJZY3N1dEtCbFBMMmNuR0JkNmYyY0tmeFV2bFB0RWJuTHRtT283NHVpU3F2cnV4aFhsa2VoTFc4Q3lKUkY5YUJR0gFyQVVfeXFMUFk2WWR4VVlZYkNmSnpOUDBEUzY2OVFsV2xDbHp0MDBxeWg4cWpELTVBdGpYSmtRNEhLZE9LcjQ3RW1kSzZZUUZvZnJYUTA5OENpZWVRNV9GejZaanNCUGIyaGZpM0Z6UnNfMlBoWEVaX3lR?oc=5",
+          "iso": "2026-05-23T07:00:00.000Z"
+        },
+        {
+          "t": "[6·3 지방선거] 박건희·이진분 안산 국힘 도·시의원, 합동 선거사무소 개소",
+          "s": "중부일보",
+          "d": "05.19",
+          "u": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1WMmo0UnBZazVVTmk0ZmphNzdad1NkdFVoUjZqYmhrM1poaWdGeWRLcmREZkpjSkcxU2hhMlVpaF90eHl2WExjUE43N0tJSWpDamkxcmEyZWhNTWUyc3VQU0labjNyR0dtYlMtVWJvNA?oc=5",
+          "iso": "2026-05-19T07:00:00.000Z"
+        },
+        {
+          "t": "[6·3 지방선거] 박건희·이진분 안산 국힘 도·시의원, 합동 선거사무소 개소",
+          "s": "v.daum.net",
+          "d": "05.19",
+          "u": "https://news.google.com/rss/articles/CBMiRkFVX3lxTFA0UExfNVZDNTdOZDdMNk9Zc3FKVkhQdGZSdldhejhjM0oyMlFCVVlfR0RTSGtoQWdFVENnMnd4cndlRHpsamc?oc=5",
+          "iso": "2026-05-19T07:00:00.000Z"
         }
       ],
-      "c": 2
+      "c": 5
     },
     {
       "n": "선현우",
@@ -452,16 +821,18 @@
       "star2": true,
       "a": [
         {
-          "t": "안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출",
-          "s": "경인일보",
-          "d": "07.01",
-          "u": "https://www.kyeongin.com/article/1766556"
+          "t": "더불어민주당 선현우 안산시의원 후보 초지동․대부동, “초지동 주민 응원 힘입어 끝까지 뛰겠다”",
+          "s": "반월신문",
+          "d": "06.02",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9vWmFBYmljUTFCby1lOGlUMGFMMXFXY29ZUGk4SWFaTnVzNDF2WThiaEh0WXFaNW5uaEVlZG1pa3ROZUotRXVhU2NFa0xJYW5hMWNSNjlrM1ltbGtZOVBaUzZJdC1zemM?oc=5",
+          "iso": "2026-06-02T07:00:00.000Z"
         },
         {
-          "t": "안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범",
-          "s": "뉴스천지",
-          "d": "07.05",
-          "u": "https://www.newscj.com/news/articleView.html?idxno=3414648"
+          "t": "더불어민주당 선현우 안산시의원 후보, 아선거구 초지동·대부동 새벽부터 현장 행보 이어가",
+          "s": "반월신문",
+          "d": "05.15",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE8zUFNyM0xKb1R6bUpaRzhkbXZiTUtDNm9ZTXJqelR5NFpYeVNmMkVQWFRXOFhJS2U5TW8waU96azJ1aHlGMXZTRGZaYXRvTDkyNFk4T1RaWWtNZ2R3VENyZkhrWkFGVzg?oc=5",
+          "iso": "2026-05-15T07:00:00.000Z"
         }
       ],
       "c": 2
@@ -479,19 +850,63 @@
       "star2": true,
       "a": [
         {
-          "t": "안산시의회 민주당 교섭단체(10명) 대표의원 최찬규",
-          "s": "에너지경제",
-          "d": "07.02",
-          "u": "https://www.ekn.kr/web/view.php?key=20260702029328440"
+          "t": "민주당 최찬규 당선인, 제10대 안산시의회 당선인 간담회 참석",
+          "s": "반월신문",
+          "d": "06.24",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1GdHJ0S0dIOE1lbzdvRXF4VEUwYkcxT29XWXNjSFMxQmhXdEpvY3FLZ2JPazFhM1RQX1RvRzFPY1dUamZaRkNTcndUQjF6OGdnUDFyZ185UzNaVlNOYkVHTFM1YzVHUHc?oc=5",
+          "iso": "2026-06-24T01:29:06.000Z"
         },
         {
-          "t": "안산시 정책간담회 참석(김진숙·최찬규 시의원)",
-          "s": "브릿지경제",
-          "d": "07.06",
-          "u": "https://www.viva100.com/article/20260706500321"
+          "t": "안산시의회 최찬규 의원 “안산시 초·중·고 체육 진로 연계 부족···체육 특성화 학교 유치 필요”",
+          "s": "산경일보",
+          "d": "06.21",
+          "u": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBLLVVhM0RmVV9DS2ZZNjNheUFYLVRRUmFGTkdaTlVzTW96MmpXcEVUQ2xSd3llV0NDbnJRSEdja0FBeEdLSE1sZGo4b2xXWW8wU1A2VmViLVY0ZC1wVzU5SFhCWkV2N1lURVdFUS1JYUs?oc=5",
+          "iso": "2026-06-21T04:47:16.000Z"
+        },
+        {
+          "t": "최찬규 안산시의원, “안산에 체육 특성화 학교 유치해야”",
+          "s": "v.daum.net",
+          "d": "06.20",
+          "u": "https://news.google.com/rss/articles/CBMiRkFVX3lxTE5HYWt0S1JaRG04Wnl1Tm5xVU1OTkltaTJIbTMzMWlsQWJBR0RmbEtxcThuaVE0N0ZlUXlwZWcwZ3c0OWM1eGc?oc=5",
+          "iso": "2026-06-20T07:00:00.000Z"
+        },
+        {
+          "t": "최찬규 안산시의원 \"체육 인재 유출 막아야\"…안산 체육 시스템 전면 개편 촉구",
+          "s": "신아일보",
+          "d": "06.20",
+          "u": "https://news.google.com/rss/articles/CBMicEFVX3lxTFAyNmhlRnJ0b0tkWmJqN2hXanZKcThzMkxyRm1TakZXUERQejlSQ25DTk8tY2lOR3NUVUlrLXZkUy1VSTFGbnZqb2NLSmVKM1g2bTFMRVVhdXhQeG5NTHpnazc3U3dUSW4wMEQ0LWNMb0c?oc=5",
+          "iso": "2026-06-20T07:00:00.000Z"
+        },
+        {
+          "t": "최찬규 안산시의원 “체육 인재 유출 막으려면 체육 특성화 학교 필요”",
+          "s": "천지일보",
+          "d": "06.20",
+          "u": "https://news.google.com/rss/articles/CBMiakFVX3lxTE93MnB5Ym5LRGxPQ0RRMHE2ZkdzZTlsT0FaSW0tS0ptTTNBQVI0ZjE0VlhJNG9rNGRpenRqSVdvd2pEOWxvajBkbzhQUlFjR1NqdXF2QjRGRG13NUJlMTJDcVd2R0FmOER3TGc?oc=5",
+          "iso": "2026-06-20T07:00:00.000Z"
+        },
+        {
+          "t": "최찬규 안산시의원, \"체육특성화학교 유치로 학생 진로 지원해야\"",
+          "s": "gukjenews.com",
+          "d": "06.19",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE50dF96UFRFZnE1U0VBaTJGZUdmR1RONDd2NGFDckVTSmdCQ2xmZWUwenNkeWZNV2hxN0MwNG02VDhsZ1B3X3RSMmRlcldKQXMwX2Exd3l2LTBhVmZDMzZrTWE1Q1BXckFBTnh0Tk9B?oc=5",
+          "iso": "2026-06-19T23:33:04.000Z"
+        },
+        {
+          "t": "안산시의회 최찬규 의원, 안산해솔중 진학문제 대책 조속 마련 필요",
+          "s": "참좋은뉴스",
+          "d": "06.16",
+          "u": "https://news.google.com/rss/articles/CBMic0FVX3lxTE95ZFkycUU5WGhrall0NTdVaXg4VTRHLWFLOXQ5ZGhfdm85VGhCOFp6V2NwLTRjbDBfZE5rNHZESENBdjFZZmFZVzFPT3hxSGExQjM0OUw0eWZaYW1aX2pGT1lUTmpJRW56NHNSRTBENWY0Xzg?oc=5",
+          "iso": "2026-06-16T07:00:00.000Z"
+        },
+        {
+          "t": "안산해솔중 진학대란 현실되나…최찬규 시의원 “학부모 불안 더 이상 안 돼”",
+          "s": "신아일보",
+          "d": "06.16",
+          "u": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5IbDc1ejFQREM0dkFxMjBidUtoZkE5SVE5X0VOWU04cTkwaXloU1l0em1QVllqelI4SmN5ZmxYc1JlLTVtSmFSRzkwVEx3WkxORjl3Sml6ajl6MldnWEpDNmlCQW5Rb0Z2eFRxMFh3R08?oc=5",
+          "iso": "2026-06-16T07:00:00.000Z"
         }
       ],
-      "c": 2
+      "c": 8
     },
     {
       "n": "김재국",
@@ -506,10 +921,11 @@
       "star2": true,
       "a": [
         {
-          "t": "안산시의회 국민의힘 교섭단체 대표의원 김재국",
-          "s": "에너지경제",
-          "d": "07.02",
-          "u": "https://www.ekn.kr/web/view.php?key=20260702029328440"
+          "t": "이재복·설호영·안두회·김재국 후보 안산시의회의원 무투표 4명 당선",
+          "s": "반월신문",
+          "d": "05.22",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9ySDhqaGswbkFuemZGLWFpRUx2SFcyZVh1TmRRM0JWVGNaYmRkNENPX0xoUnh2WVQtdW4tMDY2aFIyVHZmbDJLMzdsSVN5dTRwdkVfVzQyS3JyLXNnUWIxNmJ2OFVPRXc?oc=5",
+          "iso": "2026-05-22T07:00:00.000Z"
         }
       ],
       "c": 1
@@ -526,19 +942,35 @@
       "dist": "나선거구",
       "a": [
         {
-          "t": "안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출",
-          "s": "경인일보",
-          "d": "07.01",
-          "u": "https://www.kyeongin.com/article/1766556"
+          "t": "‘젊은 일꾼’ 윤성영 안산시의원, 제10대 전반기 기획행정위원회 부위원장 선출",
+          "s": "경인신문",
+          "d": "07.05",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1MN0lBdlc4X3c3YXpzZlJDaXM4Q2NaMVpvVkZCSHROVmtUWGVneE05OXlCYzgzaUtkMVMtVmZid0dsRVZUZ1hyd2lKbTVzckVOdGNQTzdad3NESXYwN19jNTNlS3FJRkk?oc=5",
+          "iso": "2026-07-05T04:36:27.000Z"
         },
         {
-          "t": "안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범",
-          "s": "뉴스천지",
-          "d": "07.05",
-          "u": "https://www.newscj.com/news/articleView.html?idxno=3414648"
+          "t": "윤성영 안산시의원 당선인 제10대 안산시의회 당선인 간담회 참석",
+          "s": "반월신문",
+          "d": "06.24",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBHVEJCeU9WSmVNNk5fbnFQSlhXYklLYm9GRnZ0dnpHMURoUWxsSHZ0MW9HUUg0VFBKLTMyclRENWNyQm5qUTJGWGl6QnJfdXUtTGhwMTgyOFVuQks4aXFNLWpfNGo4Y1U?oc=5",
+          "iso": "2026-06-24T07:00:00.000Z"
+        },
+        {
+          "t": "국민의힘 윤성영 안산시의원 후보 “주민 곁에서 듣고 뛰는 젊은 일꾼 되겠다”",
+          "s": "반월신문",
+          "d": "06.02",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5XYWFyTmhBMXZ6bGhsdjE5dlVGeFNfRWxCajhFb1BQYjlyX1h6bW9fNTludG5nb3dfdl95N2pDNy1KYTdhOTg1Z2g0XzdWSzhPSHBFR2RoR0hIMVJNcFpBdnJPaDBwTjQ?oc=5",
+          "iso": "2026-06-02T07:00:00.000Z"
+        },
+        {
+          "t": "국민의힘 윤성영 안산시의원 후보, ‘필승 선거캠프 방문의 날’ 성황… 표심 몰이 본격화",
+          "s": "경인신문",
+          "d": "05.20",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9aLWUyNkI3RlQyT3JaWWttQmQ5c0NHUUhtZml4ajhXaTk5UnpyUDNhc09OVFhOYmxoT2dDbjVQVURTVDBtTTdwa1p2dkNSN1B0U09XN0NFQ3VjZVhhZ3N6bi1FaVBEMDA?oc=5",
+          "iso": "2026-05-20T07:00:00.000Z"
         }
       ],
-      "c": 2
+      "c": 4
     },
     {
       "n": "백승희",
@@ -552,19 +984,14 @@
       "dist": "비례대표",
       "a": [
         {
-          "t": "안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출",
-          "s": "경인일보",
-          "d": "07.01",
-          "u": "https://www.kyeongin.com/article/1766556"
-        },
-        {
-          "t": "안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범",
-          "s": "뉴스천지",
-          "d": "07.05",
-          "u": "https://www.newscj.com/news/articleView.html?idxno=3414648"
+          "t": "안산시의회 백승희 당선인 간담회 참석 “시민 삶의 질 높이는 조례와 정책 마련에 최선”",
+          "s": "반월신문",
+          "d": "06.24",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5JOC03QXZneVAtT001Z2g4SUVrZEVVS3c4UlpzLU85WlhZYzFWRURWbVVpandDOU5jV01nVlQ1ZFRfeVhWd2JTRDFKLWt0ZDgzX1dpc3pmMmdvMU5IRVU5bGUteGR5LWc?oc=5",
+          "iso": "2026-06-24T00:39:09.000Z"
         }
       ],
-      "c": 2
+      "c": 1
     },
     {
       "n": "김태성",
@@ -578,19 +1005,14 @@
       "dist": "아선거구",
       "a": [
         {
-          "t": "안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출",
-          "s": "경인일보",
-          "d": "07.01",
-          "u": "https://www.kyeongin.com/article/1766556"
-        },
-        {
-          "t": "안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범",
-          "s": "뉴스천지",
-          "d": "07.05",
-          "u": "https://www.newscj.com/news/articleView.html?idxno=3414648"
+          "t": "“어려움 정면 돌파하겠다”... 국민의힘 김태성 안산시의원 후보, ‘책임 정치’ 강조",
+          "s": "참좋은뉴스",
+          "d": "05.01",
+          "u": "https://news.google.com/rss/articles/CBMic0FVX3lxTE8xX2VNUUo3dkRPZW14bklULVFlVVV3cDU3SnEwbTU3R1ZvRTIyYjduYl9JckR2QmYyMlJQUHhMb1NDZXBMUW80d2JNaEZrUzdaaDFuQUtKOEJMN2hBVjlyeU5jYnBhV2F0eko5Y3lPN2NUaGs?oc=5",
+          "iso": "2026-05-01T07:00:00.000Z"
         }
       ],
-      "c": 2
+      "c": 1
     },
     {
       "n": "염정우",
@@ -604,19 +1026,63 @@
       "dist": "가선거구",
       "a": [
         {
-          "t": "안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출",
-          "s": "경인일보",
-          "d": "07.01",
-          "u": "https://www.kyeongin.com/article/1766556"
+          "t": "[인터뷰] 염정우 안산시의원 당선인 \"이게 될까를 이게 되네로\"…생활정치에 방점",
+          "s": "오늘경제",
+          "d": "06.09",
+          "u": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBWTWVLc290WUkxNjR3bEg3dWNxbDhEVExwSlZTTXF4dUlDeW1VTWFHcGJxOG1nMnNQOGdUYXg1WG1QcExxai1lV3JHQjFUWG5NaE5kLV9oWklNRnY0dE0xRXgxSUNkZVVLSGJyQm1BMzdZaDg?oc=5",
+          "iso": "2026-06-09T07:00:00.000Z"
         },
         {
-          "t": "안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범",
-          "s": "뉴스천지",
-          "d": "07.05",
-          "u": "https://www.newscj.com/news/articleView.html?idxno=3414648"
+          "t": "염정우 안산시의원 당선인 “생활 바꾸는 정치로 평가받겠다”",
+          "s": "뉴스프리존",
+          "d": "06.08",
+          "u": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9mYUdLaDZEQ2hDbW9WYy1FWlRRcDhZR0JKR2pLVmdhbGNqd1B2MXl5eFUyMGJPalpaVS1zSXZYVmxUQ2gzTzlnRVo1dWluSGhNZVJTa0J6V1VyQ2xOUGdjSDVKMmJCWFBuUWRWaW9Sbm4wQjDSAXdBVV95cUxOZm5DOTAwa3JFYzV4WmFKWUIzY2Y3M2JlaXBkajVZN1pVYW1iV1o4M3FyeFNsVlE4bWl3MGpLdUxGWVNtcnhWVEtRelVkc1lYQmJNdGRlVnhFaDByS010TmV5UXltQzgxeE0yOVF6cENyYTJ6b3FsUQ?oc=5",
+          "iso": "2026-06-08T07:00:00.000Z"
+        },
+        {
+          "t": "염정우, 기자·행정 전문가에서 시의원으로…안산 미래 이끌 청년 리더 부상",
+          "s": "신아일보",
+          "d": "06.05",
+          "u": "https://news.google.com/rss/articles/CBMicEFVX3lxTE04cEtMLUxfV3RUVGtNdTZ6UUk4djZPeUJxYnMzVW1weFZFY2xFREdTcGVxZG5jRjd4X1psX0VNNXFtYlU4VHpMM0pnMV93X05ILWpxSEU4OHZRT3lFNHBtdHl5dnNEX1lqMk9fcC1pb0k?oc=5",
+          "iso": "2026-06-05T07:00:00.000Z"
+        },
+        {
+          "t": "젊은 정치 생활정치로 시민곁에 염정우 안산시의원 당선.....안산시의회 새바람 예고",
+          "s": "시민일보",
+          "d": "06.04",
+          "u": "https://news.google.com/rss/articles/CBMickFVX3lxTE9DeUFSZ2E1QmpSSjdlRFBqcjhmWklUOTVwWFJpMVptSVZtZmVaZXdwZGdTTVRrU1QyYnVPNXI1VjZ6SFJNd1N5RjNqNHYtLUpvajllVmlYTFhTYkFIck9yd0phTTJpa2NvTm5GX1dwbjJKZ9IBb0FVX3lxTE42MTlvcFFNbnBnNUFLVF9MY3d2R0UycFNRYnB6b0FVS1d1NmQ2OWpLVDZYd3Fvekd3YjZpRnFUUl9LeHBBRmtXdUZIR25LVUdDbWJHZE9XWFZ0b0FfUm9pUFNoTjQ0S2lpdm94ZERISQ?oc=5",
+          "iso": "2026-06-04T21:51:08.000Z"
+        },
+        {
+          "t": "염정우 안산시의원 당선인 “기회 주신 시민께 보답하겠다”",
+          "s": "필드뉴스",
+          "d": "06.04",
+          "u": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE1CVnR2MnFhZG40TUlVdEhKUmpidTNkUjAzcGk4dUtGWk1wUEI0T01DN0pmMkc2dWthUWdjYkE1T1l2cUtFdnV6aElONnNhZXd3bXc0VmlEa1FRdWNEcUszbGlTQWt1d0Vt0gFsQVVfeXFMTkt3R3FtaHkwM2ZuSy1kMjR5VDJfbDdkSmZTZWJLZ0ZKa3NpcVZOeXBGeldFYmw5MTZ5a0ZLS29LVUJwV3JQMGE2TjFTamtTXzVZVmZJam1CVk9iMmxwaExQX3h5OHMtUnhmYlo0?oc=5",
+          "iso": "2026-06-04T07:00:00.000Z"
+        },
+        {
+          "t": "염정우 안산시의원 후보, 선거운동 마지막 날까지 도보 순회…시민 목소리 청취",
+          "s": "필드뉴스",
+          "d": "06.02",
+          "u": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE4yci1tTl9aSVA4bEZEcllRUVRFd1RPOGJOS0R6LXUtOU5yM3ZYNHY4N0h2OGNScTRzaXJhb3NVWW1CUGctWE94Q0o4UFZsT3NXMDlfTVZ4SkhBZzhBVXlWWGIwRjFkSlFL0gFsQVVfeXFMT2ZSakhkTEx2V0dWcHZsZEl5UnF5eXN1S1JwSlA1T0lOR002OVNMZkdQZi1Jcnh1MzVaaThJV196YVZoUzJKdlFEOGRtd0EzT2wxUXFaUnZUTEUwdlZJMlNkcXBSbWtVa3RkTmJN?oc=5",
+          "iso": "2026-06-02T07:00:00.000Z"
+        },
+        {
+          "t": "염정우 시의원 후보, ‘골목길 유세·SNS 1만 뷰’로 안산에 돌풍",
+          "s": "경인매일",
+          "d": "05.27",
+          "u": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5BMWh1Skt6Rm1iYXh2cTJEeW5QYWJIMlczckcwbXlUM01XdUptek1QNkh0blQwNUtqbWw0d1locDFoeGN1TGs5ZW41ZU1lbXEyaDQ5b1dMVS1GbWZPaG9ybVZ1N1FJeXVX?oc=5",
+          "iso": "2026-05-27T07:00:00.000Z"
+        },
+        {
+          "t": "염정우 국힘 안산시의원 후보, 도전적인 홍보 문구 등으로 '눈길'",
+          "s": "경기일보",
+          "d": "05.21",
+          "u": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFAzMzd1YWtod3ZpLXAzelpZQzl0VXdwSTBtZ3NpUUlCMFF6Q1dlalh3bHpqRjAwTzBIVTV4MU5pS2RiRWdRUGpabHRjMTY3OUZROXg5anJ5Z3kwV3c?oc=5",
+          "iso": "2026-05-21T07:00:00.000Z"
         }
       ],
-      "c": 2
+      "c": 8
     },
     {
       "n": "김진숙",
@@ -631,10 +1097,11 @@
       "star2": true,
       "a": [
         {
-          "t": "안산시 정책간담회 참석(김진숙·최찬규 시의원)",
-          "s": "브릿지경제",
-          "d": "07.06",
-          "u": "https://www.viva100.com/article/20260706500321"
+          "t": "안산시의원 나선거구, 김진숙 후보 ‘가’번 공천 확정… 본선 승리 정조준",
+          "s": "참좋은뉴스",
+          "d": "05.07",
+          "u": "https://news.google.com/rss/articles/CBMic0FVX3lxTE0zdFk0V05TeGVjYm9reDdicDlZUnVXMUN4WHo0OHN0RnJQcUJONXJHTG91WDVja2VyWGFFUGhDWGJuWVN6SU4zcWhoRG0zSWV1dlQ3S25VQ3hmYzJvbUpldU1XOGE3Z25pSlJscEQ2eU94YkE?oc=5",
+          "iso": "2026-05-07T07:00:00.000Z"
         }
       ],
       "c": 1
@@ -651,19 +1118,42 @@
       "dist": "다선거구",
       "a": [
         {
-          "t": "안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출",
-          "s": "경인일보",
-          "d": "07.01",
-          "u": "https://www.kyeongin.com/article/1766556"
+          "t": "윤오일 안산시의원 후보, 피날레 집중선거운동…\"주민의 한 표가 동네의 미래 바꾼다\"",
+          "s": "엔디엔뉴스",
+          "d": "06.03",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9ndlg3NlBKOFhwOE4tZHplWmZPS2FaTHZkWlBXN2hlRVlYMFpiOVFQdlBqbTQyMkN0WGw5dzFtbU14QUZ1cjdCSmMwMmJKdEdjUTVOR0dYSGszenZnMXhKb3VQRWZRUzNNcWFHaEVB?oc=5",
+          "iso": "2026-06-03T07:00:00.000Z"
         },
         {
-          "t": "안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범",
-          "s": "뉴스천지",
-          "d": "07.05",
-          "u": "https://www.newscj.com/news/articleView.html?idxno=3414648"
+          "t": "민주당 윤오일 안산시의원 후보 시민들과 소통하며 지지 호소",
+          "s": "반월신문",
+          "d": "06.02",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5ndDZvVlFlOTRmT0w1NjYySF95eDNSWFVDeXg5al8xOFJTNWVfNGV2Vy1CNDRkbGxFRjJwVDVwejRfMEN2WFR6SG5DVjB5TE9qR0Nzb0NXUVRvX01iVGtQRXNvN0FHaVk?oc=5",
+          "iso": "2026-06-02T07:00:00.000Z"
+        },
+        {
+          "t": "윤오일 안산시 다선거구 시의원 후보, 부처님오신날 사찰 방문 이어 노적봉 원팀 유세",
+          "s": "우리일보",
+          "d": "05.25",
+          "u": "https://news.google.com/rss/articles/CBMiY0FVX3lxTFBsNHFFT2RZWmd5X083d1NJQmxzZG9raUJ5ekhCdnVZQ0xvSzBfbS1UMHJRdGFJNUU4bHJYMTNyM3lJa1d2UUlsUmliYkh6NDVlTWxxRGpwNDdRdVhBbWFmQWdmcw?oc=5",
+          "iso": "2026-05-25T06:30:44.000Z"
+        },
+        {
+          "t": "\"시민이 부르면 언제든 달려간다\"…윤오일 안산시의원 후보, 선거사무소 개소",
+          "s": "신아일보",
+          "d": "05.21",
+          "u": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5ic0htU0NSZUNEc0lsTDBwOHZkcmZDS2o1VGxtMkoyZ3c1dkdqZWNLa0pUWnRsSFdEQ1hKVVU5cmpKSGxDWTFGYkh0VGVOMm9VaHBMdUktYnBSYUNIRHh6bXk1TzRNeUZ6X1Zfam5rckc?oc=5",
+          "iso": "2026-05-21T07:00:00.000Z"
+        },
+        {
+          "t": "윤오일 안산시의원 후보, 선대위 출범 “시민 위한 본격 행보 시작”",
+          "s": "뉴스프리존",
+          "d": "05.21",
+          "u": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1LcC00MWJ2NENER3hvWFdOck56NFJENUNBblRpSFpaVVdvaXhDVkl0TmNUVGdyVEl5VXhudVI1VDhLcFhjb2pKS0w1Z25kNy1vaXE2SFBzUU93aUFZNnRTbXk3aWN0X0Y0b290c0RZOGdORjDSAXdBVV95cUxNckhMc3JxOEplekVwMGZ4X01lSXF2T29NV215YW90c0dQNzZhSHdENTZ3NEZsdEFVaVJpMl9ZVEdRb3JXWHJmYl8yck0wNUVteGxXY1pZMkFvSXRBQi11UC0yYlJySk5mNFltd21FbENlVkhkZDY1VQ?oc=5",
+          "iso": "2026-05-21T07:00:00.000Z"
         }
       ],
-      "c": 2
+      "c": 5
     },
     {
       "n": "설호영",
@@ -678,16 +1168,18 @@
       "star2": true,
       "a": [
         {
-          "t": "안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출",
-          "s": "경인일보",
-          "d": "07.01",
-          "u": "https://www.kyeongin.com/article/1766556"
+          "t": "설호영 안산시의원 당선인 대한노인회 안산시상록구지회장 취임식 참석",
+          "s": "반월신문",
+          "d": "06.24",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5PVU81SVpubWEybW0zWHBxd3BQQzFndmZNbEZpeEF5TTRSdk4wT3BqaTEzWmhDbXpib0RmODlNcVYwTXd4cU1rODdJMi1mYVptZEtTbXAxeVBwSGtHYS1vMEZadjkwdkk?oc=5",
+          "iso": "2026-06-24T00:40:42.000Z"
         },
         {
-          "t": "안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범",
-          "s": "뉴스천지",
-          "d": "07.05",
-          "u": "https://www.newscj.com/news/articleView.html?idxno=3414648"
+          "t": "이재복·설호영·안두회·김재국 후보 안산시의회의원 무투표 4명 당선",
+          "s": "반월신문",
+          "d": "05.22",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9ySDhqaGswbkFuemZGLWFpRUx2SFcyZVh1TmRRM0JWVGNaYmRkNENPX0xoUnh2WVQtdW4tMDY2aFIyVHZmbDJLMzdsSVN5dTRwdkVfVzQyS3JyLXNnUWIxNmJ2OFVPRXc?oc=5",
+          "iso": "2026-05-22T07:00:00.000Z"
         }
       ],
       "c": 2
@@ -704,19 +1196,28 @@
       "dist": "마선거구",
       "a": [
         {
-          "t": "안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출",
-          "s": "경인일보",
-          "d": "07.01",
-          "u": "https://www.kyeongin.com/article/1766556"
+          "t": "이상우 안산시 마선거구 시의원 후보, 부처님오신날 맞아 지역 사찰 방문",
+          "s": "엔디엔뉴스",
+          "d": "05.26",
+          "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE44TTBybE1tbmdKVVZRQmdKUnBQNk5MMVhQN2dBcTB3bTlvYWZ6NHpEcDBXenNuUHZfaHBWd3VtZVpySHB5UFBKWHllQzJoWl8wbzZvak5SbW1RdVR0QjR4Y09oMHAwbjdGeGxaNk5R0gFyQVVfeXFMT2ttVTk0MHBOVGpkWDBLQXhRZjZBUjFiQlRjX3VDcnZtSWxKTlNFQXRUOHJINUtHLUpKRmlBNWp6dnNIOUgwSEhtbTI3My0wYzFSZmdjWHRYZjRkUFFnWEhuNTZWV2pHZHNtQVYtcnZDWVpR?oc=5",
+          "iso": "2026-05-26T07:00:00.000Z"
         },
         {
-          "t": "안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범",
-          "s": "뉴스천지",
-          "d": "07.05",
-          "u": "https://www.newscj.com/news/articleView.html?idxno=3414648"
+          "t": "이상우 안산시의원 후보, 부처님오신날 민심 행보…\"믿고 맡길 시의원 될 것\"",
+          "s": "신아일보",
+          "d": "05.24",
+          "u": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1weHZfcnR2RDR3QnRqSlBnb0IxdENsTUlGZWk0WENEMHdhRmFyNXI2YVVEQ1pOYjV4cXlYa1VaeVdjN1RoTGdXYkUyV1Q3UlpMei02WEF4Z3NmQS1nUFFsbHRUTE1KN2ZKVzl6cFoxTzU?oc=5",
+          "iso": "2026-05-24T07:00:00.000Z"
+        },
+        {
+          "t": "민주당 이상우 안산시의원 후보 개소식…\"생활 현안 해결 집중\"",
+          "s": "신아일보",
+          "d": "05.21",
+          "u": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1iM3NrUE1EdmpKRGxHaU4xeEtWOXdJaWRBWnVNYjl1MTFBZkVIemMxbzNjUTNTNWRMMlg0QXlfcjVtaHRNRjRoUFpLdjI5VTl2cTFGU09zNmJ2czVVYUZHNmtRc2JVTHVkclZpdFVvZEQ?oc=5",
+          "iso": "2026-05-21T07:00:00.000Z"
         }
       ],
-      "c": 2
+      "c": 3
     },
     {
       "n": "유민희",
@@ -730,19 +1231,14 @@
       "dist": "마선거구",
       "a": [
         {
-          "t": "안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출",
-          "s": "경인일보",
-          "d": "07.01",
-          "u": "https://www.kyeongin.com/article/1766556"
-        },
-        {
-          "t": "안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범",
-          "s": "뉴스천지",
-          "d": "07.05",
-          "u": "https://www.newscj.com/news/articleView.html?idxno=3414648"
+          "t": "국민의힘 유민희 안산시의원 후보 가족과 함께 막판 유세 총력",
+          "s": "반월신문",
+          "d": "06.02",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBYUDMxYllhTkNaLXgwUUJBQmpCVlJMZVhBX3ByX2k1OXlmMC1kcVFtTEpaRU5HaE8wLTVLd0xCQ0ZuYTZWQlpBZklCOUNMbzRRTEh2TW9INlg3NEI2N0dCalM5ZW8wcTg?oc=5",
+          "iso": "2026-06-02T07:00:00.000Z"
         }
       ],
-      "c": 2
+      "c": 1
     },
     {
       "n": "안두회",
@@ -756,19 +1252,14 @@
       "dist": "바선거구",
       "a": [
         {
-          "t": "안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출",
-          "s": "경인일보",
-          "d": "07.01",
-          "u": "https://www.kyeongin.com/article/1766556"
-        },
-        {
-          "t": "안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범",
-          "s": "뉴스천지",
-          "d": "07.05",
-          "u": "https://www.newscj.com/news/articleView.html?idxno=3414648"
+          "t": "이재복·설호영·안두회·김재국 후보 안산시의회의원 무투표 4명 당선",
+          "s": "반월신문",
+          "d": "05.22",
+          "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9ySDhqaGswbkFuemZGLWFpRUx2SFcyZVh1TmRRM0JWVGNaYmRkNENPX0xoUnh2WVQtdW4tMDY2aFIyVHZmbDJLMzdsSVN5dTRwdkVfVzQyS3JyLXNnUWIxNmJ2OFVPRXc?oc=5",
+          "iso": "2026-05-22T07:00:00.000Z"
         }
       ],
-      "c": 2
+      "c": 1
     },
     {
       "n": "천복희",
