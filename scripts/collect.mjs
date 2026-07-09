@@ -30,6 +30,25 @@ const EXCLUDE = {
   '김현':   ['배우', '아나운서']
 };
 
+// 네이버 API 는 언론사명을 안 주므로 도메인→언론사명 매핑(주요 매체). 없으면 호스트명 사용.
+const DOMAIN_NAMES = {
+  'kyeongin.com':'경인일보','incheonilbo.com':'인천일보','kgnews.co.kr':'경기신문',
+  'viva100.com':'브릿지경제','m-i.kr':'매일일보','shinailbo.co.kr':'신아일보',
+  'kihoilbo.co.kr':'기호일보','joongboo.com':'중부일보','ekn.kr':'에너지경제',
+  'labortoday.co.kr':'매일노동뉴스','thereport.co.kr':'더리포트','enewstoday.co.kr':'이뉴스투데이',
+  'todaykorea.co.kr':'투데이코리아','newscj.com':'뉴스천지','banwol.net':'반월신문',
+  'kpinews.kr':'KPI뉴스','ifm.kr':'경인방송','ohmynews.com':'오마이뉴스',
+  'yna.co.kr':'연합뉴스','newsis.com':'뉴시스','news1.kr':'뉴스1','hankyung.com':'한국경제',
+  'mk.co.kr':'매일경제','seoul.co.kr':'서울신문','khan.co.kr':'경향신문','hani.co.kr':'한겨레',
+  'chosun.com':'조선일보','joongang.co.kr':'중앙일보','donga.com':'동아일보',
+  'heraldcorp.com':'헤럴드경제','nspna.com':'NSP통신','asn24.com':'경인신문',
+  'kyeonggi.com':'경기일보','gnews.gg.go.kr':'경기GN뉴스','kmaeil.com':'경기매일'
+};
+function srcName(host){
+  const h = host.replace(/^www\./,'');
+  return DOMAIN_NAMES[h] || h.replace(/\.(co\.kr|or\.kr|go\.kr|com|kr|net)$/,'');
+}
+
 const CID = process.env.NAVER_CLIENT_ID;
 const CSEC = process.env.NAVER_CLIENT_SECRET;
 const USE_NAVER = !!(CID && CSEC);
@@ -50,8 +69,8 @@ async function fetchNaver(query) {
   const j = await res.json();
   return (j.items || []).map(it => {
     let host = '';
-    try { host = new URL(it.originallink || it.link).hostname.replace(/^www\./, ''); } catch {}
-    return { title: decode(it.title), url: it.originallink || it.link, source: host, date: new Date(it.pubDate), desc: decode(it.description) };
+    try { host = new URL(it.originallink || it.link).hostname; } catch {}
+    return { title: decode(it.title), url: it.originallink || it.link, source: srcName(host), date: new Date(it.pubDate), desc: decode(it.description) };
   });
 }
 
