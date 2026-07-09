@@ -67,30 +67,28 @@
   /* member list */
   .grp-label{font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--muted);
     padding:12px 18px 6px;}
-  .row{display:flex;align-items:flex-start;gap:11px;padding:10px 18px;cursor:pointer;
+  .row{display:flex;align-items:center;flex-wrap:wrap;gap:7px 9px;padding:11px 18px;cursor:pointer;
     border-left:3px solid transparent;transition:background .1s;}
   .row:hover{background:var(--surface-2);}
   .row.sel{background:var(--accent-soft);border-left-color:var(--accent);}
-  .pdot{width:9px;height:9px;border-radius:50%;flex:none;margin-top:6px;}
+  .pdot{width:9px;height:9px;border-radius:50%;flex:none;}
   .pdot.D{background:var(--dem);} .pdot.K{background:var(--ppp);} .pdot.E{background:var(--etc);}
-  .rmain{flex:1;min-width:0;}
-  .rtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .rname{font-size:14.5px;font-weight:600;flex:none;}
   .rstar{color:var(--star);margin-left:1px;}
   /* 지역구 칩 (클릭 → 동 목록) */
   .rdist{font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;
     padding:2px 9px 2px 10px;border-radius:999px;border:1px solid var(--border);
     background:var(--surface-2);color:var(--accent);display:inline-flex;align-items:center;gap:4px;
-    transition:.12s;white-space:nowrap;}
+    transition:.12s;white-space:nowrap;flex:none;}
   .rdist:hover{border-color:var(--accent);background:var(--accent-soft);}
   .rdist .caret{font-size:9px;opacity:.7;transition:transform .15s;}
   .rdist.open .caret{transform:rotate(180deg);}
-  .rcnt{margin-left:auto;font-size:12px;color:var(--text-2);font-variant-numeric:tabular-nums;
-    flex:none;padding-top:1px;}
-  .rsub{font-size:11.5px;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rsub{font-size:12px;color:var(--muted);flex:1;min-width:40px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .rsub b{color:var(--text-2);font-weight:600;}
-  /* 펼쳐지는 동 목록 */
-  .rdong{margin-top:7px;font-size:11.5px;color:var(--text-2);background:var(--surface-2);
+  .rcnt{flex:none;font-size:12px;color:var(--text-2);font-variant-numeric:tabular-nums;}
+  /* 펼쳐지는 동 목록 (전체 폭, 아랫줄) */
+  .rdong{flex-basis:100%;margin-top:5px;font-size:11.5px;color:var(--text-2);background:var(--surface-2);
     border:1px solid var(--border);border-radius:9px;padding:8px 11px;line-height:1.7;}
   .rdong .gu{font-weight:700;color:var(--accent);margin-right:4px;}
   .rdong .dg{display:block;}
@@ -230,7 +228,7 @@ const CO = [ // common 원구성 article
 // sd=지역구 표시라벨 / dk=DONG 키 / term=선수 / comm=위원회 / title=직함
 const M = [
   // ===== 국회의원 =====
-  {n:"김남국",p:"D",t:"nat",sd:"안산갑",dk:"nat_gap",term:"재선",comm:"문화체육관광위",title:"",dist:"안산시갑",a:[
+  {n:"김남국",p:"D",t:"nat",sd:"안산갑",dk:"nat_gap",term:"재선",comm:"과학기술정보방송통신위",title:"",dist:"안산시갑",a:[
     {t:"김남국 \"안산 변화가 곧 국정 성과\"…신안산선 연장·ASV 강조",s:"인천일보",d:"07.07",u:"https://www.incheonilbo.com/news/articleView.html?idxno=1326781"},
     {t:"안산시·김남국 의원 맞손…ASV 경제자유구역 '실전형 기업유치'",s:"경기신문",d:"07.06",u:"https://www.kgnews.co.kr/news/article.html?no=902670"},
     {t:"안산시, 정책간담회 개최…경기경제자유구역·국비 확보 논의",s:"브릿지경제",d:"07.06",u:"https://www.viva100.com/article/20260706500321"},
@@ -352,15 +350,11 @@ function renderList(){
       const open = openDist===m.n;
       html+=`<div class="row ${m.n===selected?'sel':''}" data-n="${m.n}">
         <span class="pdot ${m.p}"></span>
-        <div class="rmain">
-          <div class="rtop">
-            <span class="rname">${m.n}${m.star?'<span class="rstar">★</span>':''}</span>
-            <button class="rdist ${open?'open':''}" data-dist="${m.n}">${m.sd}<span class="caret">▼</span></button>
-            <span class="rcnt">${m.c}건</span>
-          </div>
-          <div class="rsub">${subText(m)}</div>
-          ${open?`<div class="rdong">${dongHTML(m.dk,'dg')}</div>`:''}
-        </div>
+        <span class="rname">${m.n}${m.star?'<span class="rstar">★</span>':''}</span>
+        <button class="rdist ${open?'open':''}" data-dist="${m.n}">${m.sd}<span class="caret">▼</span></button>
+        <span class="rsub">${subText(m)}</span>
+        <span class="rcnt">${m.c}건</span>
+        ${open?`<div class="rdong">${dongHTML(m.dk,'dg')}</div>`:''}
       </div>`;
     });
   });
