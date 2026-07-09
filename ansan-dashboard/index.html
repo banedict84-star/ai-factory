@@ -323,11 +323,11 @@ function dongHTML(dk, cls){
   if(!g || !g.length) return `<span class="${cls}">안산시 전역 · 비례대표</span>`;
   return g.map(x=>`<span class="${cls}"><span class="gu">${x.gu}</span>${x.d.join(' · ')}</span>`).join('');
 }
-// 목록용 부가정보(선수 · 상임위 · 직함). 상임위는 '위원회'→'위'로 축약
+// 목록용 부가정보(선수 · 상임위 · 직함). 상임위는 정식 명칭(…위원회) 그대로
 function subText(m){
   const parts = [];
   if(m.term) parts.push(`<b>${m.term}</b>`);
-  if(m.comm) parts.push(m.comm.replace(/위원회$/,'위'));
+  if(m.comm) parts.push(m.comm);
   if(m.title) parts.push(m.title);
   if(parts.length) return parts.join(' · ');
   const g = DONG[m.dk];
