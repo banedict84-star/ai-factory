@@ -20,7 +20,7 @@ const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 const DATA = path.join(ROOT, 'ansan-dashboard', 'data', 'members.json');
 
 const WINDOW_DAYS = 90;
-const MAX_PER_MEMBER = 8;
+const MAX_PER_MEMBER = 2;   // ← 의원별 수집 기사 수 (여기 숫자만 바꾸면 조정됨)
 const NOW = new Date();
 
 // 동명이인·오탐 제외어 (제목/요약에 있으면 버림)
@@ -101,17 +101,14 @@ const provider = USE_NAVER ? fetchNaver : fetchGoogle;
 
 function keep(member, a) {
   const text = `${a.title} ${a.desc}`;
-  if (!text.includes(member.n)) return false;              // 이름 포함
-  if (!text.includes('안산')) return false;                 // 안산 지역 맥락
-  const ex = EXCLUDE[member.n] || [];
-  if (ex.some(w => text.includes(w))) return false;         // 동명이인 제외
+  if (!text.includes(member.n)) return false;              // 이름 포함(기본 확인만)
   if (!(a.date instanceof Date) || isNaN(a.date)) return false;
   if (daysAgo(a.date) > WINDOW_DAYS || daysAgo(a.date) < -1) return false; // 90일 이내
-  return true;
+  return true; // 동명이인 등은 일단 그대로 둠(추후 필요 시 EXCLUDE/안산 필터 재적용)
 }
 
 async function collectFor(member) {
-  const query = `${member.n} 안산`;
+  const query = `${member.n} 의원`;   // ← 검색어 (여기서 조정)
   let raw;
   try {
     raw = await provider(query);
