@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-09 15:28 KST",
+  "generatedAt": "2026-07-09 16:25 KST",
   "source": "구글 뉴스 RSS",
   "members": [
     {
@@ -19,6 +19,13 @@
           "d": "07.08",
           "u": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBScTRMaVlIZnYtczRiM25DS0g2dlQxM3owZm5TdFQzRGo2dTdhV1J0ZDdmcW1jcWtWaW8tMVZzeUFrRldvQkZtNEdhWFNTZHZBLUpXN0xTWVA4R1ZzTU5iUkpoY1BZZTQ?oc=5",
           "iso": "2026-07-08T00:12:58.000Z"
+        },
+        {
+          "t": "안산시-김남국 정책간담회…ASV 경제자유구역·국비 확보 공조",
+          "s": "MSN",
+          "d": "07.07",
+          "u": "https://news.google.com/rss/articles/CBMilgRBVV95cUxQR1pRYVpERGFCZUZPUVBGcENVOVdSYndZQndhWV9TVUxFWlY1LXBDdnpZUElsMEVybWU3UmVkc2NSM3VwSEY0S3dGdXRGSFpPd180aGwwdzJqWkxCTE5JR1BLNjFqRnBTSzFudlhuVDFfMFJBRkx2eExqSHVraklhQl9uQUpaWmhjVnBBcDFaa0MzUzlJX0hvUkx2VjgzUl9HVEdoSE0wTUgwTW9BNGFDd3BsLV9Jcmk1V0NlZ3JTTjgxT0JCTzlWS3hXbnhyRGpKRUxpb1h0NnlTZ2xCVTlDOGZ2SUFPd0twNEMzWnRVRWtiWGZDWmJnUmdhOGZDcjJ4cVpiQUhJd0dBemVfMWZPZ2lxZF9TeWYxeVd5SUxYN1VaSUNjZEVLRXhyZHZqU1BIZml6UGJCaVM2TVFneVczYjkxVHdTcGc1djE1dWREV1ZpNnVzN3h5TTRrN1lxYWEyU1AwTlBzRjhpVGY4a0JYR3BzLVNzeEVmWnNfMlhwUXFheDFDd1NIVzR6SHFxVzVUYWVmRWNzbDJlb184ZmRuZlU0ekpxck5ZdG9wYnRWYVlqT05xbi1PWnA3RVhEdnhIR3FRTFRKU3A4b016eTFsd3VDb0dDc2xVb1RUZVYzbFNaSGJ6VFAyVzJKekVtUmpVbkpXdTk0NC1QWFFsVGZMcllIR1o5QXQ5VDZLbjFGZnNBSDV0T0E?oc=5",
+          "iso": "2026-07-07T16:48:05.000Z"
         },
         {
           "t": "안산시-김남국 정책간담회…ASV 경제자유구역·국비 확보 공조",
@@ -61,13 +68,6 @@
           "d": "07.03",
           "u": "https://news.google.com/rss/articles/CBMibkFVX3lxTE42blFCdnphdVlydlVmNGFPdUxRTkhabUFnd19XN2xuTEcxQ0Rycnp0R1d1ZjJtUWFya3BUYjBkSjNxRGxnVm1fRHBjMGoyZXJ2RDlvWXhQV1h4U3JKLTQ5YlB2dl95MkEzSWtKaXNn?oc=5",
           "iso": "2026-07-03T10:32:54.000Z"
-        },
-        {
-          "t": "안산시, 김남국 의원과 ASV 경제자유구역 협력 논의",
-          "s": "서울경제TV",
-          "d": "07.03",
-          "u": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBDcm01ZGcxbWZOdEVGZktjUjBXWlFyWWp4RWpla05YU0Vsbm5IZy1tUkZvWTFlVTA0eFM1anB4ZHBVMVJmMEpJZWxudlR6TWMxMjhrVHlRVjZ6TXNCSk1jV3QwZjU?oc=5",
-          "iso": "2026-07-03T08:41:59.000Z"
         }
       ],
       "c": 8
@@ -222,9 +222,16 @@
           "d": "06.15",
           "u": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9UcTg2cnl4dEFoTEtxaDZDU0JZam9XZ3ZNZUFsS1R4ckI2UmZmTFdzemdJN2R1MWh5bDk0Rk5pVWd3b29adVpRU2NPY3plTWc5U0FLZlRnNzhtYzhyWVdUd09yR2g4dGNsdkFpOEdyN3B4U03SAXdBVV95cUxPeFVFT0lma2VEaExCR082MmVMQjJ4MzlhclRfT1Q5ZGZNSzNnaGhFdUE1WUJnZ2J4WXMzTHM5MmVQTGhiXzlhU2pBZzFGS0t6TlFKVWMtMnJwZDJ5MmRZYjY5djF5SWpPaWR1QmZlVmlDTnJYcnhrdw?oc=5",
           "iso": "2026-06-15T07:00:00.000Z"
+        },
+        {
+          "t": "[6·3 지방선거] 더불어민주당 경기 광역의원 경선 결과 공고… 부천 이재영·김동희, 광명 유종상·김용성, 고양 변재석, 안산 김동규·김태희, 시흥 김종배, 오산 김영희",
+          "s": "케이부동산뉴스",
+          "d": "05.08",
+          "u": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBOdDJESWdSRUh6NzNuWGRRS2lCeU5jX05ibWFsZnBzQ2lvSGEtRDViWWNfLUg5RGROMDZxczZORURscEZucG5wSjFNOWpWb21aXzRSXzcyYzlmOGxKUnpWTw?oc=5",
+          "iso": "2026-05-08T07:00:00.000Z"
         }
       ],
-      "c": 6
+      "c": 7
     },
     {
       "n": "김태희",
