@@ -1,0 +1,2 @@
+# Firebase Hosting 은 public 디렉터리를 요구합니다.
+# 모든 요청(**)은 Cloud Run 의 cafe-agent 서비스로 rewrite 되므로 이 폴더는 비어 있어도 됩니다.

@@ -1,0 +1,16 @@
+.git
+.github
+__pycache__/
+*.pyc
+output/
+*.db
+ai_os.db
+.venv/
+venv/
+.env
+media/
+node_modules/
+*.mp4
+*.png
+docs/
+run.bat

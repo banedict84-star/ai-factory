@@ -19,3 +19,43 @@ services:
         sync: false           # ← Render 대시보드에서 직접 입력(비밀)
       - key: APP_PASSWORD
         sync: false           # ← (권장) 사이트 접속 비밀번호. 비워두면 잠금 없음
+
+  # ── 가죽공예 카페 에이전트 대시보드 ──
+  # 배포 후: 네이버 개발자센터 Callback URL 을 https://<이 서비스 도메인>/oauth/callback 로 등록
+  #          → 대시보드에서 '네이버 연결' 클릭 → refresh_token 발급
+  - type: web
+    name: cafe-agent
+    runtime: python
+    branch: claude/new-conversation-5c681a   # 병합 후 기본 브랜치로 바꾸세요
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m src.cafe.web
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: OPENAI_API_KEY
+        sync: false           # 초안 생성용 OpenAI 키 (권장)
+      - key: ANTHROPIC_API_KEY
+        sync: false           # (대안) Claude 키. OPENAI 키가 있으면 안 넣어도 됨
+      - key: CAFE_LLM
+        sync: false           # (선택) openai / anthropic 강제 지정
+      - key: CAFE_GCS_BUCKET
+        sync: false           # 이미지 저장용 Firebase Storage/GCS 버킷 이름
+      - key: CAFE_IMAGE_MODEL
+        sync: false           # (선택) gpt-image-1 / dall-e-3
+      - key: APP_PASSWORD
+        sync: false           # (강력 권장) 대시보드 접속 비밀번호
+      - key: NAVER_CLIENT_ID
+        sync: false
+      - key: NAVER_CLIENT_SECRET
+        sync: false
+      - key: NAVER_CAFE_CLUB_ID
+        sync: false           # 숫자 카페 ID (또는 NAVER_CAFE_URL_NAME)
+      - key: NAVER_CAFE_URL_NAME
+        sync: false           # cafe.naver.com/<이름> (club_id 대신)
+      - key: NAVER_CAFE_MENU_ID
+        sync: false           # 게시판(메뉴) ID
+      - key: NAVER_REFRESH_TOKEN
+        sync: false           # '네이버 연결' 후 받은 값을 넣으면 재배포 후에도 유지
+      - key: CAFE_PUBLIC_URL
+        sync: false           # (선택) 예: https://cafe-agent.onrender.com

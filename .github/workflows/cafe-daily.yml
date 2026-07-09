@@ -1,0 +1,45 @@
+name: 네이버 카페 매일 자동 발행
+
+on:
+  schedule:
+    # UTC 기준. 매일 1회 (한국시간 12:00 = UTC 03:00)
+    - cron: "0 3 * * *"
+  workflow_dispatch: # 수동 실행 버튼
+    inputs:
+      topic:
+        description: "소재 지정 (비우면 config/cafe.yaml 의 topics 에서 선택)"
+        required: false
+        default: ""
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 의존성 설치
+        run: pip install -r requirements.txt
+
+      - name: 카페 자동 발행
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          NAVER_REFRESH_TOKEN: ${{ secrets.NAVER_REFRESH_TOKEN }}
+          NAVER_CAFE_CLUB_ID: ${{ secrets.NAVER_CAFE_CLUB_ID }}
+          NAVER_CAFE_URL_NAME: ${{ vars.NAVER_CAFE_URL_NAME }}
+          NAVER_CAFE_MENU_ID: ${{ secrets.NAVER_CAFE_MENU_ID }}
+        run: python -m src.cafe.main daily ${{ github.event.inputs.topic && format('--topic "{0}"', github.event.inputs.topic) || '' }}
+
+      - name: 발행 기록 아티팩트 업로드 (검수/추적용)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cafe-drafts-${{ github.run_id }}
+          path: output/cafe_drafts/
+          if-no-files-found: ignore
+          retention-days: 30
