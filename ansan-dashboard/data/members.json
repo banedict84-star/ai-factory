@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-09 16:57 KST",
+  "generatedAt": "2026-07-09 17:02 KST",
   "source": "네이버 뉴스 검색 API",
   "members": [
     {
@@ -408,18 +408,18 @@
       "star2": true,
       "a": [
         {
+          "t": "[이슈] 경찰 증거인멸 '장윤기 사건'에 與 내부서도 '보완수사권 폐지'...",
+          "s": "polinews",
+          "d": "07.09",
+          "u": "https://www.polinews.co.kr/news/articleView.html?idxno=736549",
+          "iso": "2026-07-09T07:57:00.000Z"
+        },
+        {
           "t": "민주당, 오늘 형소법 개정안 제출… '장윤기 사건' 여파에 보완책 고심",
           "s": "뉴스천지",
           "d": "07.09",
           "u": "https://www.newscj.com/news/articleView.html?idxno=3415828",
           "iso": "2026-07-09T07:12:00.000Z"
-        },
-        {
-          "t": "[사설] 보완수사권 논쟁, 제일 중요한 건 피해자가 억울하지 않게 하는...",
-          "s": "ddaily",
-          "d": "07.09",
-          "u": "https://www.ddaily.co.kr/page/view/2026070911554106135",
-          "iso": "2026-07-09T05:48:00.000Z"
         }
       ],
       "c": 2
