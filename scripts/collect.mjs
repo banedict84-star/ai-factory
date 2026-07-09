@@ -20,7 +20,7 @@ const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 const DATA = path.join(ROOT, 'ansan-dashboard', 'data', 'members.json');
 
 const WINDOW_DAYS = 90;
-const MAX_PER_MEMBER = 10;   // ← 의원별 수집 기사 수 (여기 숫자만 바꾸면 조정됨)
+const MAX_PER_MEMBER = 100;  // ← 의원별 최대 기사 수(90일 내 전부 수집; 상한 100)
 const NOW = new Date();
 
 // 동명이인·오탐 제외어 (제목/요약에 있으면 버림)
@@ -69,15 +69,24 @@ const mmdd = d => `${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDa
 const daysAgo = d => (NOW - d) / 86400000;
 
 async function fetchNaver(query) {
-  const url = `https://openapi.naver.com/v1/search/news.json?query=${encodeURIComponent(query)}&display=30&sort=date`;
-  const res = await fetchT(url, { headers: { 'X-Naver-Client-Id': CID, 'X-Naver-Client-Secret': CSEC } });
-  if (!res.ok) throw new Error(`naver ${res.status}`);
-  const j = await res.json();
-  return (j.items || []).map(it => {
-    let host = '';
-    try { host = new URL(it.originallink || it.link).hostname; } catch {}
-    return { title: decode(it.title), url: it.originallink || it.link, source: srcName(host), date: new Date(it.pubDate), desc: decode(it.description) };
-  });
+  const out = [];
+  // 최신순으로 100건씩 페이지네이션. 90일보다 오래된 기사가 나오면 중단(그 이후는 다 오래됨).
+  for (let start = 1; start <= 901; start += 100) {
+    const url = `https://openapi.naver.com/v1/search/news.json?query=${encodeURIComponent(query)}&display=100&start=${start}&sort=date`;
+    const res = await fetchT(url, { headers: { 'X-Naver-Client-Id': CID, 'X-Naver-Client-Secret': CSEC } });
+    if (!res.ok) throw new Error(`naver ${res.status}`);
+    const items = (await res.json()).items || [];
+    for (const it of items) {
+      let host = '';
+      try { host = new URL(it.originallink || it.link).hostname; } catch {}
+      out.push({ title: decode(it.title), url: it.originallink || it.link, source: srcName(host), date: new Date(it.pubDate), desc: decode(it.description) });
+    }
+    if (items.length < 100) break;
+    const last = new Date(items[items.length - 1].pubDate);
+    if (!isNaN(last) && daysAgo(last) > WINDOW_DAYS) break; // 90일 경계 넘음
+    await sleep(120);
+  }
+  return out;
 }
 
 async function fetchGoogle(query) {
