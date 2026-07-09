@@ -54,6 +54,12 @@ const CSEC = process.env.NAVER_CLIENT_SECRET;
 const USE_NAVER = !!(CID && CSEC);
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+async function fetchT(url, opts = {}, ms = 15000) {
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), ms);
+  try { return await fetch(url, { ...opts, signal: ac.signal }); }
+  finally { clearTimeout(t); }
+}
 const decode = s => (s || '')
   .replace(/<\/?b>/g, '')
   .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
@@ -64,7 +70,7 @@ const daysAgo = d => (NOW - d) / 86400000;
 
 async function fetchNaver(query) {
   const url = `https://openapi.naver.com/v1/search/news.json?query=${encodeURIComponent(query)}&display=30&sort=date`;
-  const res = await fetch(url, { headers: { 'X-Naver-Client-Id': CID, 'X-Naver-Client-Secret': CSEC } });
+  const res = await fetchT(url, { headers: { 'X-Naver-Client-Id': CID, 'X-Naver-Client-Secret': CSEC } });
   if (!res.ok) throw new Error(`naver ${res.status}`);
   const j = await res.json();
   return (j.items || []).map(it => {
@@ -76,7 +82,7 @@ async function fetchNaver(query) {
 
 async function fetchGoogle(query) {
   const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ko&gl=KR&ceid=KR:ko`;
-  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (ansan-dashboard-bot)' } });
+  const res = await fetchT(url, { headers: { 'User-Agent': 'Mozilla/5.0 (ansan-dashboard-bot)' } });
   if (!res.ok) throw new Error(`google ${res.status}`);
   const xml = await res.text();
   return xml.split('<item>').slice(1).map(chunk => {
@@ -129,7 +135,9 @@ async function collectFor(member) {
 async function main() {
   const doc = JSON.parse(fs.readFileSync(DATA, 'utf8'));
   const members = doc.members || [];
+  console.log(`네이버 키 감지 — ID:${CID ? 'O' : 'X'} SECRET:${CSEC ? 'O' : 'X'}`);
   console.log(`소스: ${USE_NAVER ? '네이버 뉴스 API' : '구글 뉴스 RSS(키없음)'} · 대상 ${members.length}명`);
+  if (!USE_NAVER) console.log('  ⚠ NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 시크릿이 안 잡혔습니다 — 이름/저장 확인 필요');
 
   let updated = 0;
   for (const m of members) {
