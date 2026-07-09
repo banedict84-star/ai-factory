@@ -73,8 +73,10 @@
   .row.sel{background:var(--accent-soft);border-left-color:var(--accent);}
   .pdot{width:9px;height:9px;border-radius:50%;flex:none;}
   .pdot.D{background:var(--dem);} .pdot.K{background:var(--ppp);} .pdot.E{background:var(--etc);}
-  .rname{font-size:14.5px;font-weight:600;flex:none;}
+  .rname{font-size:14.5px;font-weight:600;flex:none;min-width:3.1em;}
   .rstar{color:var(--star);margin-left:1px;}
+  .sub-grp{font-size:10.5px;font-weight:700;color:var(--accent);letter-spacing:.02em;
+    padding:8px 18px 2px 30px;opacity:.85;}
   /* 지역구 칩 (클릭 → 동 목록) */
   .rdist{font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;
     padding:2px 9px 2px 10px;border-radius:999px;border:1px solid var(--border);
@@ -147,10 +149,10 @@
   </header>
 
   <div class="tiles">
-    <div class="tile"><div class="l">모니터링 의원</div><div class="v">30<span style="font-size:14px;color:var(--muted);font-weight:500">명</span></div><div class="m">국회 3 · 도의원 8 · 시의원 19</div></div>
-    <div class="tile"><div class="l">정당 구성</div><div class="v" style="font-size:18px"><span style="color:var(--dem)">민주 21</span> · <span style="color:var(--ppp)">국힘 9</span></div><div class="m">시의원 민주10·국힘9 · 안산 전 선거구 민주 석권</div></div>
+    <div class="tile"><div class="l">모니터링 의원</div><div class="v"><span id="tileTotal">30</span><span style="font-size:14px;color:var(--muted);font-weight:500">명</span></div><div class="m" id="tileCount"></div></div>
+    <div class="tile"><div class="l">정당 구성</div><div class="v" id="tilePartyV" style="font-size:18px"></div><div class="m" id="tilePartyM"></div></div>
     <div class="tile"><div class="l">최근 핵심 현안</div><div class="v" style="font-size:15px">ASV 경제자유구역 · 교육예산</div><div class="m">신안산선 연장 · 과밀학급 · 소방 인프라</div></div>
-    <div class="tile" style="border-color:var(--star)"><div class="l">주목 인물</div><div class="v" style="font-size:18px;color:var(--star)">★ 장윤정<span style="font-size:12px;color:var(--muted)"> · 안산3</span></div><div class="m">교육기획위 부위원장</div></div>
+    <div class="tile" style="border-color:var(--star)"><div class="l">주목 인물 <span style="color:var(--muted);font-weight:400">· 최근 90일 최다 보도</span></div><div id="tileStar" style="margin-top:7px"></div></div>
   </div>
 
   <div class="filters" id="filters">
@@ -278,7 +280,7 @@ const M = [
     {t:"24세부터 71세까지 현장형 당선인…복싱관장 이철형(안산8) 입성",s:"투데이코리아",d:"06.18",u:"https://www.todaykorea.co.kr/news/articleView.html?idxno=402801"}
   ]},
   // ===== 안산시의원 (제10대 19명) =====
-  {n:"한명훈",p:"D",t:"city",sd:"가선거구",dk:"city_ga",term:"",comm:"",title:"의장",dist:"가선거구",a:[
+  {n:"한명훈",p:"D",t:"city",sd:"가선거구",dk:"city_ga",term:"3선",comm:"",title:"의장",dist:"가선거구",a:[
     {t:"안산시의회 제10대 의장에 한명훈, 부의장 현옥순 선출",s:"인천일보",d:"07.01",u:"https://www.incheonilbo.com/news/articleView.html?idxno=1326355"},
     {t:"안산시·김남국 국회의원 정책간담회 참석(한명훈 의장)",s:"브릿지경제",d:"07.06",u:"https://www.viva100.com/article/20260706500321"}
   ]},
@@ -333,22 +335,43 @@ function subText(m){
   return g && g.length ? g.map(x=>x.gu).filter((v,i,a)=>a.indexOf(v)===i).join('·') : '';
 }
 
+const CITY_SG = ["가선거구","나선거구","다선거구","라선거구","마선거구","바선거구","사선거구","아선거구","비례대표"];
 let curFilter="all", selected="장윤정", openDist=null; // openDist: 목록에서 펼쳐진 지역구 의원 이름
 const listEl=document.getElementById('list'), detailEl=document.getElementById('detail'), listcnt=document.getElementById('listcnt');
+
+function pick(n){ selected=n; renderList(); renderDetail(); }
+
+// 상단 요약 타일 (급별 인원·정당 석수·최다 보도 인물) — 데이터에서 자동 계산
+function renderTiles(){
+  const byT = x => M.filter(m=>m.t===x);
+  const seat = (arr,p) => arr.filter(m=>m.p===p).length;
+  document.getElementById('tileTotal').textContent = M.length;
+  document.getElementById('tileCount').textContent =
+    `국회의원 ${byT('nat').length} · 도의원 ${byT('prov').length} · 시의원 ${byT('city').length}`;
+  document.getElementById('tilePartyV').innerHTML =
+    `<span style="color:var(--dem)">민주 ${seat(M,'D')}</span> · <span style="color:var(--ppp)">국힘 ${seat(M,'K')}</span>`;
+  const seg = x => { const a=byT(x), d=seat(a,'D'), k=seat(a,'K'); return k ? `민주 ${d}·국힘 ${k}` : `민주 ${d}`; };
+  document.getElementById('tilePartyM').innerHTML =
+    `국회의원 ${seg('nat')} · 도의원 ${seg('prov')} · 시의원 ${seg('city')}`;
+  const top = x => { const a=byT(x); return a.reduce((b,m)=>m.c>b.c?m:b, a[0]); };
+  const lab = {nat:'국회', prov:'도의원', city:'시의원'};
+  document.getElementById('tileStar').innerHTML =
+    ['nat','prov','city'].map(x=>{ const m=top(x);
+      return `<div class="starrow" data-n="${m.n}" style="font-size:13px;margin:3px 0;cursor:pointer">`
+        +`<span style="color:var(--muted)">${lab[x]}</span> <b style="color:var(--star)">${m.n}</b> `
+        +`<span style="color:var(--text-2);font-variant-numeric:tabular-nums">${m.c}건</span></div>`;
+    }).join('');
+  document.querySelectorAll('#tileStar .starrow').forEach(e=>e.onclick=()=>pick(e.dataset.n));
+}
 
 function renderList(){
   let arr=M.slice();
   if(curFilter==="star") arr=arr.filter(m=>m.n==="장윤정");
   else if(curFilter!=="all") arr=arr.filter(m=>m.t===curFilter);
   listcnt.textContent=arr.length+"명";
-  let html="";
-  ["nat","prov","city"].forEach(tier=>{
-    const g=arr.filter(m=>m.t===tier);
-    if(!g.length) return;
-    html+=`<div class="grp-label">${TIERS[tier]}</div>`;
-    g.forEach(m=>{
-      const open = openDist===m.n;
-      html+=`<div class="row ${m.n===selected?'sel':''}" data-n="${m.n}">
+  const rowHTML = m => {
+    const open = openDist===m.n;
+    return `<div class="row ${m.n===selected?'sel':''}" data-n="${m.n}">
         <span class="pdot ${m.p}"></span>
         <span class="rname">${m.n}${m.star?'<span class="rstar">★</span>':''}</span>
         <button class="rdist ${open?'open':''}" data-dist="${m.n}">${m.sd}<span class="caret">▼</span></button>
@@ -356,7 +379,22 @@ function renderList(){
         <span class="rcnt">${m.c}건</span>
         ${open?`<div class="rdong">${dongHTML(m.dk,'dg')}</div>`:''}
       </div>`;
-    });
+  };
+  let html="";
+  ["nat","prov","city"].forEach(tier=>{
+    const g=arr.filter(m=>m.t===tier);
+    if(!g.length) return;
+    html+=`<div class="grp-label">${TIERS[tier]}</div>`;
+    if(tier==="city"){ // 시의원은 선거구별로 소그룹 (가~아 · 비례)
+      CITY_SG.forEach(sg=>{
+        const sgm=g.filter(m=>m.sd===sg);
+        if(!sgm.length) return;
+        html+=`<div class="sub-grp">${sg}</div>`;
+        sgm.forEach(m=>{ html+=rowHTML(m); });
+      });
+    } else {
+      g.forEach(m=>{ html+=rowHTML(m); });
+    }
   });
   listEl.innerHTML=html;
   // 행 클릭 → 의원 선택
@@ -409,7 +447,7 @@ document.querySelectorAll('#filters button').forEach(b=>{
     openDist=null;
     renderList();renderDetail();};
 });
-renderList();renderDetail();
+renderTiles();renderList();renderDetail();
 </script>
 </body>
 </html>
