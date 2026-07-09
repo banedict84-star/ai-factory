@@ -1,0 +1,47 @@
+name: 안산 의원 대시보드 배포 (GitHub Pages)
+
+# ansan-dashboard/ 폴더의 정적 사이트를 GitHub Pages 로 배포합니다.
+# 사전 설정: 저장소 Settings → Pages → Source 를 "GitHub Actions" 로 지정하세요.
+
+on:
+  push:
+    branches:
+      - main
+      - claude/ansan-council-dashboard-5v9teu
+    paths:
+      - "ansan-dashboard/**"
+      - ".github/workflows/deploy-dashboard.yml"
+  workflow_dispatch: # 수동 실행 버튼
+
+# Pages 배포에 필요한 권한
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 동시에 하나의 배포만 진행 (진행 중인 배포는 취소하지 않고 큐잉)
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Pages 설정
+        uses: actions/configure-pages@v5
+
+      - name: 대시보드 폴더 업로드
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ansan-dashboard
+
+      - name: Pages 배포
+        id: deployment
+        uses: actions/deploy-pages@v4

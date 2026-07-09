@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>안산 의원 활동 모니터링 대시보드</title>
+<style>
+  :root{
+    --page:#f9f9f7; --surface:#ffffff; --surface-2:#fcfcfb;
+    --text:#0b0b0b; --text-2:#52514e; --muted:#898781;
+    --grid:#e9e8e2; --border:rgba(11,11,11,0.10);
+    --accent:#4a3aa7; --accent-soft:#efeaf9;
+    --dem:#2a78d6; --dem-soft:rgba(42,120,214,0.12);
+    --ppp:#e34948; --ppp-soft:rgba(227,73,72,0.12);
+    --etc:#898781; --etc-soft:rgba(137,135,129,0.15);
+    --bar:#9085e9; --bar-track:#eceaf6;
+    --star:#eda100;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --page:#0d0d0d; --surface:#1c1c1b; --surface-2:#1a1a19;
+      --text:#ffffff; --text-2:#c3c2b7; --muted:#898781;
+      --grid:#2c2c2a; --border:rgba(255,255,255,0.10);
+      --accent:#9085e9; --accent-soft:#242040;
+      --dem:#3987e5; --dem-soft:rgba(57,135,229,0.18);
+      --ppp:#e66767; --ppp-soft:rgba(230,103,103,0.18);
+      --etc:#a8a69c; --etc-soft:rgba(168,166,156,0.15);
+      --bar:#9085e9; --bar-track:#2a2740;
+      --star:#c98500;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--page);color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1200px;margin:0 auto;padding:26px 20px 60px;}
+  header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;
+    gap:14px;padding-bottom:18px;border-bottom:2px solid var(--accent);margin-bottom:20px;}
+  h1{font-size:23px;margin:0 0 6px;letter-spacing:-0.02em;}
+  .sub{color:var(--text-2);font-size:13.5px;}
+  .updated{font-size:12.5px;color:var(--muted);text-align:right;}
+  .updated strong{color:var(--text-2);font-variant-numeric:tabular-nums;}
+
+  /* summary tiles */
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+  @media (max-width:720px){.tiles{grid-template-columns:repeat(2,1fr);}}
+  .tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+  .tile .l{font-size:12px;color:var(--text-2);margin-bottom:6px;}
+  .tile .v{font-size:24px;font-weight:700;letter-spacing:-0.02em;line-height:1;}
+  .tile .m{font-size:11.5px;color:var(--muted);margin-top:6px;}
+
+  /* filter */
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .filters button{font:inherit;font-size:13px;font-weight:600;cursor:pointer;
+    padding:7px 14px;border-radius:999px;border:1px solid var(--border);
+    background:var(--surface);color:var(--text-2);transition:.12s;}
+  .filters button:hover{border-color:var(--accent);}
+  .filters button.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+  /* main layout */
+  .main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start;}
+  @media (max-width:900px){.main{grid-template-columns:1fr;}}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+  .panel h2{font-size:14px;margin:0;padding:14px 18px;border-bottom:1px solid var(--grid);
+    display:flex;align-items:center;gap:8px;}
+  .panel h2 .cnt{margin-left:auto;font-size:12px;color:var(--muted);font-weight:500;}
+
+  /* member list */
+  .grp-label{font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--muted);
+    padding:12px 18px 6px;text-transform:none;}
+  .row{display:flex;align-items:center;gap:11px;padding:9px 18px;cursor:pointer;
+    border-left:3px solid transparent;transition:background .1s;}
+  .row:hover{background:var(--surface-2);}
+  .row.sel{background:var(--accent-soft);border-left-color:var(--accent);}
+  .pdot{width:9px;height:9px;border-radius:50%;flex:none;}
+  .pdot.D{background:var(--dem);} .pdot.K{background:var(--ppp);} .pdot.E{background:var(--etc);}
+  .rname{font-size:14px;font-weight:600;flex:none;min-width:54px;}
+  .rstar{color:var(--star);margin-left:-6px;}
+  .rrole{font-size:11.5px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rbar{width:82px;flex:none;height:7px;border-radius:4px;background:var(--bar-track);overflow:hidden;position:relative;}
+  .rbar i{position:absolute;left:0;top:0;bottom:0;background:var(--bar);border-radius:4px;}
+  .rcnt{font-size:11.5px;color:var(--text-2);font-variant-numeric:tabular-nums;min-width:34px;text-align:right;flex:none;}
+
+  /* detail */
+  .detail{padding:0;}
+  .dhead{padding:18px 20px;border-bottom:1px solid var(--grid);}
+  .dtitle{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .dtitle .nm{font-size:22px;font-weight:700;letter-spacing:-0.02em;}
+  .chip{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:999px;}
+  .chip.D{background:var(--dem-soft);color:var(--dem);}
+  .chip.K{background:var(--ppp-soft);color:var(--ppp);}
+  .chip.E{background:var(--etc-soft);color:var(--etc);}
+  .chip.role{background:var(--accent-soft);color:var(--accent);}
+  .dmeta{font-size:13px;color:var(--text-2);margin-top:8px;}
+  .dstat{display:flex;gap:20px;margin-top:14px;}
+  .dstat .s .n{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;}
+  .dstat .s .k{font-size:11.5px;color:var(--muted);margin-top:4px;}
+  .darts{padding:6px 20px 18px;}
+  .darts .lab{font-size:12px;color:var(--muted);margin:14px 0 4px;}
+  .art{display:block;padding:11px 0;border-bottom:1px solid var(--grid);text-decoration:none;color:var(--text);}
+  .art:last-child{border-bottom:none;}
+  .art:hover .at{color:var(--accent);text-decoration:underline;}
+  .at{font-size:13.5px;font-weight:500;}
+  .am{font-size:11.5px;color:var(--muted);margin-top:4px;display:flex;gap:8px;}
+  .empty{padding:30px 20px;color:var(--muted);font-size:13px;text-align:center;}
+
+  .note{font-size:11.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);
+    border-radius:10px;padding:11px 14px;margin-top:18px;line-height:1.6;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--text-2);margin:2px 0 16px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend i{width:9px;height:9px;border-radius:50%;}
+  footer{margin-top:26px;font-size:11.5px;color:var(--muted);text-align:center;line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>안산 의원 활동 모니터링 대시보드</h1>
+      <div class="sub">국회의원 · 경기도의원 · 안산시의원 · 이름을 누르면 최근 90일 확인 보도와 기사 목록이 열립니다</div>
+    </div>
+    <div class="updated">최신 갱신<br><strong id="ts">2026-07-09 11:42 KST</strong><br>매일 오전 8시 자동 갱신</div>
+  </header>
+
+  <div class="tiles">
+    <div class="tile"><div class="l">모니터링 의원</div><div class="v">30<span style="font-size:14px;color:var(--muted);font-weight:500">명</span></div><div class="m">국회 3 · 도의원 8 · 시의원 19</div></div>
+    <div class="tile"><div class="l">정당 구성</div><div class="v" style="font-size:18px"><span style="color:var(--dem)">민주 21</span> · <span style="color:var(--ppp)">국힘 9</span></div><div class="m">시의원 민주10·국힘9 · 안산 전 선거구 민주 석권</div></div>
+    <div class="tile"><div class="l">최근 핵심 현안</div><div class="v" style="font-size:15px">ASV 경제자유구역 · 교육예산</div><div class="m">신안산선 연장 · 과밀학급 · 소방 인프라</div></div>
+    <div class="tile" style="border-color:var(--star)"><div class="l">주목 인물</div><div class="v" style="font-size:18px;color:var(--star)">★ 장윤정<span style="font-size:12px;color:var(--muted)"> · 안산3</span></div><div class="m">교육기획위 부위원장</div></div>
+  </div>
+
+  <div class="filters" id="filters">
+    <button data-f="all" class="on">전체</button>
+    <button data-f="nat">국회의원</button>
+    <button data-f="prov">경기도의원</button>
+    <button data-f="city">안산시의원</button>
+    <button data-f="star" style="border-color:var(--star)">★ 장윤정</button>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--dem)"></i>더불어민주당</span>
+    <span><i style="background:var(--ppp)"></i>국민의힘</span>
+    <span style="color:var(--muted)">막대 = 최근 90일 확인 보도 건수(급별 상대)</span>
+  </div>
+
+  <div class="main">
+    <div class="panel">
+      <h2>의원 목록 <span class="cnt" id="listcnt"></span></h2>
+      <div id="list"></div>
+    </div>
+    <div class="panel">
+      <h2>의원 상세</h2>
+      <div class="detail" id="detail"></div>
+    </div>
+  </div>
+
+  <div class="note" id="note">
+    ※ <b>지표 = 최근 90일(2026-04-10~07-09) 확인 보도 건수</b> — 네이버 검색 '건수'가 아니라, 해당 의원에 관한 기사인지 <b>실제로 확인한 기사</b>만 집계합니다.
+    네이버 검색 건수를 그대로 쓰지 않은 이유: '이름+안산+의원'으로 좁혀도 원구성 기사(19명 이름이 함께 들어감)나 동명이인 국회의원(예: 박은정 국회의원실)이 섞여
+    흔치 않은 이름도 수천 건으로 부풀기 때문입니다. 장윤정 의원은 고양시의원 동명이인 기사를 제외했습니다.
+    현재 수치는 대표 보도 중심의 <b>표본 집계</b>이며, 매일 자동 갱신 시 90일 내 기사를 더 폭넓게 반영합니다.
+  </div>
+
+  <footer>
+    데이터 출처 · 네이버 뉴스 검색 API · 로스터: 6·3 지방선거 당선인 명단 및 원구성 보도 기준(2026.7)<br>
+    의정활동 참고용 내부 모니터링 자료 · 자동 갱신 매일 08:00 KST
+  </footer>
+</div>
+
+<script>
+// party: D 민주 / K 국힘 / E 비례·기타
+const CO = [ // common 원구성 article
+  {t:"안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출", s:"경인일보", d:"07.01", u:"https://www.kyeongin.com/article/1766556"},
+  {t:"안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범", s:"뉴스천지", d:"07.05", u:"https://www.newscj.com/news/articleView.html?idxno=3414648"}
+];
+const M = [
+  // ===== 국회의원 =====
+  {n:"김남국",p:"D",t:"nat",role:"안산갑 · 재선 · 국회 문체위",dist:"안산시갑",a:[
+    {t:"김남국 \"안산 변화가 곧 국정 성과\"…신안산선 연장·ASV 강조",s:"인천일보",d:"07.07",u:"https://www.incheonilbo.com/news/articleView.html?idxno=1326781"},
+    {t:"안산시·김남국 의원 맞손…ASV 경제자유구역 '실전형 기업유치'",s:"경기신문",d:"07.06",u:"https://www.kgnews.co.kr/news/article.html?no=902670"},
+    {t:"안산시, 정책간담회 개최…경기경제자유구역·국비 확보 논의",s:"브릿지경제",d:"07.06",u:"https://www.viva100.com/article/20260706500321"},
+    {t:"안산시·김남국 의원, 안산사이언스밸리 개발 국비 확보 공조",s:"매일일보",d:"07.03",u:"https://www.m-i.kr/news/articleView.html?idxno=1388064"}
+  ]},
+  {n:"김현",p:"D",t:"nat",role:"안산을 · 재선 · 국회 과방위",dist:"안산시을",a:[
+    {t:"與 김현 \"청소년 유해 음원, 무방비 유통·확산 막을 것\"…음산법·정보통신망법 발의",s:"헤럴드경제",d:"07.08",u:"https://n.news.naver.com/mnews/article/016/0002667207?sid=100"},
+    {t:"청소년 제작 '19금 음원' 유통사가 유해성 검사 의무화 추진",s:"경인일보",d:"07.07",u:"https://www.kyeongin.com/article/1766927"},
+    {t:"與 김현 \"우주 기술 패권 거머쥐자\"…KARI 항공우주기술 포럼 주최",s:"TV조선",d:"07.02",u:"https://n.news.naver.com/mnews/article/448/0000623886?sid=100"},
+    {t:"김현, '존폐 위기' 케이블TV에 \"입법·제도적 지원 최선\"",s:"TV조선",d:"07.02",u:"https://n.news.naver.com/mnews/article/448/0000623776?sid=100"}
+  ]},
+  {n:"박해철",p:"D",t:"nat",role:"안산병 · 초선 · 국회 기후에너지환경노동위",dist:"안산시병",a:[
+    {t:"'김정호 위원장·이소영 여당 간사' 후반기 기후노동위 첫발…박해철 위원 배치",s:"매일노동뉴스",d:"07.09",u:"https://www.labortoday.co.kr/news/articleView.html?idxno=235590"},
+    {t:"방위산업의 날? 노동3권은 '반쪽짜리'…박해철 등 기자회견",s:"매일노동뉴스",d:"07.08",u:"https://www.labortoday.co.kr/news/articleView.html?idxno=235564"},
+    {t:"한국형 제시카법 다시 주목…박해철 등 아동성범죄자 거주제한 발의",s:"경인일보",d:"07.04",u:"https://www.kyeongin.com/article/1766715"},
+    {t:"박해철 발의 '농어업인 삶의 질 향상법' 국회 본회의 통과",s:"신아일보",d:"06.18",u:"https://www.shinailbo.co.kr/news/articleView.html?idxno=5032119"}
+  ]},
+  // ===== 경기도의원 (안산1~8, 전원 민주) =====
+  {n:"김동규",p:"D",t:"prov",role:"안산1 · 재선",dist:"안산 제1선거구",c:381,a:[
+    {t:"안산시·김남국 국회의원 정책간담회 참석(ASV 경제자유구역)",s:"브릿지경제",d:"07.06",u:"https://www.viva100.com/article/20260706500321"}
+  ]},
+  {n:"김태희",p:"D",t:"prov",role:"안산2 · 재선 · 民 정책위원장",dist:"안산 제2선거구",c:1429,star2:true,a:[
+    {t:"경기도의회 온 정청래 전 대표…김태희 정책위원장 등 참석",s:"KPI뉴스",d:"07.06",u:"https://www.kpinews.kr/newsView/1065598872370312"},
+    {t:"경기도의회 민주당 12대 전반기 정책위원장에 김태희(안산2)",s:"기호일보",d:"06.28",u:"https://www.kihoilbo.co.kr/news/articleView.html?idxno=3027223"}
+  ]},
+  {n:"장윤정",p:"D",t:"prov",star:true,role:"안산3 · 재선 · 교육기획위 부위원장",dist:"안산 제3선거구",c:1064,a:[
+    {t:"장윤정 의원 \"교육예산 유보, 절감보다 적기 집행이 우선\"",s:"더리포트",d:"06.12",u:"https://www.thereport.co.kr/news/articleView.html?idxno=88724"},
+    {t:"장윤정 경기도의원, 경기도교육청 예산유보 운영 점검",s:"서울신문",d:"06.12",u:"https://n.news.naver.com/mnews/article/081/0003652172?sid=102"},
+    {t:"경기도의회 의정홍보위원회 활동 종료…장윤정 위원 참여",s:"이뉴스투데이",d:"06.09",u:"http://www.enewstoday.co.kr/news/articleView.html?idxno=2437303"},
+    {t:"안산소방서 수암119안전센터 개청식 참석",s:"경기일보",d:"06.24",u:"https://n.news.naver.com/mnews/article/666/0000112451?sid=102"}
+  ]},
+  {n:"유재수",p:"D",t:"prov",role:"안산4 · 초선(시의원 출신)",dist:"안산 제4선거구",c:297,a:[
+    {t:"안산소방서 수암119안전센터 개청식 참석(장윤정·유재수)",s:"경기일보",d:"06.24",u:"https://n.news.naver.com/mnews/article/666/0000112451?sid=102"},
+    {t:"안산시의원에서 경기도의원으로 체급 높인 유재수(안산4)",s:"강원도민일보",d:"06.08",u:"https://n.news.naver.com/mnews/article/654/0000184416?sid=100"}
+  ]},
+  {n:"이은미",p:"D",t:"prov",role:"안산5 · 재선 · 안전행정위 · 무투표당선",dist:"안산 제5선거구",c:450,a:[
+    {t:"이은미 경기도의원 \"수암119안전센터 인력 증원·안산소방서 이전\" 촉구",s:"서울신문",d:"06.12",u:"https://n.news.naver.com/mnews/article/081/0003652109?sid=102"},
+    {t:"이은미 \"경기안산1교, 대한민국 다문화 교육의 새 기준\"",s:"경인방송",d:"06.11",u:"https://news.ifm.kr/news/articleView.html?idxno=472789"}
+  ]},
+  {n:"박은경",p:"D",t:"prov",role:"안산6 · 초선(시의원 출신)",dist:"안산 제6선거구",c:629,a:[
+    {t:"경기도의회 당선인 명단…안산6 박은경(민주) 입성",s:"중부일보",d:"06.04",u:"https://www.joongboo.com/news/articleView.html?idxno=363728022"}
+  ]},
+  {n:"황은화",p:"D",t:"prov",role:"안산7 · 초선 · 첫 중국동포 출신 광역의원",dist:"안산 제7선거구",c:221,a:[
+    {t:"체급 낮춘 손혜원부터 첫 중국동포 출신까지…황은화(안산7) 당선인",s:"한국경제",d:"06.05",u:"https://n.news.naver.com/mnews/article/015/0005295556?sid=162"}
+  ]},
+  {n:"이철형",p:"D",t:"prov",role:"안산8 · 초선 · 복싱체육관 관장 출신",dist:"안산 제8선거구",c:26,a:[
+    {t:"24세부터 71세까지 현장형 당선인…복싱관장 이철형(안산8) 입성",s:"투데이코리아",d:"06.18",u:"https://www.todaykorea.co.kr/news/articleView.html?idxno=402801"}
+  ]},
+  // ===== 안산시의원 (제10대 19명) =====
+  {n:"한명훈",p:"D",t:"city",role:"의장 · 가선거구",dist:"가선거구",c:685,a:[
+    {t:"안산시의회 제10대 의장에 한명훈, 부의장 현옥순 선출",s:"인천일보",d:"07.01",u:"https://www.incheonilbo.com/news/articleView.html?idxno=1326355"},
+    {t:"안산시·김남국 국회의원 정책간담회 참석(한명훈 의장)",s:"브릿지경제",d:"07.06",u:"https://www.viva100.com/article/20260706500321"}
+  ]},
+  {n:"현옥순",p:"K",t:"city",role:"부의장 · 다선거구",dist:"다선거구",c:446,a:[
+    {t:"안산시의회 의장에 한명훈, 부의장은 현옥순 의원 선출…원구성 마쳐",s:"브릿지경제",d:"07.02",u:"https://www.viva100.com/article/20260702500257"}
+  ]},
+  {n:"이재복",p:"D",t:"city",role:"의회운영위원장 · 라선거구",dist:"라선거구",c:52,a:CO},
+  {n:"박은정",p:"D",t:"city",role:"기획행정위원장 · 사선거구",dist:"사선거구",c:1188,star2:true,a:CO},
+  {n:"이진분",p:"K",t:"city",role:"문화복지위원장 · 사선거구",dist:"사선거구",c:1705,star2:true,a:CO},
+  {n:"선현우",p:"D",t:"city",role:"도시환경위원장 · 아선거구",dist:"아선거구",c:800,star2:true,a:CO},
+  {n:"최찬규",p:"D",t:"city",role:"民 교섭단체 대표 · 가선거구",dist:"가선거구",c:960,star2:true,a:[
+    {t:"안산시의회 민주당 교섭단체(10명) 대표의원 최찬규",s:"에너지경제",d:"07.02",u:"https://www.ekn.kr/web/view.php?key=20260702029328440"},
+    {t:"안산시 정책간담회 참석(김진숙·최찬규 시의원)",s:"브릿지경제",d:"07.06",u:"https://www.viva100.com/article/20260706500321"}
+  ]},
+  {n:"김재국",p:"K",t:"city",role:"국힘 교섭단체 대표 · 운영위 부위원장 · 바선거구",dist:"바선거구",c:1213,star2:true,a:[
+    {t:"안산시의회 국민의힘 교섭단체 대표의원 김재국",s:"에너지경제",d:"07.02",u:"https://www.ekn.kr/web/view.php?key=20260702029328440"}
+  ]},
+  {n:"윤성영",p:"K",t:"city",role:"기획행정위 부위원장 · 나선거구",dist:"나선거구",c:40,a:CO},
+  {n:"백승희",p:"D",t:"city",role:"문화복지위 부위원장 · 비례",dist:"비례대표",c:34,a:CO},
+  {n:"김태성",p:"K",t:"city",role:"도시환경위 부위원장 · 아선거구",dist:"아선거구",c:119,a:CO},
+  {n:"염정우",p:"K",t:"city",role:"가선거구",dist:"가선거구",c:81,a:CO},
+  {n:"김진숙",p:"D",t:"city",role:"나선거구",dist:"나선거구",c:1613,star2:true,a:[
+    {t:"안산시 정책간담회 참석(김진숙·최찬규 시의원)",s:"브릿지경제",d:"07.06",u:"https://www.viva100.com/article/20260706500321"}
+  ]},
+  {n:"윤오일",p:"D",t:"city",role:"다선거구",dist:"다선거구",c:40,a:CO},
+  {n:"설호영",p:"K",t:"city",role:"라선거구",dist:"라선거구",c:734,star2:true,a:CO},
+  {n:"이상우",p:"D",t:"city",role:"마선거구",dist:"마선거구",c:90,a:CO},
+  {n:"유민희",p:"K",t:"city",role:"마선거구",dist:"마선거구",c:32,a:CO},
+  {n:"안두회",p:"D",t:"city",role:"바선거구",dist:"바선거구",c:26,a:CO},
+  {n:"천복희",p:"K",t:"city",role:"문화복지위 · 비례",dist:"비례대표",c:24,a:CO}
+];
+
+const TIERS = {nat:"국회의원", prov:"경기도의원 (안산1~8)", city:"안산시의원 (제10대)"};
+const PARTY = {D:"더불어민주당", K:"국민의힘", E:"비례·기타"};
+M.forEach(m=>{ m.c = m.a.length; }); // 지표 = 최근 90일 확인 보도(수록 기사) 수
+const tierMax = {};
+["nat","prov","city"].forEach(t=>{ tierMax[t]=Math.max(...M.filter(m=>m.t===t).map(m=>m.c)); });
+
+let curFilter="all", selected="장윤정";
+const listEl=document.getElementById('list'), detailEl=document.getElementById('detail'), listcnt=document.getElementById('listcnt');
+
+function renderList(){
+  let arr=M.slice();
+  if(curFilter==="star") arr=arr.filter(m=>m.n==="장윤정");
+  else if(curFilter!=="all") arr=arr.filter(m=>m.t===curFilter);
+  listcnt.textContent=arr.length+"명";
+  let html="", lastTier=null;
+  ["nat","prov","city"].forEach(tier=>{
+    const g=arr.filter(m=>m.t===tier);
+    if(!g.length) return;
+    html+=`<div class="grp-label">${TIERS[tier]}</div>`;
+    g.forEach(m=>{
+      const w=Math.max(4,Math.round(m.c/tierMax[m.t]*100));
+      html+=`<div class="row ${m.n===selected?'sel':''}" data-n="${m.n}">
+        <span class="pdot ${m.p}"></span>
+        <span class="rname">${m.n}${m.star?'<span class="rstar">★</span>':''}</span>
+        <span class="rrole">${m.role}</span>
+        <span class="rbar"><i style="width:${w}%"></i></span>
+        <span class="rcnt">${m.c}건</span>
+      </div>`;
+    });
+  });
+  listEl.innerHTML=html;
+  listEl.querySelectorAll('.row').forEach(r=>r.onclick=()=>{selected=r.dataset.n;renderList();renderDetail();});
+}
+function renderDetail(){
+  const m=M.find(x=>x.n===selected);
+  if(!m){detailEl.innerHTML='<div class="empty">의원을 선택하세요.</div>';return;}
+  const arts=m.a.map(x=>`<a class="art" href="${x.u}" target="_blank" rel="noopener">
+      <div class="at">${x.t}</div><div class="am"><span>${x.s}</span><span>·</span><span>${x.d}</span></div></a>`).join('');
+  detailEl.innerHTML=`
+    <div class="dhead">
+      <div class="dtitle">
+        <span class="nm">${m.n}${m.star?' <span style="color:var(--star)">★</span>':''}</span>
+        <span class="chip ${m.p}">${PARTY[m.p]}</span>
+        <span class="chip role">${TIERS[m.t].split(' ')[0]}</span>
+      </div>
+      <div class="dmeta">${m.dist} · ${m.role}</div>
+      <div class="dstat">
+        <div class="s"><div class="n">${m.c}건</div><div class="k">최근 90일 확인 보도</div></div>
+        <div class="s"><div class="n">${m.p==='D'?'민주':m.p==='K'?'국힘':'비례'}</div><div class="k">소속 정당</div></div>
+      </div>
+    </div>
+    <div class="darts">
+      <div class="lab">최근 기사${m.n==='장윤정'?' · <span style="color:var(--star)">고양시의원 동명이인 기사 제외</span>':''}</div>
+      ${arts||'<div class="empty">수록된 기사가 없습니다.</div>'}
+    </div>`;
+}
+document.querySelectorAll('#filters button').forEach(b=>{
+  b.onclick=()=>{document.querySelectorAll('#filters button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');curFilter=b.dataset.f;
+    if(curFilter==="star")selected="장윤정";
+    renderList();renderDetail();};
+});
+renderList();renderDetail();
+</script>
+</body>
+</html>
