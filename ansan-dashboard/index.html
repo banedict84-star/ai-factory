@@ -145,7 +145,7 @@
       <h1>안산 의원 활동 모니터링 대시보드</h1>
       <div class="sub">국회의원 · 경기도의원 · 안산시의원 · <b>지역구</b>를 누르면 관할 동(洞)이, 이름을 누르면 최근 90일 확인 보도가 열립니다</div>
     </div>
-    <div class="updated">최신 갱신<br><strong id="ts">2026-07-09 11:42 KST</strong><br>매일 오전 8시 자동 갱신</div>
+    <div class="updated">최신 갱신<br><strong id="ts">2026-07-09 11:42 KST</strong><br>하루 3회 자동 수집 · 08·14·20시 KST</div>
   </header>
 
   <div class="tiles">
@@ -187,7 +187,7 @@
 
   <footer>
     데이터 출처 · 네이버 뉴스 검색 · 선거구/관할 동 · 중앙선거관리위원회 획정 기준 · 로스터: 6·3 지방선거 당선인 및 원구성 보도(2026.7)<br>
-    의정활동 참고용 내부 모니터링 자료 · 자동 갱신 매일 08:00 KST
+    의정활동 참고용 내부 모니터링 자료 · 자동 수집 하루 3회(08·14·20시 KST)
   </footer>
 </div>
 
@@ -221,96 +221,7 @@ const DONG = {
   city_pr: [] // 비례대표 = 안산시 전역
 };
 
-const CO = [ // common 원구성 article
-  {t:"안산시의회 제10대 원구성 완료…한명훈 의장·현옥순 부의장 선출", s:"경인일보", d:"07.01", u:"https://www.kyeongin.com/article/1766556"},
-  {t:"안산시의회, 제10대 원 구성 마무리…민생 의정 본격 출범", s:"뉴스천지", d:"07.05", u:"https://www.newscj.com/news/articleView.html?idxno=3414648"}
-];
-
-// sd=지역구 표시라벨 / dk=DONG 키 / term=선수 / comm=상임위 / title=직함
-const M = [
-  // ===== 국회의원 =====
-  {n:"김남국",p:"D",t:"nat",sd:"안산갑",dk:"nat_gap",term:"재선",comm:"과학기술정보방송통신위원회",title:"",dist:"안산시갑",a:[
-    {t:"김남국 \"안산 변화가 곧 국정 성과\"…신안산선 연장·ASV 강조",s:"인천일보",d:"07.07",u:"https://www.incheonilbo.com/news/articleView.html?idxno=1326781"},
-    {t:"안산시·김남국 의원 맞손…ASV 경제자유구역 '실전형 기업유치'",s:"경기신문",d:"07.06",u:"https://www.kgnews.co.kr/news/article.html?no=902670"},
-    {t:"안산시, 정책간담회 개최…경기경제자유구역·국비 확보 논의",s:"브릿지경제",d:"07.06",u:"https://www.viva100.com/article/20260706500321"},
-    {t:"안산시·김남국 의원, 안산사이언스밸리 개발 국비 확보 공조",s:"매일일보",d:"07.03",u:"https://www.m-i.kr/news/articleView.html?idxno=1388064"}
-  ]},
-  {n:"김현",p:"D",t:"nat",sd:"안산을",dk:"nat_eul",term:"재선",comm:"과학기술정보방송통신위원회",title:"",dist:"안산시을",a:[
-    {t:"與 김현 \"청소년 유해 음원, 무방비 유통·확산 막을 것\"…음산법·정보통신망법 발의",s:"헤럴드경제",d:"07.08",u:"https://n.news.naver.com/mnews/article/016/0002667207?sid=100"},
-    {t:"청소년 제작 '19금 음원' 유통사가 유해성 검사 의무화 추진",s:"경인일보",d:"07.07",u:"https://www.kyeongin.com/article/1766927"},
-    {t:"與 김현 \"우주 기술 패권 거머쥐자\"…KARI 항공우주기술 포럼 주최",s:"TV조선",d:"07.02",u:"https://n.news.naver.com/mnews/article/448/0000623886?sid=100"},
-    {t:"김현, '존폐 위기' 케이블TV에 \"입법·제도적 지원 최선\"",s:"TV조선",d:"07.02",u:"https://n.news.naver.com/mnews/article/448/0000623776?sid=100"}
-  ]},
-  {n:"박해철",p:"D",t:"nat",sd:"안산병",dk:"nat_byeong",term:"초선",comm:"기후에너지환경노동위원회",title:"",dist:"안산시병",a:[
-    {t:"'김정호 위원장·이소영 여당 간사' 후반기 기후노동위 첫발…박해철 위원 배치",s:"매일노동뉴스",d:"07.09",u:"https://www.labortoday.co.kr/news/articleView.html?idxno=235590"},
-    {t:"방위산업의 날? 노동3권은 '반쪽짜리'…박해철 등 기자회견",s:"매일노동뉴스",d:"07.08",u:"https://www.labortoday.co.kr/news/articleView.html?idxno=235564"},
-    {t:"한국형 제시카법 다시 주목…박해철 등 아동성범죄자 거주제한 발의",s:"경인일보",d:"07.04",u:"https://www.kyeongin.com/article/1766715"},
-    {t:"박해철 발의 '농어업인 삶의 질 향상법' 국회 본회의 통과",s:"신아일보",d:"06.18",u:"https://www.shinailbo.co.kr/news/articleView.html?idxno=5032119"}
-  ]},
-  // ===== 경기도의원 (안산1~8, 전원 민주) =====
-  {n:"김동규",p:"D",t:"prov",sd:"1선거구",dk:"prov1",term:"재선",comm:"보건복지위원회",title:"위원장",dist:"안산 제1선거구",a:[
-    {t:"안산시·김남국 국회의원 정책간담회 참석(ASV 경제자유구역)",s:"브릿지경제",d:"07.06",u:"https://www.viva100.com/article/20260706500321"}
-  ]},
-  {n:"김태희",p:"D",t:"prov",sd:"2선거구",dk:"prov2",term:"재선",comm:"",title:"민주당 정책위원장",dist:"안산 제2선거구",star2:true,a:[
-    {t:"경기도의회 온 정청래 전 대표…김태희 정책위원장 등 참석",s:"KPI뉴스",d:"07.06",u:"https://www.kpinews.kr/newsView/1065598872370312"},
-    {t:"경기도의회 민주당 12대 전반기 정책위원장에 김태희(안산2)",s:"기호일보",d:"06.28",u:"https://www.kihoilbo.co.kr/news/articleView.html?idxno=3027223"}
-  ]},
-  {n:"장윤정",p:"D",t:"prov",sd:"3선거구",dk:"prov3",term:"재선",comm:"경제노동위원회",title:"부위원장",dist:"안산 제3선거구",a:[
-    {t:"장윤정 의원 \"교육예산 유보, 절감보다 적기 집행이 우선\"",s:"더리포트",d:"06.12",u:"https://www.thereport.co.kr/news/articleView.html?idxno=88724"},
-    {t:"장윤정 경기도의원, 경기도교육청 예산유보 운영 점검",s:"서울신문",d:"06.12",u:"https://n.news.naver.com/mnews/article/081/0003652172?sid=102"},
-    {t:"경기도의회 의정홍보위원회 활동 종료…장윤정 위원 참여",s:"이뉴스투데이",d:"06.09",u:"http://www.enewstoday.co.kr/news/articleView.html?idxno=2437303"},
-    {t:"안산소방서 수암119안전센터 개청식 참석",s:"경기일보",d:"06.24",u:"https://n.news.naver.com/mnews/article/666/0000112451?sid=102"}
-  ]},
-  {n:"유재수",p:"D",t:"prov",sd:"4선거구",dk:"prov4",term:"재선",comm:"건설교통위원회",title:"",dist:"안산 제4선거구",a:[
-    {t:"안산소방서 수암119안전센터 개청식 참석(장윤정·유재수)",s:"경기일보",d:"06.24",u:"https://n.news.naver.com/mnews/article/666/0000112451?sid=102"},
-    {t:"안산시의원에서 경기도의원으로 체급 높인 유재수(안산4)",s:"강원도민일보",d:"06.08",u:"https://n.news.naver.com/mnews/article/654/0000184416?sid=100"}
-  ]},
-  {n:"이은미",p:"D",t:"prov",sd:"5선거구",dk:"prov5",term:"재선",comm:"여성가족평생교육위원회",title:"",dist:"안산 제5선거구",a:[
-    {t:"이은미 경기도의원 \"수암119안전센터 인력 증원·안산소방서 이전\" 촉구",s:"서울신문",d:"06.12",u:"https://n.news.naver.com/mnews/article/081/0003652109?sid=102"},
-    {t:"이은미 \"경기안산1교, 대한민국 다문화 교육의 새 기준\"",s:"경인방송",d:"06.11",u:"https://news.ifm.kr/news/articleView.html?idxno=472789"}
-  ]},
-  {n:"박은경",p:"D",t:"prov",sd:"6선거구",dk:"prov6",term:"초선",comm:"교육기획위원회",title:"",dist:"안산 제6선거구",a:[
-    {t:"경기도의회 당선인 명단…안산6 박은경(민주) 입성",s:"중부일보",d:"06.04",u:"https://www.joongboo.com/news/articleView.html?idxno=363728022"}
-  ]},
-  {n:"황은화",p:"D",t:"prov",sd:"7선거구",dk:"prov7",term:"초선",comm:"문화체육관광위원회",title:"",dist:"안산 제7선거구",a:[
-    {t:"체급 낮춘 손혜원부터 첫 중국동포 출신까지…황은화(안산7) 당선인",s:"한국경제",d:"06.05",u:"https://n.news.naver.com/mnews/article/015/0005295556?sid=162"}
-  ]},
-  {n:"이철형",p:"D",t:"prov",sd:"8선거구",dk:"prov8",term:"초선",comm:"",title:"",dist:"안산 제8선거구",a:[
-    {t:"24세부터 71세까지 현장형 당선인…복싱관장 이철형(안산8) 입성",s:"투데이코리아",d:"06.18",u:"https://www.todaykorea.co.kr/news/articleView.html?idxno=402801"}
-  ]},
-  // ===== 안산시의원 (제10대 19명) =====
-  {n:"한명훈",p:"D",t:"city",sd:"가선거구",dk:"city_ga",term:"3선",comm:"",title:"안산시의회 의장",dist:"가선거구",a:[
-    {t:"안산시의회 제10대 의장에 한명훈, 부의장 현옥순 선출",s:"인천일보",d:"07.01",u:"https://www.incheonilbo.com/news/articleView.html?idxno=1326355"},
-    {t:"안산시·김남국 국회의원 정책간담회 참석(한명훈 의장)",s:"브릿지경제",d:"07.06",u:"https://www.viva100.com/article/20260706500321"}
-  ]},
-  {n:"현옥순",p:"K",t:"city",sd:"다선거구",dk:"city_da",term:"3선",comm:"기획행정위원회",title:"안산시의회 부의장",dist:"다선거구",a:[
-    {t:"안산시의회 의장에 한명훈, 부의장은 현옥순 의원 선출…원구성 마쳐",s:"브릿지경제",d:"07.02",u:"https://www.viva100.com/article/20260702500257"}
-  ]},
-  {n:"이재복",p:"D",t:"city",sd:"라선거구",dk:"city_ra",term:"초선",comm:"기획행정위원회",title:"",dist:"라선거구",a:CO},
-  {n:"박은정",p:"D",t:"city",sd:"사선거구",dk:"city_sa",term:"재선",comm:"기획행정위원회",title:"위원장",dist:"사선거구",star2:true,a:CO},
-  {n:"이진분",p:"K",t:"city",sd:"사선거구",dk:"city_sa",term:"재선",comm:"문화복지위원회",title:"위원장",dist:"사선거구",star2:true,a:CO},
-  {n:"선현우",p:"D",t:"city",sd:"아선거구",dk:"city_a",term:"재선",comm:"도시환경위원회",title:"위원장",dist:"아선거구",star2:true,a:CO},
-  {n:"최찬규",p:"D",t:"city",sd:"가선거구",dk:"city_ga",term:"재선",comm:"도시환경위원회",title:"민주당 교섭단체 대표",dist:"가선거구",star2:true,a:[
-    {t:"안산시의회 민주당 교섭단체(10명) 대표의원 최찬규",s:"에너지경제",d:"07.02",u:"https://www.ekn.kr/web/view.php?key=20260702029328440"},
-    {t:"안산시 정책간담회 참석(김진숙·최찬규 시의원)",s:"브릿지경제",d:"07.06",u:"https://www.viva100.com/article/20260706500321"}
-  ]},
-  {n:"김재국",p:"K",t:"city",sd:"바선거구",dk:"city_ba",term:"재선",comm:"도시환경위원회",title:"국민의힘 교섭단체 대표",dist:"바선거구",star2:true,a:[
-    {t:"안산시의회 국민의힘 교섭단체 대표의원 김재국",s:"에너지경제",d:"07.02",u:"https://www.ekn.kr/web/view.php?key=20260702029328440"}
-  ]},
-  {n:"윤성영",p:"K",t:"city",sd:"나선거구",dk:"city_na",term:"초선",comm:"기획행정위원회",title:"부위원장",dist:"나선거구",a:CO},
-  {n:"백승희",p:"D",t:"city",sd:"비례대표",dk:"city_pr",term:"초선",comm:"문화복지위원회",title:"부위원장",dist:"비례대표",a:CO},
-  {n:"김태성",p:"K",t:"city",sd:"아선거구",dk:"city_a",term:"초선",comm:"도시환경위원회",title:"부위원장",dist:"아선거구",a:CO},
-  {n:"염정우",p:"K",t:"city",sd:"가선거구",dk:"city_ga",term:"초선",comm:"도시환경위원회",title:"",dist:"가선거구",a:CO},
-  {n:"김진숙",p:"D",t:"city",sd:"나선거구",dk:"city_na",term:"3선",comm:"문화복지위원회",title:"",dist:"나선거구",star2:true,a:[
-    {t:"안산시 정책간담회 참석(김진숙·최찬규 시의원)",s:"브릿지경제",d:"07.06",u:"https://www.viva100.com/article/20260706500321"}
-  ]},
-  {n:"윤오일",p:"D",t:"city",sd:"다선거구",dk:"city_da",term:"초선",comm:"도시환경위원회",title:"",dist:"다선거구",a:CO},
-  {n:"설호영",p:"K",t:"city",sd:"라선거구",dk:"city_ra",term:"재선",comm:"문화복지위원회",title:"",dist:"라선거구",star2:true,a:CO},
-  {n:"이상우",p:"D",t:"city",sd:"마선거구",dk:"city_ma",term:"초선",comm:"기획행정위원회",title:"",dist:"마선거구",a:CO},
-  {n:"유민희",p:"K",t:"city",sd:"마선거구",dk:"city_ma",term:"초선",comm:"기획행정위원회",title:"",dist:"마선거구",a:CO},
-  {n:"안두회",p:"D",t:"city",sd:"바선거구",dk:"city_ba",term:"초선",comm:"기획행정위원회",title:"",dist:"바선거구",a:CO},
-  {n:"천복희",p:"K",t:"city",sd:"비례대표",dk:"city_pr",term:"초선",comm:"문화복지위원회",title:"",dist:"비례대표",a:CO}
-];
+let M = [];
 
 const TIERS = {nat:"국회의원 (제22대)", prov:"경기도의원 (제12대)", city:"안산시의원 (제10대)"};
 const PARTY = {D:"더불어민주당", K:"국민의힘", E:"비례·기타"};
@@ -443,7 +354,17 @@ document.querySelectorAll('#filters button').forEach(b=>{
     openDist=null;
     renderList();renderDetail();};
 });
-renderTiles();renderList();renderDetail();
+// data/members.json 에서 데이터 로드 후 렌더 (수집 스크립트가 이 파일을 갱신)
+function boot(data){
+  M = (data && data.members) || [];
+  M.forEach(m=>{ m.c = (m.a||[]).length; });
+  if(data && data.generatedAt){ const ts=document.getElementById('ts'); if(ts) ts.textContent=data.generatedAt; }
+  renderTiles();renderList();renderDetail();
+}
+fetch('data/members.json',{cache:'no-store'})
+  .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+  .then(boot)
+  .catch(err=>{ document.getElementById('list').innerHTML='<div class="empty">데이터를 불러오지 못했습니다 ('+err+').<br>data/members.json 을 확인하세요.</div>'; });
 </script>
 </body>
 </html>

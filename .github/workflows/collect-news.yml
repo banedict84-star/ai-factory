@@ -1,0 +1,68 @@
+name: 안산 의원 뉴스 자동 수집 (하루 3회)
+
+# data/members.json 을 최신 뉴스로 갱신하고 GitHub Pages 로 재배포.
+# ⚠️ cron 스케줄은 저장소 '기본 브랜치'에 있을 때만 실행됩니다.
+#    (feature 브랜치에서는 아래 'Run workflow' 수동 실행만 동작)
+# 선택: 저장소 Secrets 에 NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 를 넣으면
+#       구글 뉴스 RSS 대신 네이버 뉴스 API 를 사용(품질↑).
+
+on:
+  schedule:
+    - cron: "0 23 * * *"  # 08:00 KST
+    - cron: "0 5 * * *"   # 14:00 KST
+    - cron: "0 11 * * *"  # 20:00 KST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  collect-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node 설치
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 뉴스 수집 → members.json 갱신
+        env:
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        run: node scripts/collect.mjs
+
+      - name: 변경분 커밋 & 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ansan-dashboard/data/members.json
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋 생략"
+          else
+            git commit -m "chore: 뉴스 자동 수집 갱신 [skip ci]"
+            git push
+          fi
+
+      - name: Pages 설정
+        uses: actions/configure-pages@v5
+
+      - name: 대시보드 업로드
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ansan-dashboard
+
+      - name: Pages 배포
+        id: deployment
+        uses: actions/deploy-pages@v4
