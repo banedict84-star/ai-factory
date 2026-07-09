@@ -61,7 +61,7 @@
   .sec-h .s{font-size:12.5px;color:var(--t5);}
 
   /* ranking */
-  .rankgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(186px,1fr));gap:14px;}
+  .rankgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;}
   .rank-card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:14px;
     padding:16px 16px 15px 20px;cursor:pointer;overflow:hidden;box-shadow:var(--shadow-rank);
     transition:transform .15s ease,box-shadow .15s ease;}
@@ -73,6 +73,7 @@
   .rank-card .rn{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1;}
 
   .badge{font-size:10.5px;font-weight:700;letter-spacing:.02em;border-radius:6px;padding:3px 7px;white-space:nowrap;}
+  .lv-short{display:none;}
 
   /* filter bar */
   .fbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;}
@@ -138,6 +139,20 @@
   .foot .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px 28px;font-size:12px;line-height:1.65;color:var(--t4);}
   .foot .cols p{margin:0;} .foot .cols b{color:var(--t2);}
   .empty{padding:40px 20px;color:var(--t5);font-size:13px;text-align:center;}
+
+  /* 모바일: 지역구 칩을 항상 이름 옆에 고정(막대는 아랫줄), 랭킹 카드 컴팩트 */
+  @media (max-width:560px){
+    .list .lv-full{display:none;} .list .lv-short{display:inline;}
+    .barwrap{flex-basis:100%;min-width:0;order:9;margin-top:2px;}
+    .row-main{gap:8px 10px;padding:12px 16px;}
+    .row-meta{padding:0 16px 11px 46px;}
+    .dongrow{padding:2px 16px 14px 46px;}
+    .rank-card{padding:13px 14px 12px 16px;}
+    .rank-card .nm{font-size:17px;}
+    .rank-card .rn{font-size:25px;}
+    .rank-card .wm{font-size:29px;top:10px;right:12px;}
+    main{padding-left:14px;padding-right:14px;}
+  }
 </style>
 </head>
 <body>
@@ -190,10 +205,11 @@ const DONG = {
 };
 const ISSUES_TOP = ['ASV 경제자유구역','교육예산','신안산선 연장','과밀학급','소방 인프라'];
 const LV = {
-  nat:{label:'국회의원', color:'#5b46b0', bg:'#efecfa'},
-  prov:{label:'경기도의원', color:'#177e63', bg:'#e7f5f0'},
-  city:{label:'안산시의원', color:'#b96f14', bg:'#fbf0e2'}
+  nat:{label:'국회의원', short:'국회', color:'#5b46b0', bg:'#efecfa'},
+  prov:{label:'경기도의원', short:'도의', color:'#177e63', bg:'#e7f5f0'},
+  city:{label:'안산시의원', short:'시의', color:'#b96f14', bg:'#fbf0e2'}
 };
+function badgeHTML(m){ return `<span class="badge" style="color:${LV[m.t].color};background:${LV[m.t].bg};"><span class="lv-full">${LV[m.t].label}</span><span class="lv-short">${LV[m.t].short}</span></span>`; }
 const PC={D:'#0b57a4',K:'#d0272e'}, PBG={D:'#eaf1fb',K:'#fdecec'}, PFULL={D:'더불어민주당',K:'국민의힘'};
 const ACCENT='#0b57a4';
 const CITY_SG=["가선거구","나선거구","다선거구","라선거구","마선거구","바선거구","사선거구","아선거구","비례대표"];
@@ -207,6 +223,36 @@ function distIdx(m){ // 급별 지역구 정렬 인덱스
 }
 
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// 기사 제목에서 '현안' 키워드 자동 추출 (여러 의원에 공통으로 등장하는 단어 우선)
+const STOP=new Set(['의원','안산','안산시','안산시의회','시의회','도의회','국회','국회의원','경기도','경기도의회','경기','도의원','시의원','위원회','위원장','부위원장','의장','부의장','대표','교섭단체','선출','참석','개최','간담회','기자회견','위한','관련','통해','대한','대해','시민','지역','주민','후보','당선','당선인','선거','선거구','민주당','국민의힘','더불어민주당','전반기','후반기','원구성','추진','점검','방문','촉구','발의','통과','논의','대책','현장','정책','참여','활동','대표의원','민생','제10대','제9회','인터뷰','오늘','이번','우리',
+  // 원구성·개원 상투어
+  '구성','마무리','출범','협치','의장단','의정','본격','본격화','상생','체제','완료','마쳐','진용','완성','기대','성공','뒷받침','첫걸음','시작','출발','돌입','개원','개원식','상임','전국','명단','입성','발표','경선','공천','확정','간담','제','및','등','더','또','통','것','수','중','전','후','새','첫','위','도','시','군','구']);
+function stripJosa(w){ return w.length>2 ? w.replace(/(은|는|이|가|을|를|에서|에게|으로|로|와|과|의|도|만|까지|부터|에|께|라|나|고)$/,'') : w; }
+function extractIssues(members){
+  const names=new Set(members.map(m=>m.n));
+  const score=new Map(); // term -> Set(memberName)
+  members.forEach(m=>{
+    const seen=new Set();
+    (m.a||[]).forEach(a=>{
+      String(a.t||'').split(/[\s,·・"'“”‘’…\-—~()\[\]{}<>!?.:;、，"']+/).forEach(raw=>{
+        let w=stripJosa(raw.trim());
+        if(w.length<2||w.length>12) return;
+        if(/^[0-9]+$/.test(w)) return;
+        if(STOP.has(w)||names.has(w)) return;
+        if([...names].some(n=>w.includes(n))) return; // 이름 포함 토큰 제거
+        seen.add(w);
+      });
+    });
+    seen.forEach(w=>{ if(!score.has(w)) score.set(w,new Set()); score.get(w).add(m.n); });
+  });
+  const ranked=[...score.entries()]
+    .map(([w,s])=>({w,members:s.size}))
+    .filter(x=>x.members>=4)              // 최소 4명 이상 공통(강한 신호만) — 약하면 아래 기본목록
+    .sort((a,b)=>b.members-a.members)
+    .slice(0,6).map(x=>x.w);
+  return ranked.length>=3 ? ranked : ['ASV 경제자유구역','교육예산','신안산선 연장','과밀학급','소방 인프라'];
+}
 function dongsOf(dk){ const g=DONG[dk]; if(!g||!g.length) return ['안산시 전역']; return g.flatMap(x=>x.d); }
 function subMeta(m){ return [m.term,m.comm,m.title].filter(Boolean).join(' · '); }
 
@@ -236,6 +282,7 @@ function render(){
     (TORDER[a.t]-TORDER[b.t]) || (distIdx(a)-distIdx(b)) || (b.c-a.c));
   const sel=M.find(m=>m.n===selectedN);
   const cnt={all:tot,nat:cN,prov:cD,city:cS};
+  const issues=extractIssues(M);
 
   mainEl.innerHTML=`
     <section class="strip">
@@ -258,7 +305,7 @@ function render(){
       </div>
       <div class="card stat">
         <div class="l">최근 핵심 현안</div>
-        <div class="chipwrap">${ISSUES_TOP.map(i=>`<span class="issue">${esc(i)}</span>`).join('')}</div>
+        <div class="chipwrap">${issues.map(i=>`<span class="issue">${esc(i)}</span>`).join('')}</div>
       </div>
     </section>
 
@@ -322,7 +369,7 @@ function rowHTML(m,rank){
     <div class="row-main">
       <span class="rk tnum">${rank}</span>
       <button class="nbtn" data-select="${esc(m.n)}"><span class="pdot" style="background:${PC[m.p]}"></span><span class="nm">${esc(m.n)}</span></button>
-      <span class="badge" style="color:${LV[m.t].color};background:${LV[m.t].bg};">${LV[m.t].label}</span>
+      ${badgeHTML(m)}
       <button class="dist-btn" data-toggle="${esc(m.n)}"><span>${esc(m.sd)}</span><span class="n">관할동 ${dongs.length}</span></button>
       <div class="barwrap">
         <div class="bar"><i style="width:${Math.round(m.c/MAXR*100)}%;background:${PC[m.p]}"></i></div>
