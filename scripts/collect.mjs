@@ -20,7 +20,7 @@ const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 const DATA = path.join(ROOT, 'ansan-dashboard', 'data', 'members.json');
 
 const WINDOW_DAYS = 90;
-const MAX_PER_MEMBER = 2;   // ← 의원별 수집 기사 수 (여기 숫자만 바꾸면 조정됨)
+const MAX_PER_MEMBER = 10;   // ← 의원별 수집 기사 수 (여기 숫자만 바꾸면 조정됨)
 const NOW = new Date();
 
 // 동명이인·오탐 제외어 (제목/요약에 있으면 버림)

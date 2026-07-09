@@ -1,4 +1,4 @@
-name: 안산 의원 뉴스 자동 수집 (하루 3회)
+name: 안산 의원 뉴스 자동 수집 (하루 2회)
 
 # data/members.json 을 최신 뉴스로 갱신하고 GitHub Pages 로 재배포.
 # ⚠️ cron 스케줄은 저장소 '기본 브랜치'에 있을 때만 실행됩니다.
@@ -8,9 +8,8 @@ name: 안산 의원 뉴스 자동 수집 (하루 3회)
 
 on:
   schedule:
-    - cron: "0 23 * * *"  # 08:00 KST
-    - cron: "0 5 * * *"   # 14:00 KST
-    - cron: "0 11 * * *"  # 20:00 KST
+    - cron: "0 23 * * *"  # 08:00 KST (오전 8시)
+    - cron: "0 11 * * *"  # 20:00 KST (저녁 8시)
   workflow_dispatch:
   push:
     branches: [claude/ansan-council-dashboard-5v9teu]
