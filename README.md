@@ -97,3 +97,31 @@ python -m oms.main serve
 `src/` 에는 실제 인스타 콘텐츠를 생성·게시하는 파이프라인 초안이 있습니다.
 지금 OS 는 **실제 AI/게시 API 를 연결하지 않습니다.** 나중에 직원의 Decision/작업 자리에
 이 실행기를 연결하면, AI 직원들이 실제로 콘텐츠를 만들어 올리게 됩니다.
+
+## `src/news_scraper.py` — 반월신문 기사 스크래퍼
+
+지역 뉴스(반월신문, banwol.net)의 섹션 최근 기사를 콘텐츠 소재로 끌어오는 모듈입니다.
+제목·링크·날짜·요약을 뽑고, 옵션으로 본문까지 가져옵니다.
+
+```bash
+# 최근 10건 (제목·링크·날짜·요약) 을 화면에 출력
+python -m src.news_scraper --section S1N6 --limit 10
+
+# 본문까지 포함해 JSON 파일로 저장
+python -m src.news_scraper --section S1N6 --limit 10 --with-body \
+    --out output/banwol_S1N6.json
+```
+
+코드에서:
+
+```python
+from src.news_scraper import recent_articles
+for a in recent_articles("S1N6", limit=5, with_body=True):
+    print(a.date, a.title, a.url)
+```
+
+> ⚠️ 반월신문 서버는 봇/비브라우저·데이터센터 IP 요청을 **403** 으로 막습니다.
+> 브라우저에 가까운 헤더를 붙이지만, 클라우드/CI 환경에서는 차단될 수 있으니
+> **반월신문이 정상 접속되는 네트워크(로컬 PC 등)에서 실행**하세요.
+> 파서 로직은 `tests/test_news_scraper.py` 에서 합성 HTML 로 검증합니다
+> (`python -m tests.test_news_scraper`).

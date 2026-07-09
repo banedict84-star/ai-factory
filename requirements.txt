@@ -7,6 +7,7 @@ python-multipart>=0.0.9
 # ── Instagram 실행 파이프라인 (src/, 추후 연결) ──
 anthropic>=0.40.0
 requests>=2.31.0
+beautifulsoup4>=4.12.0
 PyYAML>=6.0
 python-dotenv>=1.0.0
 Pillow>=10.0.0
