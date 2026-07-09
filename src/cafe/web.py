@@ -17,7 +17,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from .. import config
-from . import auth, content_generator, images, pipeline, review
+from . import auth, content_generator, images, pipeline, publisher, review
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -71,6 +71,14 @@ if _APP_PASSWORD:
 
 def _has_llm_key() -> bool:
     return bool(os.getenv("OPENAI_API_KEY") or os.getenv("ANTHROPIC_API_KEY"))
+
+
+def _hero_image_src(content: str) -> str:
+    """본문 상단 대표 이미지(<img>)의 src 를 뽑는다. 없으면 빈 문자열."""
+    import re
+
+    m = re.search(r'<img\b[^>]*\bsrc=["\']([^"\']+)["\']', content, re.IGNORECASE)
+    return m.group(1) if m else ""
 
 
 def _public_base(request: Request) -> str:
@@ -137,7 +145,11 @@ def draft_detail(request: Request, draft_id: str):
             request, "message.html", status_code=404,
             title="초안 없음", message=f"{draft_id} 를 찾을 수 없습니다.", back="/",
         )
-    return _render(request, "draft.html", d=d)
+    return _render(
+        request, "draft.html", d=d,
+        cafe_hero=_hero_image_src(d.post.content),
+        cafe_preview=publisher._prettify_for_cafe(d.post.content),
+    )
 
 
 @app.post("/draft/{draft_id}/edit")

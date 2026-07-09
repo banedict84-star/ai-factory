@@ -16,6 +16,15 @@
   {% endif %}
   {% if d.note %}<div class="banner">📝 메모: {{ d.note }}</div>{% endif %}
 
+  <h2>카페에 이렇게 올라갑니다 <span class="sub">— 실제 발행 모습 미리보기</span></h2>
+  <div class="cafe-preview">
+    <div class="cafe-subject">{{ d.post.subject }}</div>
+    {% if cafe_hero %}
+    <img class="cafe-hero" src="{{ cafe_hero }}" alt="대표 이미지">
+    {% endif %}
+    <div class="cafe-body">{{ cafe_preview | safe }}</div>
+  </div>
+
   {% if d.status == 'published' %}
   <h1>{{ d.post.subject }}</h1>
   <h2>본문</h2>
