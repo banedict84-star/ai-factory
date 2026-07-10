@@ -24,10 +24,11 @@ const METRIC_DAYS = 30;      // ← 핵심 지표(건수·막대·랭킹) 기간
 const MAX_PER_MEMBER = 100;  // ← 의원별 기사 목록 최대 수(여기 숫자만 바꾸면 조정됨)
 const NOW = new Date();
 
-// 동명이인·오탐 제외어 (제목/요약에 있으면 버림)
+// 동명이인·오탐 제외어 (제목/요약에 있으면 그 기사 버림)
 const EXCLUDE = {
-  '장윤정': ['고양', '가수', '트로트'],       // 고양시의원 / 가수 동명이인
-  '박은정': ['검사', '장관', '통일부', '검찰'], // 박은정 前 검사/국회 동명이인
+  '박은정': ['검사', '검찰', '특검', '형소법', '보완수사권', '수사권', '법사위'], // 前 검사·국회의원 동명이인
+  '장윤정': ['고양', '가수', '트로트', '생존자', '투병'],                       // 고양시의원 / 가수 동명이인
+  '김태성': ['부산', '수영구', '배우'],                                         // 부산 수영구 등 타지역/배우 동명이인
   '김현':   ['배우', '아나운서']
 };
 
@@ -103,9 +104,11 @@ const provider = USE_NAVER ? fetchNaver : fetchGoogle;
 function keep(member, a) {
   const text = `${a.title} ${a.desc}`;
   if (!text.includes(member.n)) return false;              // 이름 포함(기본 확인만)
+  const ex = EXCLUDE[member.n] || [];
+  if (ex.some(w => text.includes(w))) return false;         // 지정 의원 동명이인 제외어
   if (!(a.date instanceof Date) || isNaN(a.date)) return false;
   if (daysAgo(a.date) > WINDOW_DAYS || daysAgo(a.date) < -1) return false; // 90일 이내
-  return true; // 동명이인 등은 일단 그대로 둠(추후 필요 시 EXCLUDE/안산 필터 재적용)
+  return true;
 }
 
 async function collectFor(member) {
