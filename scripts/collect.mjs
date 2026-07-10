@@ -19,8 +19,9 @@ import path from 'node:path';
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const DATA = path.join(ROOT, 'ansan-dashboard', 'data', 'members.json');
 
-const WINDOW_DAYS = 90;
-const MAX_PER_MEMBER = 30;   // ← 의원별 최근 기사 수 (여기 숫자만 바꾸면 조정됨)
+const WINDOW_DAYS = 90;      // 기사 목록에 담을 기간(최근 90일)
+const METRIC_DAYS = 30;      // ← 핵심 지표(건수·막대·랭킹) 기간: 최근 30일
+const MAX_PER_MEMBER = 100;  // ← 의원별 기사 목록 최대 수(여기 숫자만 바꾸면 조정됨)
 const NOW = new Date();
 
 // 동명이인·오탐 제외어 (제목/요약에 있으면 버림)
@@ -141,9 +142,10 @@ async function main() {
     const res = await collectFor(m);
     if (res && res.length) {
       m.a = res;
-      m.c = res.length;
+      m.r30 = res.filter(x => x.iso && daysAgo(new Date(x.iso)) <= METRIC_DAYS).length; // 최근 30일 건수
+      m.c = m.r30;   // 지표 = 30일 건수
       updated++;
-      console.log(`  ✓ ${m.n}: ${res.length}건`);
+      console.log(`  ✓ ${m.n}: 목록 ${res.length}건 · 30일 ${m.r30}건`);
     } else if (res && res.length === 0) {
       // 0건이면 기존 유지(품질 안전). 원하면 여기서 m.a=[] 로 비울 수 있음.
       console.log(`  · ${m.n}: 신규 0건 → 기존 ${(m.a || []).length}건 유지`);

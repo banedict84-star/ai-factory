@@ -261,7 +261,7 @@ const mainEl=document.getElementById('main');
 
 function boot(data){
   M=(data&&data.members)||[];
-  M.forEach(m=>{ m.c=(m.a||[]).length; });
+  M.forEach(m=>{ m.c=(m.r30!=null?m.r30:(m.a||[]).length); }); // 지표 = 최근 30일 건수(없으면 목록수)
   MAXR=Math.max(1,...M.map(m=>m.c));
   const top=[...M].sort((a,b)=>b.c-a.c)[0];
   selectedN=top?top.n:null;
@@ -310,7 +310,7 @@ function render(){
     </section>
 
     <section class="sec">
-      <div class="sec-h"><h2>주목 인물</h2><span class="s">최근 90일 최다 보도 · 상위 5인</span></div>
+      <div class="sec-h"><h2>주목 인물</h2><span class="s">최근 30일 최다 보도 · 상위 5인</span></div>
       <div class="rankgrid">
         ${ranked.map((m,i)=>`
           <div class="rank-card" data-select="${esc(m.n)}">
@@ -325,7 +325,7 @@ function render(){
             <div style="display:flex;align-items:baseline;gap:5px;margin-top:14px;">
               <span class="rn tnum" style="color:${PC[m.p]}">${m.c}</span><span style="font-size:13px;font-weight:700;color:var(--t2);">건</span>
             </div>
-            <div style="font-size:11px;color:var(--t6);margin-top:5px;">확인 보도 · 90일</div>
+            <div style="font-size:11px;color:var(--t6);margin-top:5px;">최근 30일 보도</div>
           </div>`).join('')}
       </div>
     </section>
@@ -339,7 +339,7 @@ function render(){
       </div>
       <div class="ld">
         <div class="card list">
-          <div class="head"><span style="width:22px;text-align:right;">#</span><span style="flex:1;">의원</span><span>최근 90일 확인 보도</span></div>
+          <div class="head"><span style="width:22px;text-align:right;">#</span><span style="flex:1;">의원</span><span>최근 30일 보도</span></div>
           ${filtered.map((m,i)=>rowHTML(m,i+1)).join('')}
         </div>
         <div class="detail">${sel?detailHTML(sel,filtered.findIndex(x=>x.n===sel.n)+1):'<div class="card dcard"><div class="empty">의원을 선택하세요.</div></div>'}</div>
@@ -352,7 +352,7 @@ function render(){
         <span style="font-size:12.5px;color:var(--t4);">뉴스 검색으로 하루 2회 자동 수집됩니다 (오전 8시·저녁 8시 KST). 동명이인 등 일부 오탐이 포함될 수 있습니다.</span>
       </div>
       <div class="cols">
-        <p><b>지표</b> = 최근 90일 <b>확인 보도 건수</b> — '이름 의원' 뉴스 검색 결과 중 최신순 표본입니다.</p>
+        <p><b>지표</b> = 최근 <b>30일 보도 건수</b> — 최근 30일간 '이름의원' 뉴스 검색 기사 수(활동량 지표). 아래 목록은 최근 90일 최대 100건까지 표시.</p>
         <p><b>지역구 관할 동</b>은 중앙선관위 선거구 획정 기준 — 도의원(1~8선거구)·시의원(가~아선거구)·국회의원(갑·을·병) 급별 경계가 다릅니다.</p>
         <p><b>데이터 출처</b> · 네이버/구글 뉴스 검색 · 선거구/관할 동: 중앙선거관리위원회 획정 기준 · 로스터: 6·3 지방선거 당선인 및 원구성 보도(2026.7).</p>
       </div>
@@ -400,7 +400,7 @@ function detailHTML(m,rank){
       <div style="display:flex;align-items:baseline;gap:12px;margin-top:14px;">
         <div>
           <div style="display:flex;align-items:baseline;gap:5px;"><span class="dbig tnum" style="color:${PC[m.p]}">${m.c}</span><span style="font-size:15px;font-weight:700;color:var(--t2);">건</span></div>
-          <div style="font-size:11.5px;color:var(--t6);margin-top:5px;">최근 90일 확인 보도</div>
+          <div style="font-size:11.5px;color:var(--t6);margin-top:5px;">최근 30일 보도 건수</div>
         </div>
       </div>
     </div>
